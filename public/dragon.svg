@@ -1,0 +1,95 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bodyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0ff;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#06b6d4;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0e7490;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="wingGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#22d3ee;stop-opacity:0.9" />
+      <stop offset="100%" style="stop-color:#0891b2;stop-opacity:0.7" />
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="outerGlow">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background circle -->
+  <circle cx="256" cy="256" r="250" fill="#0a0a0f" stroke="url(#bodyGrad)" stroke-width="3" filter="url(#outerGlow)" opacity="0.95"/>
+
+  <!-- Dragon body/neck curve -->
+  <path d="M 200 380 Q 180 320 190 260 Q 200 200 240 170 Q 260 155 280 150 Q 300 145 310 155 Q 330 170 320 200 Q 315 220 300 240 Q 280 265 260 280 Q 240 295 230 320 Q 220 350 225 380"
+        fill="none" stroke="url(#bodyGrad)" stroke-width="18" stroke-linecap="round" filter="url(#glow)"/>
+
+  <!-- Dragon head -->
+  <path d="M 280 150 Q 310 120 340 115 Q 360 112 370 125 Q 380 138 365 155 Q 350 170 330 175 Q 310 178 300 170"
+        fill="url(#bodyGrad)" stroke="#0ff" stroke-width="2" filter="url(#glow)"/>
+
+  <!-- Dragon snout -->
+  <path d="M 340 115 Q 370 105 390 110 Q 400 115 395 125 Q 390 135 370 130 Q 355 128 345 120"
+        fill="#06b6d4" stroke="#0ff" stroke-width="1.5"/>
+
+  <!-- Dragon eye -->
+  <circle cx="340" cy="130" r="6" fill="#0a0a0f"/>
+  <circle cx="341" cy="129" r="3" fill="#ff3e3e"/>
+  <circle cx="342" cy="128" r="1.2" fill="#ff8080"/>
+
+  <!-- Dragon horns -->
+  <path d="M 320 120 Q 310 90 325 70" fill="none" stroke="#0ff" stroke-width="4" stroke-linecap="round" filter="url(#glow)"/>
+  <path d="M 340 115 Q 340 85 360 65" fill="none" stroke="#0ff" stroke-width="3.5" stroke-linecap="round" filter="url(#glow)"/>
+
+  <!-- Left wing (large, spread) -->
+  <path d="M 220 220 Q 160 150 100 110 Q 80 100 75 120 Q 70 145 110 180 Q 85 165 60 160 Q 45 158 50 175 Q 55 195 100 210 Q 140 225 180 240"
+        fill="url(#wingGrad)" stroke="#0ff" stroke-width="2" filter="url(#glow)" opacity="0.85"/>
+
+  <!-- Right wing -->
+  <path d="M 290 190 Q 340 130 400 100 Q 420 92 425 112 Q 428 135 390 160 Q 415 148 440 145 Q 455 143 450 162 Q 445 180 400 195 Q 360 208 320 215"
+        fill="url(#wingGrad)" stroke="#0ff" stroke-width="2" filter="url(#glow)" opacity="0.85"/>
+
+  <!-- Wing membrane details - left -->
+  <path d="M 190 230 Q 145 180 100 145" fill="none" stroke="#22d3ee" stroke-width="1" opacity="0.5"/>
+  <path d="M 185 235 Q 130 195 85 170" fill="none" stroke="#22d3ee" stroke-width="1" opacity="0.4"/>
+
+  <!-- Wing membrane details - right -->
+  <path d="M 305 205 Q 355 155 400 130" fill="none" stroke="#22d3ee" stroke-width="1" opacity="0.5"/>
+  <path d="M 310 210 Q 370 170 420 148" fill="none" stroke="#22d3ee" stroke-width="1" opacity="0.4"/>
+
+  <!-- Dragon tail -->
+  <path d="M 210 370 Q 180 400 160 410 Q 130 425 110 415 Q 95 408 105 395 Q 115 385 135 390 Q 145 393 150 400"
+        fill="none" stroke="url(#bodyGrad)" stroke-width="12" stroke-linecap="round" filter="url(#glow)"/>
+
+  <!-- Tail spikes -->
+  <path d="M 110 415 Q 95 430 85 420" fill="none" stroke="#0ff" stroke-width="3" stroke-linecap="round"/>
+  <path d="M 120 410 Q 108 425 100 418" fill="none" stroke="#0ff" stroke-width="2.5" stroke-linecap="round"/>
+
+  <!-- Dragon chest/belly scales indication -->
+  <path d="M 235 280 Q 240 290 235 300" fill="none" stroke="#22d3ee" stroke-width="1.5" opacity="0.6"/>
+  <path d="M 230 300 Q 235 310 230 320" fill="none" stroke="#22d3ee" stroke-width="1.5" opacity="0.5"/>
+  <path d="M 225 320 Q 230 330 225 340" fill="none" stroke="#22d3ee" stroke-width="1.5" opacity="0.4"/>
+
+  <!-- Dragon legs -->
+  <path d="M 230 350 Q 220 370 210 385 Q 205 395 215 398 Q 225 400 230 390"
+        fill="none" stroke="url(#bodyGrad)" stroke-width="8" stroke-linecap="round"/>
+  <path d="M 250 340 Q 260 365 265 385 Q 268 395 258 398 Q 248 400 245 390"
+        fill="none" stroke="url(#bodyGrad)" stroke-width="8" stroke-linecap="round"/>
+
+  <!-- Claws -->
+  <path d="M 215 398 L 208 408 M 215 398 L 218 410 M 215 398 L 225 407" fill="none" stroke="#0ff" stroke-width="2" stroke-linecap="round"/>
+  <path d="M 258 398 L 252 408 M 258 398 L 262 410 M 258 398 L 268 405" fill="none" stroke="#0ff" stroke-width="2" stroke-linecap="round"/>
+
+  <!-- Breath effect (subtle cyan mist from mouth) -->
+  <circle cx="405" cy="108" r="5" fill="#0ff" opacity="0.3" filter="url(#glow)"/>
+  <circle cx="415" cy="103" r="3.5" fill="#0ff" opacity="0.2" filter="url(#glow)"/>
+  <circle cx="422" cy="100" r="2.5" fill="#0ff" opacity="0.15" filter="url(#glow)"/>
+</svg>
