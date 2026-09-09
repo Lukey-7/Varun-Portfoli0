@@ -1,7 +1,9 @@
 import { useEffect, useRef } from 'react';
 import { motion, useMotionValue, useSpring } from 'framer-motion';
+import { useFinePointer } from '@/hooks/use-fine-pointer';
 
 const NebulaBackground = () => {
+  const isFinePointer = useFinePointer();
   const containerRef = useRef<HTMLDivElement>(null);
   
   const mouseX = useMotionValue(0);
@@ -13,6 +15,10 @@ const NebulaBackground = () => {
   const nebulaY = useSpring(mouseY, springConfig);
   
   useEffect(() => {
+    // Parallax only makes sense with a real pointer; skip the listener
+    // entirely on touch devices rather than animating for nobody.
+    if (!isFinePointer) return;
+
     const handleMouseMove = (e: MouseEvent) => {
       // Offset from center, scaled down
       const centerX = window.innerWidth / 2;
@@ -20,10 +26,10 @@ const NebulaBackground = () => {
       mouseX.set((e.clientX - centerX) * 0.1);
       mouseY.set((e.clientY - centerY) * 0.1);
     };
-    
+
     window.addEventListener('mousemove', handleMouseMove);
     return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, [mouseX, mouseY]);
+  }, [mouseX, mouseY, isFinePointer]);
   
   return (
     <div ref={containerRef} className="fixed inset-0 overflow-hidden pointer-events-none z-0">

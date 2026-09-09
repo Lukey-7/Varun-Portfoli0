@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion, useMotionValue, useSpring } from 'framer-motion';
+import { useFinePointer } from '@/hooks/use-fine-pointer';
 
 const CustomCursor = () => {
+  const isFinePointer = useFinePointer();
   const cursorRef = useRef<HTMLDivElement>(null);
   const [isHovering, setIsHovering] = useState(false);
   const [isClicking, setIsClicking] = useState(false);
@@ -70,7 +72,10 @@ const CustomCursor = () => {
       window.removeEventListener('mouseover', handleMouseOver);
     };
   }, [mouseX, mouseY, velocityX, velocityY]);
-  
+
+  // Touch devices keep their native tap targets and no floating ring.
+  if (!isFinePointer) return null;
+
   return (
     <>
       {/* Main cursor ring */}
