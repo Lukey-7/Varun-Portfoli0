@@ -1,133 +1,64 @@
-# Varun Darji — Portfolio
+# Varun Darji portfolio
 
-A terminal-flavoured personal portfolio for **Varun Rajesh Darji**, AI/ML Engineer in Mumbai.
-Ghost-cyan on near-black, glassmorphic cards, an interactive skill graph, and a working
-shell you can actually type résumé commands into.
+Two separate portfolio sites, cyan and monochrome (ORDO), built from one React 18, TypeScript and Vite repository. Each has its own app, styles, dev server, build output and deployment, so either can change without touching the other.
 
-**Stack:** React 18 · TypeScript · Vite · Tailwind CSS · shadcn/ui · Framer Motion
+## Sites
 
----
+| Site | Develop | Build output | Preview |
+| --- | --- | --- | --- |
+| Cyan | `npm run dev:cyan` → 127.0.0.1:4173 | `dist/cyan` | `npm run preview:cyan` → :4174 |
+| Monochrome (ORDO) | `npm run dev:ordo` → 127.0.0.1:4175 | `dist/ordo` | `npm run preview:ordo` → :4176 |
 
-## Pages
+Run `npm ci` first. `npm run dev` starts the cyan site; `npm run build` builds both.
 
-| Route       | Name       | What's there                                                                 |
-| ----------- | ---------- | ---------------------------------------------------------------------------- |
-| `/`         | **Home**   | Hero, current role, location, education and featured work in a bento grid     |
-| `/logs`     | **Logs**   | Professional experience timeline, education, and how I work                   |
-| `/nexus`    | **Nexus**  | Project archive — featured builds plus side projects, each with a deep-dive   |
-| `/vault`    | **Vault**  | Technical stack as a connected graph (desktop) and grouped grid (mobile)      |
-| `/terminal` | **Terminal** | An interactive shell: `about`, `experience`, `skills`, `projects`, `resume` |
+**Cyan** (`src/sites/cyan`): pointer-lit hero, case studies, results with their scope, signal map, interactive research explainer and a command palette (Ctrl/⌘ K or /). It keeps the original pages: `/nexus` (project archive), `/logs`, `/vault` (skill map), `/terminal` and `/classic`. `/ordo` redirects to the monochrome site.
 
-### Terminal commands
+**Monochrome** (`src/sites/ordo`): a single page following the ORDO reference film, with an auto-morphing hero, AI capability grid, six-project grid, four-stage workflow, scroll-assembled particle system, research proposal, built-in console and dotted wordmark. Unknown paths show its own 404.
 
-```
-help  about  whoami  experience  education  skills
-projects  contact  resume  github  linkedin  email
-clear  sudo  exit
-```
+Both have a light/dark toggle and respect reduced-motion preferences. The bottom-right design switch links to the other site.
 
-`Tab` completes a command, `↑` / `↓` walk through history.
+### How the split works
 
----
+- `vite.config.ts` reads the Vite mode (`cyan` by default, or `ordo`). It points the `@site` alias at `src/sites/<site>`, and sets the port, output folder and page title, description and theme colour.
+- `src/main.tsx` renders `@site/App`, so each build contains only its own site.
+- Each site has its own stylesheet: `src/sites/cyan/cyan.css`, and `src/sites/ordo/base.css` plus `ordo.css`.
+- Shared on purpose: content in `src/data`, the terminal commands, `src/lib` helpers, and the case-study dialog and project diagrams in `src/components/portfolio`.
 
-## Architecture notes
+### Deploying
 
-**One source of truth.** Every piece of résumé content — roles, dates, bullet points,
-skills, projects, contact details — lives in [`src/data/profile.ts`](src/data/profile.ts).
-The pages, the bento cards and the terminal all read from it, so updating a job title
-in one place updates it everywhere. Adding a project means appending one object to the
-`projects` array; no JSX to touch.
+Create one hosting project per site from this repository. With Vercel, use build command `npm run build:cyan` and output `dist/cyan` for one, and `npm run build:ordo` and `dist/ordo` for the other. `vercel.json` keeps SPA routes working for both. Set `VITE_CYAN_URL` and `VITE_ORDO_URL` in both projects so the sites link to each other. Locally they default to 127.0.0.1:4173 and :4175.
 
-**Mobile is a first-class target, not a media query afterthought.**
+## Content
 
-- The custom cursor and the mouse-parallax nebula are gated behind
-  `(hover: hover) and (pointer: fine)` — touch devices never load the listeners and
-  keep every native affordance.
-- The project detail view is a centred dialog on desktop and a bottom sheet on phones,
-  with scroll locking, `Escape` to dismiss and safe-area padding.
-- The skill graph's absolute positioning only renders at `lg` and above. Below that the
-  same data appears as a category-grouped grid built for thumbs.
-- Terminal input doesn't autofocus on touch, so the keyboard no longer ambushes you on
-  page load. Quick-command chips sit above the window on mobile.
-- Wide content (ASCII art, command output) scrolls inside its own container. The page
-  body never scrolls sideways.
-- `prefers-reduced-motion` is respected globally.
+- `src/data/profile.ts`: contact, work history, education and skills. Archive projects are derived from curated portfolio data.
+- `src/data/portfolio.ts`: case-study narratives, public project links, personal projects, client-work summaries, AI capabilities and the research proposal.
+- `src/lib/terminal-commands.ts`: command set shared by the cyan `/terminal` page and the ORDO console.
+- `public/Varun-Darji-Resume.pdf`: supplied resume, unchanged.
+- `src/sites/ordo/projectShowcase.ts`: the monochrome site's project galleries and verified highlights. Screenshots in `public/projects` come from each project's own repository and show demo or synthetic data only.
+- `public/play/arcade`: a playable copy of Lukey Arcade (Tetris-89 and Star Vanguard) from the public Lukey-tetris repository, without its service worker. See its README to update it.
+- `docs/DESIGN.md`: reference analysis, design decisions and generated artwork prompt.
 
-**Design tokens.** All colour, glow and glass values are CSS custom properties in
-[`src/index.css`](src/index.css), extended into Tailwind via
-[`tailwind.config.ts`](tailwind.config.ts). Shared layout primitives — `.page-shell`,
-`.bento-card`, `.section-title`, `.glass` — keep spacing consistent across pages.
+Sprachweg is listed as a personal project. Its former public GitHub URL returned 404, so it opens an internal project detail without a broken source link on both sites. Other project repositories are public. Diagrams are conceptual illustrations, not product screenshots. Evaluation numbers retain their dataset scope.
 
----
+Client systems remain private: no credentials, deployment URLs, client source or client data are included. Descriptions distinguish extending an existing platform from owning the whole platform.
 
-## Getting started
+## Checks
 
-Requires Node 18+.
-
-```bash
-git clone https://github.com/Lukey-7/Varun-Portfoli0.git
-cd Varun-Portfoli0
-npm install
-npm run dev
+```sh
+npx tsc -p tsconfig.app.json --noEmit
+npm run lint
+npm test -- --maxWorkers=1
+npm run build
+npm run preview:cyan
+npm run preview:ordo
 ```
 
-The dev server prints a local URL (usually `http://localhost:8080`).
+Interaction tests cover case-study opening/closing, workflow keyboard navigation, mobile navigation, appearance switching, clipboard success/failure and employment disclosures. Legacy pages load on demand. Unused starter providers no longer inflate the landing-page bundle.
 
-### Scripts
-
-| Command           | Does                                    |
-| ----------------- | --------------------------------------- |
-| `npm run dev`     | Start the Vite dev server with HMR      |
-| `npm run build`   | Production build into `dist/`           |
-| `npm run preview` | Serve the production build locally      |
-| `npm run lint`    | ESLint across the project               |
-| `npm test`        | Run the Vitest suite                    |
-
----
-
-## Project structure
-
-```
-src/
-├── data/
-│   └── profile.ts        # All résumé content — edit here first
-├── components/
-│   ├── Navigation.tsx    # Desktop bar + mobile sheet
-│   ├── CustomCursor.tsx  # Fine-pointer devices only
-│   ├── NebulaBackground.tsx
-│   ├── NoiseOverlay.tsx
-│   ├── PageTransition.tsx
-│   └── ui/               # shadcn/ui primitives
-├── hooks/
-│   └── use-fine-pointer.ts   # Pointer + reduced-motion media queries
-├── pages/
-│   ├── Index.tsx  Logs.tsx  Nexus.tsx  Vault.tsx  Terminal.tsx  NotFound.tsx
-└── index.css             # Design tokens + shared component classes
-```
-
----
-
-## Updating the content
-
-Open `src/data/profile.ts`:
-
-- **New job** → add an object to `experience` (newest first).
-- **New project** → add to `projects`; set `featured: true` to surface it on the home
-  page and the top of the Nexus.
-- **New skill** → add to `skills` with a `short` code, a `category`, and `connections`
-  listing related skill ids. Then add its coordinates to `nodePositions` in
-  `src/pages/Vault.tsx` so it appears in the graph.
-- **Contact details** → the `profile` object; the terminal and every contact card pick
-  the change up automatically.
-
----
+This is a local review build on `codex/portfolio-two-directions`. No remote push or public deployment was performed. `vercel.json` preserves SPA routes for a future deployment.
 
 ## Contact
 
-- **Email** — varun.darji@somaiya.edu
-- **GitHub** — [@Lukey-7](https://github.com/Lukey-7)
-- **LinkedIn** — [varun-darji](https://www.linkedin.com/in/varun-darji-5713472a9/)
+[varun.darji07@gmail.com](mailto:varun.darji07@gmail.com) · [GitHub](https://github.com/Lukey-7) · [LinkedIn](https://www.linkedin.com/in/varun-darji-5713472a9/)
 
-## License
-
-MIT — see [LICENSE](LICENSE).
+MIT. See `LICENSE`.

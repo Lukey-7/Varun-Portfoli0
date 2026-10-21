@@ -1,3 +1,5 @@
+import { selectedWork, otherWork } from './portfolio';
+
 /**
  * Single source of truth for every piece of resume content on the site.
  * Pages read from here so the terminal, the cards and the meta tags can
@@ -11,14 +13,14 @@ export const profile = {
   tagline: 'Building at the intersection of LLMs and production systems',
   location: 'Mumbai, Maharashtra',
   timezone: 'IST (UTC+5:30)',
-  email: 'varun.darji@somaiya.edu',
+  email: 'varun.darji07@gmail.com',
   phone: '+91 7977023495',
   github: 'https://github.com/Lukey-7',
   githubHandle: 'Lukey-7',
   linkedin: 'https://www.linkedin.com/in/varun-darji-5713472a9/',
   linkedinHandle: 'varun-darji-5713472a9',
   summary:
-    'M.Sc. Computer Science graduate building AI systems with LLMs, RAG, hybrid retrieval and vector databases. Strong in Python, C++, full-stack development and cloud deployment (GCP, Docker), with a track record of turning business requirements into scalable, production-ready AI features under real deadlines.',
+    'AI Engineer at LetsTute and M.Sc. Computer Science graduate. Building retrieval systems, agent workflows, backend APIs and client applications. My work includes extending existing platforms, testing ERP intelligence features and gaining hands-on AWS deployment experience.',
 } as const;
 
 /* ---------------------------------------------------------------- skills */
@@ -225,11 +227,11 @@ export const experience: Experience[] = [
     period: 'Aug 2026 — Present',
     current: true,
     highlights: [
-      'Developing AI-powered solutions for e-learning clients, from prototyping through to deployment.',
-      'Deploying and maintaining applications on Google Cloud Platform using Docker.',
-      'Working directly with client requirements to build AI-driven features for the platform.',
+      'Extending and restructuring the existing Webex platform, including AI workflows and application features.',
+      'Leading implementation and testing of AI features for a secured client ERP.',
+      'Developing the KiranOS iOS application and gaining hands-on AWS deployment experience for clients.',
     ],
-    stack: ['Python', 'LLMs', 'RAG', 'GCP', 'Docker', 'FastAPI'],
+    stack: ['Python', 'LLMs', 'RAG', 'AWS', 'Docker', 'FastAPI'],
   },
   {
     id: 'techit',
@@ -307,130 +309,28 @@ export interface Project {
 }
 
 export const projects: Project[] = [
-  {
-    id: 'studyforge',
-    title: 'StudyForge',
-    subtitle: 'AI-Powered Document-to-Learning Platform',
-    description:
-      'A RAG platform that turns academic documents into 16 personalised content-generation pipelines built on structured prompts and retrieval.',
-    longDescription: `StudyForge converts raw academic documents into structured, personalised learning material. A single upload fans out into sixteen distinct content-generation pipelines, each driven by its own structured prompt and retrieval strategy.
-
-The retrieval layer is multi-stage: documents are chunked semantically, embedded with text-embedding-004 and indexed in ChromaDB, then re-ranked before reaching the generation step. Prompt orchestration sits on top, selecting context and enforcing the output contract for each pipeline.
-
-The full architecture was presented and defended end-to-end at the master's viva.`,
-    technologies: [
-      'React.js',
-      'FastAPI',
-      'Gemini 2.5 Flash',
-      'LangChainGo',
-      'ChromaDB',
-      'Supabase',
-      'RAG',
-      'Semantic Search',
-    ],
-    facts: [
-      { label: 'Pipelines', value: '16' },
-      { label: 'Retrieval', value: 'Multi-layer' },
-      { label: 'Defended', value: 'M.Sc. viva' },
-    ],
-    links: { github: 'https://github.com/Lukey-7/StudyForge' },
-    status: 'production',
-    featured: true,
-  },
-  {
-    id: 'multi-agent',
-    title: 'Multi-Agent Research Assistant',
-    subtitle: 'Planning, Retrieval and Citation-Backed Synthesis',
-    description:
-      'A multi-agent system that plans research tasks, gathers evidence, summarises findings and returns answers with citations attached.',
-    longDescription: `A research assistant built as a set of cooperating agents rather than a single prompt. A planner decomposes the question into sub-tasks, retrieval agents gather evidence, and a synthesis agent produces an answer where every claim is traceable to a source.
-
-Retrieval is hybrid: semantic chunking feeds a dense index, metadata filtering narrows the candidate set, and a reranking pass orders what actually reaches the model. The corpus spans PDFs, web pages and internal knowledge bases.
-
-LlamaIndex and Haystack handle orchestration and document stores, with Redis for caching and Docker for reproducible deployment.`,
-    technologies: [
-      'Python',
-      'FastAPI',
-      'LlamaIndex',
-      'Haystack',
-      'ChromaDB',
-      'Redis',
-      'Docker',
-      'OpenAI / Gemini',
-    ],
-    facts: [
-      { label: 'Agents', value: 'Multi' },
-      { label: 'Retrieval', value: 'Hybrid' },
-      { label: 'Answers', value: 'Cited' },
-    ],
-    links: { github: 'https://github.com/Lukey-7' },
+  ...selectedWork.map((project): Project => ({
+    id: project.id,
+    title: project.name,
+    subtitle: project.category,
+    description: project.description,
+    longDescription: [project.problem, project.approach, project.evidence, project.ownership].join('\n\n'),
+    technologies: project.stack,
+    facts: project.facts.map(([value, label]) => ({ label, value })),
+    links: { github: project.github },
     status: 'development',
     featured: true,
-  },
-  {
-    id: 'axiomquant',
-    title: 'AxiomQuant',
-    subtitle: 'Quantitative Trading and Portfolio Optimization Engine',
-    description:
-      'A C++20 engine for backtesting strategies, computing risk metrics and simulating portfolio performance on historical market data.',
-    longDescription: `A quantitative finance engine written in modern C++ for people who care what the numbers cost to compute. It backtests trading strategies against historical market data, calculates statistical risk metrics and simulates portfolio behaviour under different assumptions.
-
-The engine implements Monte Carlo simulation, constrained Markowitz portfolio optimisation, drawdown analysis and Sharpe-ratio evaluation, with transaction costs modelled rather than ignored so strategy results survive contact with reality.
-
-Built on C++20 and the STL, with Eigen for linear algebra, OpenMP for parallel simulation, SQLite for market data and CMake for the build.`,
-    technologies: [
-      'C++20',
-      'STL',
-      'Eigen',
-      'OpenMP',
-      'SQLite',
-      'CMake',
-    ],
-    facts: [
-      { label: 'Language', value: 'C++20' },
-      { label: 'Simulation', value: 'Monte Carlo' },
-      { label: 'Parallel', value: 'OpenMP' },
-    ],
-    links: { github: 'https://github.com/Lukey-7/AxiomQuant' },
-    status: 'production',
-    featured: true,
-  },
-  {
-    id: 'sprachweg',
-    title: 'Sprachweg',
-    subtitle: 'German Learning App, A0 to B2',
-    description:
-      'A language learning app combining the Gemini API with FSRS spaced repetition over a Prisma and SQLite store.',
-    longDescription: `A German learning application covering the A0 to B2 range, built around a real spaced-repetition scheduler rather than a fixed lesson order.
-
-Review scheduling uses FSRS, so cards surface based on predicted recall instead of a naive interval ladder. The Gemini API generates and adapts exercise content, and Prisma over SQLite keeps the learner's full review history queryable.`,
-    technologies: ['TypeScript', 'Gemini API', 'FSRS', 'Prisma', 'SQLite'],
-    facts: [
-      { label: 'Range', value: 'A0-B2' },
-      { label: 'Scheduler', value: 'FSRS' },
-      { label: 'Store', value: 'Prisma' },
-    ],
-    links: { github: 'https://github.com/Lukey-7/sprachweg' },
-    status: 'production',
+  })),
+  ...otherWork.map((project): Project => ({
+    id: project.kind,
+    title: project.name,
+    subtitle: project.category,
+    description: project.description,
+    longDescription: project.description + (project.kind === 'language' ? '\n\nA personal learning application. Source code is not currently public.' : ''),
+    technologies: project.tech.split(' / '),
+    facts: [{ label: 'Project', value: 'Independent' }],
+    links: project.href.startsWith('https://github.com/') ? { github: project.href } : {},
+    status: project.kind === 'game' ? 'research' : 'development',
     featured: false,
-  },
-  {
-    id: 'dnd-ai',
-    title: 'DND AI Game',
-    subtitle: 'LLM-Driven Tabletop Campaign Engine',
-    description:
-      'An experimental Dungeons & Dragons game master driven by an LLM, holding narrative state across a campaign.',
-    longDescription: `An experiment in using an LLM as a dungeon master: the model narrates encounters, adjudicates player actions and carries campaign state forward between sessions.
-
-The interesting problem is memory. Keeping characters, world facts and prior decisions consistent across a long campaign, without stuffing the entire history into every prompt, is most of the work.`,
-    technologies: ['TypeScript', 'LLM APIs', 'React'],
-    facts: [
-      { label: 'Type', value: 'Experiment' },
-      { label: 'Core', value: 'LLM state' },
-      { label: 'Mode', value: 'Campaign' },
-    ],
-    links: { github: 'https://github.com/Lukey-7/DND-AI-Game-beta' },
-    status: 'research',
-    featured: false,
-  },
+  })),
 ];

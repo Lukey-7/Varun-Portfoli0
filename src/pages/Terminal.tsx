@@ -3,139 +3,13 @@ import { motion } from 'framer-motion';
 import { Github, Linkedin, Mail, Phone } from 'lucide-react';
 import PageTransition from '@/components/PageTransition';
 import { useFinePointer } from '@/hooks/use-fine-pointer';
+import { profile } from '@/data/profile';
 import {
-  profile,
-  skills,
-  skillCategories,
-  experience,
-  education,
-  projects,
-} from '@/data/profile';
-
-interface CommandOutput {
-  command: string;
-  output: string;
-  isError?: boolean;
-}
-
-const ASCII_ART = `
-██╗   ██╗ █████╗ ██████╗ ██╗   ██╗███╗   ██╗
-██║   ██║██╔══██╗██╔══██╗██║   ██║████╗  ██║
-██║   ██║███████║██████╔╝██║   ██║██╔██╗ ██║
-╚██╗ ██╔╝██╔══██║██╔══██╗██║   ██║██║╚██╗██║
- ╚████╔╝ ██║  ██║██║  ██║╚██████╔╝██║ ╚████║
-  ╚═══╝  ╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝ ╚═╝  ╚═══╝
-`;
-
-const buildSkillTree = () =>
-  skillCategories
-    .map((category) => {
-      const group = skills.filter((s) => s.category === category);
-      const lines = group.map(
-        (skill, i) =>
-          `  ${i === group.length - 1 ? '└──' : '├──'} ${skill.name}`,
-      );
-      return `${category}\n${lines.join('\n')}`;
-    })
-    .join('\n\n');
-
-const buildExperience = () =>
-  experience
-    .map(
-      (job) =>
-        `${job.role}\n  ${job.company} · ${job.location}\n  ${job.period}${
-          job.current ? '  [CURRENT]' : ''
-        }\n${job.highlights.map((h) => `    ▸ ${h}`).join('\n')}`,
-    )
-    .join('\n\n');
-
-const buildEducation = () =>
-  education
-    .map(
-      (item) =>
-        `${item.year}  ${item.degree}\n      ${item.institution}${
-          item.detail ? ` (${item.detail})` : ''
-        }`,
-    )
-    .join('\n\n');
-
-const buildProjects = () =>
-  projects
-    .map(
-      (project, i) =>
-        `${i + 1}. ${project.title}${project.featured ? ' ★' : ''}\n   → ${
-          project.subtitle
-        }\n   → ${project.technologies.join(', ')}`,
-    )
-    .join('\n\n');
-
-const COMMANDS: Record<string, () => string> = {
-  help: () => `
-Available commands:
-  help        Show this help message
-  about       Who Varun is, in a box
-  whoami      One-line summary
-  experience  Professional experience log
-  education   Degrees and diplomas
-  skills      Full technical stack
-  projects    Featured and side projects
-  contact     Every way to reach out
-  resume      Condensed resume dump
-  github      Open GitHub profile
-  linkedin    Open LinkedIn profile
-  email       Email address
-  clear       Clear the terminal
-  sudo        Try it ;)
-  exit        Close the session
-`,
-  about: () => `
-┌────────────────────────────────────────────────┐
-│  ${profile.name.toUpperCase().padEnd(46)}│
-│  ${profile.role.padEnd(46)}│
-├────────────────────────────────────────────────┤
-│  Location: ${profile.location.padEnd(36)}│
-│  Now:      AI Engineer @ LetsTute${' '.repeat(14)}│
-│  Focus:    LLMs, RAG, hybrid retrieval${' '.repeat(9)}│
-│  Degree:   M.Sc. Computer Science (CGPA 8.6)   │
-│  Status:   Open to opportunities${' '.repeat(15)}│
-└────────────────────────────────────────────────┘
-`,
-  whoami: () => `${profile.name} — ${profile.role}, ${profile.location}.\n\n${profile.summary}`,
-  experience: () => `\n${buildExperience()}\n`,
-  education: () => `\n${buildEducation()}\n`,
-  skills: () => `\nTechnical Stack:\n\n${buildSkillTree()}\n`,
-  projects: () => `\nProjects:\n\n${buildProjects()}\n`,
-  contact: () => `
-Contact:
-  Email:    ${profile.email}
-  Phone:    ${profile.phone}
-  GitHub:   github.com/${profile.githubHandle}
-  LinkedIn: linkedin.com/in/${profile.linkedinHandle}
-  Location: ${profile.location}
-`,
-  resume: () => `
-${profile.name} — ${profile.role}
-${profile.location} · ${profile.email} · ${profile.phone}
-
-SUMMARY
-${profile.summary}
-
-EXPERIENCE
-${buildExperience()}
-
-EDUCATION
-${buildEducation()}
-
-PROJECTS
-${buildProjects()}
-`,
-  github: () => `Opening GitHub... → github.com/${profile.githubHandle}`,
-  linkedin: () => `Opening LinkedIn... → linkedin.com/in/${profile.linkedinHandle}`,
-  email: () => `Contact: ${profile.email}`,
-  sudo: () => 'Nice try. Permission denied. 🔒',
-  exit: () => 'Session terminated. Thanks for stopping by.',
-  clear: () => '__CLEAR__',
-};
+  ASCII_ART,
+  completeCommand,
+  runCommand,
+  type CommandOutput,
+} from '@/lib/terminal-commands';
 
 const QUICK_COMMANDS = [
   'help',
@@ -177,33 +51,15 @@ const Terminal = () => {
     setCommandHistory((prev) => [...prev, trimmed]);
     setHistoryIndex(-1);
 
-    if (trimmed === 'clear') {
+    const result = runCommand(cmd);
+    if (!result) {
       setHistory([
         { command: '', output: ASCII_ART },
         { command: '', output: 'Terminal cleared.\n' },
       ]);
       return;
     }
-
-    const commandFn = COMMANDS[trimmed];
-
-    if (commandFn) {
-      if (trimmed === 'github') {
-        window.open(profile.github, '_blank', 'noopener,noreferrer');
-      } else if (trimmed === 'linkedin') {
-        window.open(profile.linkedin, '_blank', 'noopener,noreferrer');
-      }
-      setHistory((prev) => [...prev, { command: cmd, output: commandFn() }]);
-    } else {
-      setHistory((prev) => [
-        ...prev,
-        {
-          command: cmd,
-          output: `Command not found: ${trimmed}\nType "help" for available commands.`,
-          isError: true,
-        },
-      ]);
-    }
+    setHistory((prev) => [...prev, result]);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -230,10 +86,8 @@ const Terminal = () => {
       }
     } else if (e.key === 'Tab') {
       e.preventDefault();
-      const matches = Object.keys(COMMANDS).filter((cmd) =>
-        cmd.startsWith(currentInput.toLowerCase()),
-      );
-      if (matches.length === 1) setCurrentInput(matches[0]);
+      const match = completeCommand(currentInput);
+      if (match) setCurrentInput(match);
     }
   };
 

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowUpRight, X, Github, ExternalLink } from 'lucide-react';
 import PageTransition from '@/components/PageTransition';
@@ -87,7 +88,8 @@ const ProjectCard = ({
 );
 
 const Nexus = () => {
-  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [searchParams] = useSearchParams();
+  const [selectedProject, setSelectedProject] = useState<Project | null>(() => projects.find(p => p.id === searchParams.get('project')) ?? null);
 
   const featured = projects.filter((project) => project.featured);
   const others = projects.filter((project) => !project.featured);

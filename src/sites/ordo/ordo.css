@@ -1,0 +1,1878 @@
+/* Reference edition: the composition and sequence follow the supplied ORDO film. */
+.ordo-edition .portfolio-header {
+  height: 64px;
+  position: sticky;
+  top: 0;
+  background: var(--page);
+}
+.ordo-edition .hero {
+  grid-template-columns: 1fr 1.13fr;
+  gap: 20px;
+  min-height: 690px;
+  padding-block: 30px 80px;
+}
+.ordo-edition h1 {
+  font-size: clamp(44px, 4.55vw, 66px);
+  line-height: 1.08;
+  letter-spacing: -0.065em;
+}
+.ordo-edition .hero-copy {
+  align-self: center;
+  padding-bottom: 40px;
+}
+.ordo-edition .hero-art {
+  height: 650px;
+  border-left: 0;
+}
+.hero-coordinate {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  color: var(--subtle);
+  font-size: 8px !important;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 14px;
+}
+.hero-terminal {
+  position: absolute;
+  bottom: -60px;
+  left: -70px;
+  width: 330px;
+  padding: 18px 20px;
+  background: #101110;
+  color: #d3d7d2;
+  z-index: 2;
+  border: 1px solid #343733;
+  box-shadow: 0 12px 32px #00000012;
+  font-family: "IBM Plex Mono", monospace;
+}
+.terminal-chrome {
+  display: flex;
+  justify-content: space-between;
+  font-size: 8px;
+  color: #969d94;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #343733;
+  margin-bottom: 16px;
+}
+.hero-terminal code {
+  font-size: 10px;
+  line-height: 1.9;
+  display: block;
+}
+.terminal-command {
+  color: #f4f6f1;
+}
+.terminal-dim {
+  color: #a2aaa0;
+}
+.terminal-check {
+  color: #b7cdb8;
+}
+.hero-terminal > a {
+  font-size: 9px;
+  margin-top: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: #b7beb3;
+}
+.terminal-caret {
+  display: inline-block;
+  height: 11px;
+  width: 5px;
+  background: #d2dbd0;
+  margin-left: 5px;
+  vertical-align: middle;
+  animation: caret-blink 1.2s step-end infinite;
+}
+@keyframes caret-blink {
+  50% {
+    opacity: 0;
+  }
+}
+/* The shape owns the top of the art column; the terminal sits in the clear
+   band below it (left) beside the shape controls (right), never over it. */
+.ordo-edition .hero-art > .sculpture {
+  height: 66%;
+  padding-top: 20px;
+}
+.ordo-edition .hero-art .sculpture-controls {
+  bottom: 0;
+  left: auto;
+  width: 235px;
+  border: 0;
+}
+.ordo-stack-strip {
+  padding-block: 52px 65px;
+  border-block: 1px solid var(--line);
+}
+.ordo-stack-strip > p {
+  font-size: 22px;
+  font-weight: 500;
+  letter-spacing: -0.04em;
+}
+.ordo-stack-strip > div {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  margin-top: 30px;
+  border: 1px solid var(--line);
+}
+.ordo-stack-strip > div > span {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 12px;
+  text-align: center;
+  padding: 22px 12px;
+  color: var(--muted);
+  border-right: 1px solid var(--line);
+}
+.ordo-stack-strip > div > span:last-child {
+  border: 0;
+}
+.ordo-section-label {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9px;
+  letter-spacing: 0.03em;
+  color: var(--muted);
+  margin-bottom: 25px;
+}
+.ordo-work {
+  padding-block: 105px 75px;
+}
+.ordo-work h2,
+.ordo-flow h2 {
+  font-size: clamp(32px, 3.5vw, 48px);
+}
+.ordo-section-intro {
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.75;
+  margin-top: 22px !important;
+}
+.ordo-project-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  margin-top: 42px;
+  border-left: 1px solid var(--line);
+  border-top: 1px solid var(--line);
+}
+.ordo-project-grid > article {
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  min-width: 0;
+}
+.ordo-project-button {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  flex-direction: column;
+  border: 0;
+  padding: 0;
+  text-align: left;
+  background: transparent;
+  color: var(--ink);
+  transition: background 0.25s;
+}
+.ordo-project-button:hover {
+  background: var(--panel);
+}
+.ordo-card-top {
+  display: flex;
+  justify-content: space-between;
+  padding: 18px 20px 0;
+  gap: 8px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 8px;
+  color: var(--muted);
+}
+.ordo-card-art {
+  height: 235px;
+  position: relative;
+  overflow: hidden;
+}
+.ordo-card-art .project-visual {
+  --accent: var(--ink);
+  --panel: var(--page);
+}
+.ordo-card-art .retrieval-visual {
+  transform: scale(0.88);
+  background: none;
+}
+.ordo-card-art .finance-label {
+  font-size: 8px;
+  padding: 5px 9px;
+}
+.ordo-card-art .agent-node {
+  font-size: 8px;
+  padding: 6px 9px;
+}
+.ordo-card-art .quant-visual {
+  padding: 40px;
+}
+.ordo-card-copy {
+  padding: 0 22px 23px;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+.ordo-card-copy h3 {
+  font-size: 19px;
+  letter-spacing: -0.035em;
+}
+.ordo-card-copy p {
+  font-size: 12px;
+  line-height: 1.7;
+  color: var(--muted);
+  margin-block: 9px 20px;
+}
+.ordo-card-action {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 9px;
+  font-family: "IBM Plex Mono", monospace;
+  color: var(--muted);
+}
+.ordo-personal-art {
+  display: grid;
+  place-items: center;
+}
+.language-orbit {
+  width: 155px;
+  height: 155px;
+  border: 1px dashed var(--subtle);
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  position: relative;
+  transform: rotate(-12deg);
+}
+.language-orbit > span {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 92px;
+}
+.language-orbit > i {
+  position: absolute;
+  font-size: 8px;
+  font-style: normal;
+  font-family: "IBM Plex Mono", monospace;
+  background: var(--page);
+  padding: 4px 7px;
+  border: 1px solid var(--line);
+}
+.language-orbit > i:nth-child(2) {
+  top: 10px;
+  left: -20px;
+}
+.language-orbit > i:nth-child(3) {
+  bottom: 10px;
+  left: -25px;
+}
+.language-orbit > i:nth-child(4) {
+  top: 65px;
+  right: -40px;
+}
+.tetris-matrix {
+  display: grid;
+  grid-template-columns: repeat(8, 15px);
+  gap: 3px;
+  transform: rotate(-5deg);
+}
+.tetris-matrix > i {
+  height: 15px;
+  border: 1px solid var(--line);
+}
+.tetris-matrix > i.filled {
+  background: var(--ink);
+  border-color: var(--ink);
+}
+.ordo-archive-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  margin-top: 26px;
+  font-size: 11px;
+  color: var(--muted);
+}
+.ordo-archive-row a {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+.ordo-flow {
+  background: var(--panel);
+  padding-block: 75px 85px;
+}
+.ordo-flow-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 60px;
+  align-items: center;
+}
+.ordo-flow-heading > p {
+  max-width: 285px;
+  font-size: 13px;
+  color: var(--muted);
+}
+.ordo-flow-grid {
+  display: grid;
+  grid-template-columns: 250px 1fr;
+  gap: 50px;
+  align-items: center;
+  margin-top: 70px;
+}
+.ordo-flow-grid > [role="tablist"] > button {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  width: 100%;
+  background: transparent;
+  color: var(--muted);
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  padding: 23px 0;
+  text-align: left;
+  font-size: 22px;
+  letter-spacing: -0.04em;
+  position: relative;
+}
+.ordo-flow-grid > [role="tablist"] > button > span {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9px;
+}
+.ordo-flow-grid > [role="tablist"] > button > svg {
+  margin-left: auto;
+  opacity: 0;
+}
+.ordo-flow-grid > [role="tablist"] > button[aria-selected="true"] {
+  color: var(--ink);
+  border-color: var(--ink);
+}
+.ordo-flow-grid > [role="tablist"] > button[aria-selected="true"] > svg {
+  opacity: 1;
+}
+.ordo-flow-grid > [role="tablist"] > p {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 8px;
+  color: var(--muted);
+  margin-top: 25px;
+}
+.ordo-edition .experience-section {
+  padding-top: 100px;
+}
+@media (max-width: 1100px) {
+  .ordo-edition .hero {
+    min-height: 650px;
+  }
+  .ordo-edition h1 {
+    font-size: 49px;
+  }
+  .ordo-edition .hero-art {
+    height: 580px;
+  }
+  .hero-terminal {
+    left: -25px;
+    width: 290px;
+  }
+  .ordo-project-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .ordo-flow-grid {
+    grid-template-columns: 180px 1fr;
+    gap: 30px;
+  }
+  .ordo-flow-heading {
+    gap: 30px;
+  }
+}
+@media (max-width: 767px) {
+  .ordo-edition .portfolio-header {
+    height: 68px;
+  }
+  .ordo-edition .hero {
+    grid-template-columns: 1fr;
+    padding-top: 34px;
+    padding-bottom: 40px;
+    gap: 0;
+    min-height: auto;
+  }
+  .ordo-edition h1 {
+    font-size: clamp(40px, 8.8vw, 62px);
+  }
+  .ordo-edition .hero-copy {
+    padding-bottom: 10px;
+  }
+  /* On phones the terminal follows the shape instead of overlapping it. */
+  .ordo-edition .hero-art {
+    height: auto;
+    margin-top: 25px;
+    border-top: 0;
+    display: block;
+    padding-top: 34px;
+  }
+  .hero-coordinate {
+    font-size: 7px !important;
+  }
+  .hero-terminal {
+    position: relative;
+    left: auto;
+    bottom: auto;
+    width: 100%;
+    margin-top: 14px;
+    padding: 15px;
+  }
+  .hero-terminal code {
+    font-size: 9px;
+  }
+  .hero-terminal > a {
+    font-size: 8px;
+  }
+  .ordo-edition .hero-art > .sculpture {
+    height: 380px;
+    padding-top: 0;
+  }
+  .ordo-edition .hero-art .sculpture-controls {
+    width: auto;
+    right: 0;
+    left: auto;
+    bottom: 0;
+    background: var(--page);
+  }
+  .ordo-edition .hero-art .sculpture-controls > div button {
+    padding: 6px;
+  }
+  .ordo-stack-strip {
+    padding-block: 32px 40px;
+  }
+  .ordo-stack-strip > p {
+    font-size: 20px;
+  }
+  .ordo-stack-strip > div {
+    grid-template-columns: repeat(3, 1fr);
+    margin-top: 22px;
+  }
+  .ordo-stack-strip > div > span {
+    font-size: 10px;
+    padding: 16px 10px;
+    border-bottom: 1px solid var(--line);
+  }
+  .ordo-stack-strip > div > span:nth-child(3) {
+    border-right: 0;
+  }
+  .ordo-stack-strip > div > span:nth-child(n + 4) {
+    border-bottom: 0;
+  }
+  .ordo-section-label {
+    font-size: 7px;
+    gap: 10px;
+  }
+  .ordo-section-label > span:last-child {
+    text-align: right;
+  }
+  .ordo-work {
+    padding-block: 60px 45px;
+  }
+  .ordo-work h2,
+  .ordo-flow h2 {
+    font-size: 32px;
+  }
+  .ordo-section-intro {
+    font-size: 12px;
+  }
+  .ordo-project-grid {
+    grid-template-columns: 1fr;
+    margin-top: 30px;
+  }
+  .ordo-card-art {
+    height: 255px;
+  }
+  .ordo-card-copy h3 {
+    font-size: 23px;
+  }
+  .ordo-card-copy p {
+    font-size: 13px;
+  }
+  .ordo-archive-row {
+    flex-direction: column;
+    font-size: 10px;
+    gap: 15px;
+  }
+  .ordo-flow {
+    padding-block: 50px;
+  }
+  .ordo-flow-heading {
+    display: block;
+  }
+  .ordo-flow-heading > p {
+    margin-top: 20px;
+    max-width: 400px;
+  }
+  .ordo-flow-grid {
+    grid-template-columns: 1fr;
+    margin-top: 32px;
+    gap: 25px;
+  }
+  .ordo-flow-grid > [role="tablist"] > button {
+    padding: 16px 0;
+    font-size: 21px;
+  }
+  .ordo-flow-grid > [role="tablist"] > p {
+    display: none;
+  }
+  .ordo-edition .experience-section {
+    padding-top: 65px;
+  }
+}
+
+html[data-portfolio-edition="ordo"]::-webkit-scrollbar-track, .ordo-edition ::-webkit-scrollbar-track { background: #eeeeea; }
+html[data-portfolio-edition="ordo"]::-webkit-scrollbar-thumb, .ordo-edition ::-webkit-scrollbar-thumb { background: #82857d; }
+@media (max-width:767px) { .ordo-edition h1 { font-size:clamp(28px,7.8vw,46px); line-height:1.12; } }
+
+html[data-portfolio-edition="ordo"], .ordo-edition * { scrollbar-color: #82857d #eeeeea; }
+@media (min-width: 768px) and (max-width: 1100px) {
+  .ordo-edition h1 { font-size: clamp(32px, 4vw, 44px); }
+  .ordo-edition .hero-description { font-size: 14px; max-width: 320px; }
+  .ordo-edition .hero-terminal { left: 0; width: 270px; bottom: -70px; }
+  .ordo-edition .hero-art > .sculpture { height: 58%; padding-top: 70px; }
+  /* The overlapping terminal covers the bottom row, so lift the shape controls under the rule. */
+  .ordo-edition .hero-art .sculpture-controls { top: 40px; bottom: auto; width: auto; border-top: 0; padding-top: 0; background: var(--page); z-index: 3; }
+  .cyan-edition .hero h1 { font-size: clamp(44px, 5.6vw, 62px); }
+}
+
+/* ---------- Pixel-dissolve chips (reference: trusted-network marks) ---------- */
+.ordo-stack-strip > div > span {
+  position: relative;
+  padding: 0;
+}
+.pixel-swap {
+  display: block;
+  padding: 22px 12px;
+  color: var(--ink);
+}
+.pixel-swap-label {
+  color: var(--muted);
+  transition: opacity 0.12s;
+}
+.pixel-swap.is-noisy .pixel-swap-label {
+  opacity: 0;
+}
+.pixel-swap canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/* ---------- Capability grid ---------- */
+.ordo-capabilities {
+  padding-block: 100px 40px;
+}
+.ordo-capabilities h2,
+.ordo-research h2,
+.ordo-console h2 {
+  font-size: clamp(32px, 3.5vw, 48px);
+}
+.capability-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  margin-top: 42px;
+  border-top: 1px solid var(--line);
+  border-left: 1px solid var(--line);
+}
+.capability-card {
+  padding: 18px 20px 26px;
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  transition: background 0.25s;
+}
+.capability-card:hover {
+  background: var(--panel);
+}
+.capability-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 8px;
+  color: var(--muted);
+  letter-spacing: 0.04em;
+}
+.capability-art {
+  position: relative;
+  margin-top: 14px;
+  aspect-ratio: 4 / 3;
+  border: 1px dashed var(--line);
+}
+.capability-canvas {
+  display: block;
+  width: 100%;
+  height: calc(100% - 22px);
+  color: var(--ink);
+}
+.capability-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 0 10px;
+  height: 22px;
+  align-items: center;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 7px;
+  color: var(--muted);
+}
+.capability-card h3 {
+  font-size: 18px;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  margin-top: 20px !important;
+}
+.capability-card p {
+  font-size: 13px;
+  line-height: 1.65;
+  color: var(--muted);
+  margin-top: 8px !important;
+}
+
+/* ---------- Workflow: four stages with an auto-advancing underline ---------- */
+.ordo-flow-grid > [role="tablist"] > button,
+.ordo-flow-grid > [role="tablist"] > button[aria-selected="true"] {
+  border-bottom-color: var(--line);
+}
+.flow-progress {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 2px;
+  background: var(--ink);
+  transform-origin: left;
+  animation: flow-progress 6.5s linear forwards;
+}
+.ordo-flow.is-idle .flow-progress,
+.ordo-flow:hover .flow-progress,
+.ordo-flow:focus-within .flow-progress {
+  animation-play-state: paused;
+}
+.ordo-flow.is-manual .flow-progress {
+  animation: none;
+}
+@keyframes flow-progress {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+.ordo-flow-canvas {
+  position: relative;
+  height: 520px;
+  border: 1px solid var(--line);
+  background-color: var(--page);
+  background-image: linear-gradient(var(--line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--line) 1px, transparent 1px);
+  background-size: 24px 24px;
+  background-position: -1px 44px;
+  overflow: hidden;
+}
+.flow-canvas-label {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--line);
+  background: var(--page);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 8px;
+  color: var(--muted);
+}
+.flow-canvas-label strong {
+  color: var(--ink);
+  font-weight: 500;
+}
+.flow-wires {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.flow-wires path {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+.flow-code,
+.flow-graph,
+.flow-output,
+.flow-form {
+  position: absolute;
+  z-index: 1;
+  border: 1px solid var(--ink);
+}
+.flow-code {
+  left: 5%;
+  top: 64px;
+  width: 44%;
+  height: 190px;
+  background: #0f100f;
+  color: #c9cec4;
+  border-color: #0f100f;
+}
+.flow-code-top,
+.flow-card-top {
+  display: flex;
+  justify-content: space-between;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 7.5px;
+  letter-spacing: 0.04em;
+  padding: 10px 12px;
+}
+.flow-code-top {
+  color: #9aa196;
+}
+.flow-card-top {
+  color: var(--ink);
+}
+.flow-code code {
+  display: block;
+  padding: 6px 14px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  line-height: 1.85;
+}
+.flow-code code > span {
+  display: block;
+  white-space: pre;
+  opacity: 0;
+  animation: flow-line 0.35s ease-out forwards;
+}
+.flow-code code > span:first-child {
+  color: #f4f6f1;
+}
+.flow-code code > span.is-done {
+  color: #a8d8b0;
+}
+@keyframes flow-line {
+  from {
+    opacity: 0;
+    transform: translateX(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.flow-graph {
+  right: 4%;
+  top: 92px;
+  width: 40%;
+  height: 150px;
+  background: var(--page);
+}
+.prompt-graph {
+  display: block;
+  width: calc(100% - 20px);
+  height: calc(100% - 40px);
+  margin: 2px 10px 0;
+}
+.prompt-graph path {
+  fill: none;
+  stroke: var(--muted);
+  stroke-dasharray: 2 3;
+  stroke-width: 0.8;
+}
+.prompt-graph path.is-lit {
+  stroke: var(--ink);
+  stroke-dasharray: none;
+}
+.prompt-graph rect {
+  fill: var(--page);
+  stroke: var(--muted);
+  stroke-width: 0.8;
+  transition: fill 0.3s;
+}
+.prompt-graph text {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 6.5px;
+  text-anchor: middle;
+  fill: var(--muted);
+}
+.prompt-graph g.is-lit rect {
+  fill: var(--ink);
+  stroke: var(--ink);
+}
+.prompt-graph g.is-lit text {
+  fill: var(--page);
+}
+.flow-output {
+  left: 17%;
+  top: 290px;
+  width: 32%;
+  height: 152px;
+  background: var(--page);
+}
+.flow-card-top > i {
+  width: 6px;
+  height: 6px;
+  background: var(--ink);
+}
+.flow-output > strong {
+  display: block;
+  padding: 0 12px;
+  font-size: 34px;
+  font-weight: 500;
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+.flow-output > strong small {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 8px;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+.flow-output > p {
+  padding: 6px 12px 0;
+  font-size: 10px;
+  color: var(--muted);
+}
+.output-cells {
+  display: grid;
+  grid-template-columns: repeat(22, 1fr);
+  gap: 2px;
+  padding: 12px 12px 0;
+}
+.output-cells i {
+  height: 9px;
+  background: var(--ink);
+  opacity: 0;
+  animation: flow-cell 0.3s forwards;
+}
+@keyframes flow-cell {
+  to {
+    opacity: 1;
+  }
+}
+.flow-form {
+  right: 16%;
+  top: 276px;
+  width: 22%;
+  height: 170px;
+  background: var(--page);
+}
+.flow-form .sculpture {
+  height: calc(100% - 30px);
+}
+.flow-form .sculpture canvas {
+  height: 100%;
+}
+.flow-note {
+  position: absolute;
+  left: 5%;
+  bottom: 16px;
+  width: 44%;
+  z-index: 1;
+  font-size: 11px;
+}
+.flow-note strong {
+  font-weight: 500;
+}
+.flow-note p {
+  color: var(--muted);
+  font-size: 10px;
+  margin-top: 2px !important;
+}
+
+/* ---------- Particle system: pinned while it scatters and assembles ---------- */
+.ordo-showcase {
+  position: relative;
+  height: 240vh;
+  background: #0c0d0c;
+  color: #f2f4ed;
+  overflow: clip;
+}
+.showcase-sticky {
+  position: sticky;
+  top: 64px;
+  height: calc(100vh - 64px);
+  min-height: 560px;
+  overflow: hidden;
+}
+.showcase-inner {
+  position: relative;
+  height: 100%;
+  padding-block: 28px;
+}
+.ordo-showcase .ordo-section-label {
+  position: relative;
+  z-index: 2;
+  color: #b4bbb0;
+}
+.particle-field {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: calc(50% - 50vw);
+  width: 100vw;
+  height: 100%;
+  display: block;
+}
+.particle-tag {
+  position: absolute;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 9px;
+  border: 1px solid #2c302a;
+  background: rgba(12, 13, 12, 0.7);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 8px;
+  letter-spacing: 0.05em;
+  color: #b4bbb0;
+  pointer-events: none;
+}
+.particle-tag strong {
+  color: #f2f4ed;
+  font-weight: 500;
+}
+.particle-tag i {
+  width: 5px;
+  height: 5px;
+  background: #d7dccf;
+}
+.particle-tag i.is-live {
+  background: #8fd19e;
+  animation: caret-blink 2s step-end infinite;
+}
+.tag-system {
+  top: 17%;
+  left: 3%;
+}
+.tag-nodes {
+  top: 13%;
+  right: 5%;
+}
+.tag-input {
+  top: 60%;
+  left: 12%;
+}
+.tag-status {
+  top: 45%;
+  right: 2%;
+}
+.showcase-bottom {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 70px;
+  z-index: 2;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 50px;
+  pointer-events: none;
+}
+.showcase-bottom h2 {
+  font-size: clamp(35px, 4.1vw, 58px);
+  line-height: 1.02;
+  letter-spacing: -0.06em;
+  max-width: 600px;
+}
+.showcase-bottom p {
+  font-family: "IBM Plex Mono", monospace;
+  max-width: 230px;
+  font-size: 9px;
+  color: #b4bbb0;
+  text-align: right;
+}
+.showcase-progress {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 30px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 7px;
+  color: #8d9488;
+}
+.showcase-progress > div {
+  flex: 1;
+  height: 1px;
+  background: #2d312b;
+  position: relative;
+}
+.showcase-progress > div > i {
+  position: absolute;
+  inset: 0;
+  background: #d7dccf;
+  transform-origin: left;
+}
+
+/* ---------- Research ---------- */
+.ordo-research {
+  padding-block: 110px 60px;
+}
+.research-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 60px;
+}
+.research-heading > div {
+  max-width: 380px;
+}
+.research-heading > div > p {
+  font-size: 13px;
+  line-height: 1.75;
+  color: var(--muted);
+}
+.research-heading em {
+  font-style: normal;
+  color: var(--ink);
+}
+.research-status {
+  display: inline-block;
+  margin-top: 14px;
+  padding: 6px 9px;
+  border: 1px solid var(--line);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 8px;
+  color: var(--muted);
+}
+.research-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  margin-top: 44px;
+  border-top: 1px solid var(--line);
+  border-left: 1px solid var(--line);
+}
+.research-card {
+  padding: 20px 24px 28px;
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+.study-diagram {
+  display: block;
+  width: 100%;
+  max-width: 420px;
+  margin: 26px 0 8px;
+}
+.study-diagram rect {
+  fill: var(--page);
+  stroke: var(--ink);
+  stroke-width: 0.8;
+}
+.study-diagram rect.is-recent {
+  fill: var(--ink);
+}
+.study-diagram rect.is-recalled {
+  fill: var(--muted);
+  animation: study-pulse 2.4s ease-in-out infinite;
+}
+.study-wire {
+  fill: none;
+  stroke: var(--muted);
+  stroke-width: 0.8;
+  stroke-dasharray: 2 2;
+}
+.study-diagram text {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 6px;
+  fill: var(--muted);
+}
+.study-diagram text.on-ink {
+  fill: var(--page);
+}
+@keyframes study-pulse {
+  50% {
+    opacity: 0.35;
+  }
+}
+.research-card h3 {
+  font-size: 22px;
+  font-weight: 500;
+  letter-spacing: -0.04em;
+  margin-top: 14px !important;
+}
+.research-summary {
+  font-size: 14px;
+  color: var(--muted);
+  margin-top: 6px !important;
+}
+.research-card dl {
+  margin: 22px 0 0;
+  display: grid;
+  gap: 14px;
+}
+.research-card dl > div {
+  display: grid;
+  grid-template-columns: 96px 1fr;
+  gap: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+}
+.research-card dt {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 8px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding-top: 3px;
+}
+.research-card dd {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.65;
+}
+.research-note {
+  margin-top: 22px !important;
+  max-width: 760px;
+  font-size: 12px;
+  line-height: 1.7;
+  color: var(--muted);
+}
+
+/* ---------- Console (the original terminal, restyled) ---------- */
+.ordo-console {
+  padding-block: 80px 90px;
+}
+.console-grid {
+  display: grid;
+  grid-template-columns: 0.8fr 1.2fr;
+  gap: 60px;
+  align-items: start;
+}
+.console-copy > p {
+  margin-top: 20px !important;
+  font-size: 13px;
+  line-height: 1.75;
+  color: var(--muted);
+  max-width: 340px;
+}
+.console-copy ol {
+  list-style: none;
+  padding: 0;
+  margin: 34px 0 0;
+}
+.console-copy li {
+  display: grid;
+  grid-template-columns: 34px 1fr;
+  gap: 2px 0;
+  padding: 14px 0;
+  border-top: 1px solid var(--line);
+}
+.console-copy li > span {
+  grid-row: span 2;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9px;
+  color: var(--muted);
+  padding-top: 3px;
+}
+.console-copy li strong {
+  font-weight: 500;
+  font-size: 14px;
+}
+.console-copy li small {
+  font-size: 12px;
+  color: var(--muted);
+}
+.console-copy li a {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.console-window {
+  background: #0f100f;
+  color: #c9cec4;
+  border: 1px solid #0f100f;
+  font-family: "IBM Plex Mono", monospace;
+}
+.console-tabs {
+  display: flex;
+  overflow-x: auto;
+  border-bottom: 1px solid #2c302a;
+  scrollbar-width: none;
+}
+.console-tabs button {
+  flex: none;
+  padding: 12px 14px;
+  font-family: inherit;
+  font-size: 10px;
+  color: #8d9488;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid transparent;
+  margin-bottom: -1px;
+}
+.console-tabs button:hover {
+  color: #f2f4ed;
+}
+.console-tabs button[aria-pressed="true"] {
+  color: #f2f4ed;
+  border-bottom-color: #f2f4ed;
+}
+.console-body {
+  height: 400px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 18px 20px;
+  font-size: 11px;
+  line-height: 1.6;
+  cursor: text;
+}
+.console-entry {
+  margin-bottom: 14px;
+}
+.console-entry > p {
+  color: #f2f4ed;
+}
+.console-entry > p > span,
+.console-input > span {
+  color: #a8d8b0;
+}
+.console-entry pre {
+  margin: 4px 0 0;
+  /* System monospace fonts carry the box-drawing glyphs the ASCII art needs. */
+  font-family: ui-monospace, "Cascadia Mono", Consolas, "SFMono-Regular", Menlo, monospace;
+  line-height: 1.3;
+  white-space: pre;
+  overflow-x: auto;
+  color: #b4bbb0;
+}
+.console-entry pre.is-error {
+  color: #e59a8f;
+}
+.console-input {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.console-input input {
+  flex: 1;
+  min-width: 0;
+  background: transparent;
+  border: 0;
+  outline: none;
+  color: #f2f4ed;
+  font: inherit;
+  caret-color: #a8d8b0;
+}
+.console-input input::placeholder {
+  color: #6f766b;
+}
+.console-status {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 20px;
+  border-top: 1px solid #2c302a;
+  font-size: 8px;
+  color: #8d9488;
+}
+
+/* ---------- Dotted wordmark ---------- */
+.dot-wordmark {
+  background: #0c0d0c;
+  color: #e8ece2;
+}
+.dot-wordmark-inner {
+  height: clamp(200px, 27vw, 380px);
+  padding-block: 24px 10px;
+  display: flex;
+  flex-direction: column;
+}
+.dot-wordmark-labels {
+  display: flex;
+  justify-content: space-between;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 8px;
+  color: #8d9488;
+}
+.dot-wordmark canvas {
+  flex: 1;
+  width: 100%;
+  min-height: 0;
+  display: block;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flow-progress {
+    animation: none;
+  }
+  .flow-code code > span,
+  .output-cells i {
+    opacity: 1;
+    animation: none;
+  }
+  .ordo-showcase {
+    height: auto;
+  }
+  .showcase-sticky {
+    position: relative;
+    top: 0;
+    height: 640px;
+  }
+}
+
+@media (max-width: 1100px) {
+  .capability-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .ordo-flow-grid {
+    grid-template-columns: 170px 1fr;
+  }
+  .flow-code code {
+    font-size: 8.5px;
+  }
+  .flow-output > strong {
+    font-size: 26px;
+  }
+  .console-grid {
+    gap: 36px;
+  }
+  .research-heading {
+    display: block;
+  }
+  .research-heading > div {
+    margin-top: 22px;
+  }
+}
+
+@media (max-width: 767px) {
+  .pixel-swap {
+    padding: 16px 10px;
+  }
+  .ordo-capabilities {
+    padding-block: 60px 30px;
+  }
+  .ordo-capabilities h2,
+  .ordo-research h2,
+  .ordo-console h2 {
+    font-size: 32px;
+  }
+  .capability-grid,
+  .research-grid,
+  .console-grid {
+    grid-template-columns: 1fr;
+  }
+  .ordo-flow-grid {
+    grid-template-columns: 1fr;
+  }
+  .ordo-flow-canvas {
+    height: auto;
+    display: grid;
+    gap: 12px;
+    padding-bottom: 16px;
+    background-position: -1px 40px;
+  }
+  .flow-canvas-label {
+    font-size: 7px;
+    padding: 12px;
+  }
+  .flow-canvas-project,
+  .flow-wires {
+    display: none;
+  }
+  .flow-code,
+  .flow-graph,
+  .flow-output,
+  .flow-form,
+  .flow-note {
+    position: relative;
+    inset: auto;
+    width: auto;
+    margin-inline: 12px;
+  }
+  .flow-code {
+    height: auto;
+    min-height: 186px;
+  }
+  .flow-graph,
+  .flow-output {
+    height: auto;
+  }
+  .flow-form {
+    height: 190px;
+  }
+  .ordo-showcase {
+    height: 220vh;
+  }
+  .showcase-sticky {
+    top: 68px;
+    height: calc(100vh - 68px);
+    min-height: 520px;
+  }
+  .showcase-bottom {
+    bottom: 64px;
+    display: block;
+  }
+  .showcase-bottom h2 {
+    font-size: 36px;
+  }
+  .showcase-bottom p {
+    text-align: left;
+    margin-top: 14px;
+    font-size: 8px;
+  }
+  .particle-tag {
+    font-size: 7px;
+    padding: 5px 7px;
+  }
+  .tag-input,
+  .tag-status {
+    display: none;
+  }
+  .tag-system {
+    top: 12%;
+  }
+  .tag-nodes {
+    top: 19%;
+  }
+  .ordo-research {
+    padding-block: 70px 40px;
+  }
+  .research-card {
+    padding: 18px 16px 24px;
+  }
+  .research-card dl > div {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+  .ordo-console {
+    padding-block: 60px;
+  }
+  .console-body {
+    height: 340px;
+    padding: 14px;
+    font-size: 10px;
+  }
+}
+/* Wide console output scrolls inside its window instead of stretching the grid. */
+.console-grid > * {
+  min-width: 0;
+}
+.ordo-edition[data-theme="dark"] .flow-code,
+.ordo-edition[data-theme="dark"] .console-window {
+  border-color: var(--line);
+}
+
+/* 404 for the standalone monochrome site. */
+.ordo-not-found {
+  min-height: 100dvh;
+  display: grid;
+  place-content: center;
+  gap: 18px;
+  padding: 24px;
+  text-align: center;
+  background: #fafaf8;
+  color: #222420;
+  font-family: "IBM Plex Mono", monospace;
+}
+.ordo-not-found > span {
+  font-size: 10px;
+  color: #646660;
+}
+.ordo-not-found h1 {
+  font-size: clamp(36px, 6vw, 64px);
+  letter-spacing: -0.06em;
+}
+.ordo-not-found a {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+/* ---------- Monochrome project dialog: gallery, highlights, live demo ---------- */
+.ordo-project-dialog {
+  width: min(880px, calc(100vw - 32px));
+  border-radius: 0;
+}
+.showcase-stage {
+  margin: 28px 0 0;
+}
+.stage-frame {
+  position: relative;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+.stage-frame.wide img {
+  width: 100%;
+  height: auto;
+  max-height: 460px;
+  object-fit: contain;
+  display: block;
+}
+.stage-frame.phone {
+  padding: 18px 0;
+}
+.stage-frame.phone img {
+  height: min(460px, 60vh);
+  width: auto;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+}
+.stage-nav {
+  position: absolute;
+  top: 50%;
+  translate: 0 -50%;
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--line);
+  background: var(--page);
+  color: var(--ink);
+}
+.stage-nav.prev {
+  left: 10px;
+}
+.stage-nav.next {
+  right: 10px;
+}
+.showcase-stage figcaption {
+  display: flex;
+  gap: 12px;
+  align-items: baseline;
+  margin-top: 10px;
+  font-size: 13px;
+  color: var(--muted);
+}
+.showcase-stage figcaption span {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9px;
+}
+.stage-thumbs {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+  overflow-x: auto;
+}
+.stage-thumbs button {
+  flex: none;
+  width: 84px;
+  height: 56px;
+  padding: 0;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  opacity: 0.55;
+  transition: opacity 0.2s;
+}
+.stage-thumbs button[aria-pressed="true"],
+.stage-thumbs button:hover {
+  opacity: 1;
+  border-color: var(--ink);
+}
+.stage-thumbs img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top;
+  filter: grayscale(1);
+}
+.stage-thumbs button[aria-pressed="true"] img {
+  filter: none;
+}
+.showcase-highlights {
+  margin: 10px 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 10px;
+}
+.showcase-highlights li {
+  position: relative;
+  padding-left: 22px;
+  font-size: 14px;
+  line-height: 1.65;
+}
+.showcase-highlights li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.62em;
+  width: 10px;
+  height: 1px;
+  background: var(--ink);
+}
+.showcase-note {
+  margin-top: 22px !important;
+  font-size: 10px;
+  color: var(--muted);
+}
+.dialog-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 24px;
+}
+.play-bar {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-top: 22px;
+}
+.play-bar .primary-button {
+  gap: 10px;
+}
+.play-bar a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.play-frame {
+  margin-top: 18px;
+}
+.play-frame iframe {
+  display: block;
+  width: 100%;
+  height: min(620px, 68vh);
+  border: 1px solid var(--ink);
+  background: #8b956d;
+}
+.play-frame p {
+  margin-top: 8px !important;
+  font-size: 9px;
+  color: var(--muted);
+}
+
+
+@media (max-width: 767px) {
+  .ordo-project-dialog .dialog-body {
+    padding: 26px 18px;
+  }
+  .stage-frame.phone img {
+    height: min(400px, 55vh);
+  }
+  .play-frame iframe {
+    height: 70vh;
+  }
+}
+
+/* ---------- Animated project icons: each one acts out what its project does ---------- */
+.ordo-card-art > * {
+  transition: scale 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+/* The scale property composes with each icon's own tilt. */
+.ordo-project-button:hover .ordo-card-art > * {
+  scale: 1.04;
+}
+
+/* StudyForge: documents feed the pipeline, a pulse travels, cited lines fill in. */
+.ordo-card-art .document-stack svg:nth-child(1) {
+  animation: doc-a 3.6s ease-in-out infinite;
+}
+.ordo-card-art .document-stack svg:nth-child(2) {
+  animation: doc-b 3.6s ease-in-out infinite;
+}
+.ordo-card-art .document-stack svg:nth-child(3) {
+  animation: doc-c 3.6s ease-in-out infinite;
+}
+@keyframes doc-a {
+  50% { transform: translate(-19px, -18px); }
+}
+@keyframes doc-b {
+  50% { transform: translate(-9px, -10px); }
+}
+@keyframes doc-c {
+  50% { transform: translate(3px, 2px); }
+}
+.ordo-card-art .diagram-link {
+  opacity: 0.85;
+}
+.ordo-card-art .diagram-link i {
+  background: linear-gradient(90deg, transparent 0 30%, currentColor 30% 60%, transparent 60%) 0 0 / 300% 100%;
+  height: 2px;
+  animation: link-pulse 1.8s linear infinite;
+}
+.ordo-card-art .diagram-link:last-of-type i {
+  animation-delay: 0.9s;
+}
+@keyframes link-pulse {
+  from { background-position: 100% 0; }
+  to { background-position: -50% 0; }
+}
+.ordo-card-art .retrieval-core {
+  animation: core-bob 3.6s ease-in-out infinite;
+}
+@keyframes core-bob {
+  50% { transform: rotate(-5deg) translateY(-4px); }
+}
+.ordo-card-art .source-lines span {
+  transform-origin: left;
+  animation: cite-line 3.6s ease-in-out infinite;
+}
+.ordo-card-art .source-lines span:nth-child(2) { animation-delay: 0.25s; }
+.ordo-card-art .source-lines span:nth-child(3) { animation-delay: 0.5s; }
+.ordo-card-art .source-lines span:nth-child(4) { animation-delay: 0.75s; }
+.ordo-card-art .source-lines span:nth-child(5) { animation-delay: 1s; }
+@keyframes cite-line {
+  0%, 10% { transform: scaleX(0); opacity: 0.3; }
+  35%, 75% { transform: scaleX(1); opacity: 0.85; }
+  100% { transform: scaleX(1); opacity: 0.3; }
+}
+
+/* FinTrack: orbits turn, the card breathes, flows float in turn. */
+.ordo-card-art .orbit-one {
+  animation: orbit-one 18s linear infinite;
+}
+.ordo-card-art .orbit-two {
+  animation: orbit-two 26s linear infinite;
+}
+@keyframes orbit-one {
+  from { transform: rotate(-30deg) scaleY(0.6); }
+  to { transform: rotate(330deg) scaleY(0.6); }
+}
+@keyframes orbit-two {
+  from { transform: rotate(40deg) scaleY(0.8); }
+  to { transform: rotate(-320deg) scaleY(0.8); }
+}
+.ordo-card-art .finance-chip {
+  animation: chip-bob 4s ease-in-out infinite;
+}
+@keyframes chip-bob {
+  50% { transform: rotate(-9deg) translateY(-5px); }
+}
+.ordo-card-art .finance-label {
+  animation: label-float 4s ease-in-out infinite;
+}
+.ordo-card-art .finance-label.transfer { animation-delay: 1s; }
+.ordo-card-art .finance-label.scan { animation-delay: 2s; }
+.ordo-card-art .finance-label.review { animation-delay: 3s; }
+@keyframes label-float {
+  0%, 100% { transform: translateY(0); background: var(--page); color: var(--ink); }
+  12% { transform: translateY(-5px); background: var(--ink); color: var(--page); }
+  30% { transform: translateY(0); background: var(--page); color: var(--ink); }
+}
+
+/* MARA: the ring turns and each agent takes its turn, in order. */
+.ordo-card-art .agent-ring {
+  animation: ring-turn 22s linear infinite;
+}
+@keyframes ring-turn {
+  to { transform: rotate(360deg); }
+}
+.ordo-card-art .agent-hub {
+  animation: hub-pulse 2.5s ease-out infinite;
+}
+@keyframes hub-pulse {
+  from { box-shadow: 0 0 0 0 color-mix(in srgb, var(--ink) 30%, transparent); }
+  to { box-shadow: 0 0 0 16px transparent; }
+}
+.ordo-card-art .agent-node {
+  animation: agent-turn 5s steps(1) infinite;
+}
+.ordo-card-art .agent-node-1 { animation-delay: 1s; }
+.ordo-card-art .agent-node-2 { animation-delay: 2s; }
+.ordo-card-art .agent-node-3 { animation-delay: 3s; }
+.ordo-card-art .agent-node-4 { animation-delay: 4s; }
+@keyframes agent-turn {
+  0% { background: var(--ink); color: var(--page); border-color: var(--ink); }
+  20%, 100% { background: var(--page); color: var(--ink); border-color: var(--art-line); }
+}
+
+/* AxiomQuant: bars move like a live test while a walk-forward window sweeps. */
+.ordo-card-art .quant-grid {
+  position: relative;
+}
+.ordo-card-art .quant-grid span {
+  transform-origin: bottom;
+  animation: quant-bar 2.8s ease-in-out infinite alternate;
+}
+.ordo-card-art .quant-grid span:nth-child(3n) { animation-duration: 2.1s; }
+.ordo-card-art .quant-grid span:nth-child(4n + 1) { animation-delay: -0.8s; }
+.ordo-card-art .quant-grid span:nth-child(5n + 2) { animation-delay: -1.6s; }
+.ordo-card-art .quant-grid span:nth-child(7n) { animation-duration: 3.4s; }
+@keyframes quant-bar {
+  from { transform: scaleY(0.25); }
+  to { transform: scaleY(1); }
+}
+.ordo-card-art .quant-grid::after {
+  content: "";
+  position: absolute;
+  top: -6px;
+  bottom: -6px;
+  width: 22%;
+  border: 1px solid var(--ink);
+  background: color-mix(in srgb, var(--ink) 6%, transparent);
+  animation: walk-window 4.2s ease-in-out infinite;
+}
+@keyframes walk-window {
+  0% { left: 0; }
+  50% { left: 78%; }
+  100% { left: 0; }
+}
+
+/* Sprachweg: the ring turns, and the review words light up in a learning loop. */
+.ordo-card-art .language-orbit {
+  border-color: transparent;
+}
+.ordo-card-art .language-orbit::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: 1px dashed var(--subtle);
+  border-radius: 50%;
+  animation: ring-turn 24s linear infinite;
+}
+.ordo-card-art .language-orbit > span {
+  animation: eszett 3.6s ease-in-out infinite;
+}
+@keyframes eszett {
+  50% { transform: scale(1.06); }
+}
+.ordo-card-art .language-orbit > i {
+  animation: word-turn 3.6s steps(1) infinite;
+}
+.ordo-card-art .language-orbit > i:nth-child(3) { animation-delay: 1.2s; }
+.ordo-card-art .language-orbit > i:nth-child(4) { animation-delay: 2.4s; }
+@keyframes word-turn {
+  0% { background: var(--ink); color: var(--page); border-color: var(--ink); }
+  33.3%, 100% { background: var(--page); color: var(--ink); border-color: var(--line); }
+}
+
+/* Tetris: the board plays itself (see TetrisMini). */
+.tetris-matrix.is-live > i {
+  transition: background 0.12s;
+}
+.tetris-matrix.is-live > i.falling {
+  background: color-mix(in srgb, var(--ink) 70%, transparent);
+  border-color: var(--ink);
+}
+.tetris-matrix.is-live > i.clearing {
+  animation: line-clear 0.26s steps(2) 1;
+}
+@keyframes line-clear {
+  50% { background: var(--page); border-color: var(--ink); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ordo-card-art *,
+  .ordo-card-art *::before,
+  .ordo-card-art *::after {
+    animation: none !important;
+  }
+  .ordo-project-button:hover .ordo-card-art > * {
+    scale: none;
+  }
+}

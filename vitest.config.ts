@@ -11,6 +11,9 @@ export default defineConfig({
     include: ["src/**/*.{test,spec}.{ts,tsx}"],
   },
   resolve: {
-    alias: { "@": path.resolve(__dirname, "./src") },
+    alias: {
+      "@site": path.resolve(__dirname, "./src/sites/cyan"),
+      "@": path.resolve(__dirname, "./src"),
+    },
   },
 });
