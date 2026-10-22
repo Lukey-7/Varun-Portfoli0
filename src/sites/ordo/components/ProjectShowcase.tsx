@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from "react";
-import { ArrowLeft, ArrowRight, ArrowUpRight, Gamepad2, X } from "lucide-react";
+import { ArrowLeft, ArrowRight, ArrowUpRight, X } from "lucide-react";
 import type { CaseStudy } from "@/data/portfolio";
 import { projectShowcase, type ShowcaseMedia } from "../projectShowcase";
+import { hasDemo, ProjectDemo } from "../demos/ProjectDemo";
 
 function Stage({
   media,
@@ -53,7 +54,11 @@ function Stage({
   );
 }
 
-/** The monochrome site's case-study dialog: gallery, verified detail, live demo. */
+/**
+ * The monochrome site's case-study dialog. It reads top to bottom the way a
+ * visitor asks: what does it look like, what is the idea, can I try it, and
+ * how do I know it works.
+ */
 export function OrdoProjectDialog({
   project,
   onClose,
@@ -63,13 +68,11 @@ export function OrdoProjectDialog({
 }) {
   const ref = useRef<HTMLDialogElement>(null);
   const [index, setIndex] = useState(0);
-  const [playing, setPlaying] = useState(false);
   const showcase = project ? projectShowcase[project.id] : undefined;
 
   useEffect(() => {
     const dialog = ref.current;
     setIndex(0);
-    setPlaying(false);
     if (project && dialog && !dialog.open) dialog.showModal();
     if (!project && dialog?.open) dialog.close();
     if (!project) return;
@@ -80,14 +83,20 @@ export function OrdoProjectDialog({
     };
   }, [project]);
 
-  const sections = project
+  const idea = project
     ? ([
         ["The problem", project.problem],
-        ["What I built", project.approach],
-        ["How I checked it", project.evidence],
-        ["My contribution", project.ownership],
+        ["What I built", project.approach ?? showcase?.idea],
       ].filter(([, text]) => text) as [string, string][])
     : [];
+  const proof = project
+    ? ([
+        ["How I checked it", project.evidence],
+        ["My part", project.ownership],
+      ].filter(([, text]) => text) as [string, string][])
+    : [];
+  const facts = showcase?.facts ?? project?.facts ?? [];
+  const links = showcase?.links ?? (project?.github ? [{ label: "View on GitHub", href: project.github }] : []);
 
   return (
     <dialog
@@ -116,39 +125,15 @@ export function OrdoProjectDialog({
           </button>
           <span className="mono detail-category">{project.category}</span>
           <h2 id="project-detail-title">{project.name}</h2>
-          <p className="dialog-intro">{project.description}</p>
+          <p className="dialog-intro">{showcase?.pitch ?? project.description}</p>
 
-          {showcase?.play && (
-            <div className="play-bar">
-              <button
-                className="primary-button"
-                onClick={() => setPlaying((value) => !value)}
-              >
-                <Gamepad2 size={16} />
-                {playing ? "Back to screenshots" : showcase.play.label}
-              </button>
-              {playing && (
-                <a href={showcase.play.src} target="_blank" rel="noreferrer">
-                  Open full screen <ArrowUpRight size={14} />
-                </a>
-              )}
-            </div>
-          )}
+          {showcase?.media.length ? (
+            <Stage media={showcase.media} index={index} onIndex={setIndex} />
+          ) : null}
 
-          {playing && showcase?.play ? (
-            <div className="play-frame">
-              <iframe src={showcase.play.src} title={showcase.play.title} />
-              <p className="mono">Click the game to give it the keyboard; press Tab to leave it. Sound starts only when you press play.</p>
-            </div>
-          ) : (
-            showcase?.media.length ? (
-              <Stage media={showcase.media} index={index} onIndex={setIndex} />
-            ) : null
-          )}
-
-          {project.facts.length > 0 && (
+          {facts.length > 0 && (
             <div className="detail-facts">
-              {project.facts.map(([value, label]) => (
+              {facts.map(([value, label]) => (
                 <div key={label}>
                   <strong>{value}</strong>
                   <span>{label}</span>
@@ -157,8 +142,28 @@ export function OrdoProjectDialog({
             </div>
           )}
 
+          {idea.length > 0 && (
+            <section className="dialog-idea">
+              <span className="mono dialog-step">01 / The idea</span>
+              {idea.map(([heading, text]) => (
+                <div key={heading}>
+                  <h3>{heading}</h3>
+                  <p>{text}</p>
+                </div>
+              ))}
+            </section>
+          )}
+
+          {hasDemo(project.id) && (
+            <section className="dialog-demo">
+              <span className="mono dialog-step">02 / Try it</span>
+              <ProjectDemo id={project.id} />
+            </section>
+          )}
+
           {showcase?.highlights.length ? (
             <section>
+              <span className="mono dialog-step">03 / The details</span>
               <h3>In numbers and decisions</h3>
               <ul className="showcase-highlights">
                 {showcase.highlights.map((line) => (
@@ -168,7 +173,7 @@ export function OrdoProjectDialog({
             </section>
           ) : null}
 
-          {sections.map(([heading, text]) => (
+          {proof.map(([heading, text]) => (
             <section key={heading}>
               <h3>{heading}</h3>
               <p>{text}</p>
@@ -177,9 +182,9 @@ export function OrdoProjectDialog({
 
           {showcase?.note && <p className="showcase-note mono">{showcase.note}</p>}
 
-          <div className="dialog-links">
-            {(showcase?.links ?? (project.github ? [{ label: "View on GitHub", href: project.github }] : [])).map(
-              (link) => (
+          {links.length > 0 && (
+            <div className="dialog-links">
+              {links.map((link) => (
                 <a
                   key={link.href}
                   className="primary-button"
@@ -189,9 +194,9 @@ export function OrdoProjectDialog({
                 >
                   {link.label} <ArrowUpRight size={17} />
                 </a>
-              ),
-            )}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
     </dialog>

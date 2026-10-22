@@ -168,7 +168,7 @@ describe("portfolio visitor journeys", () => {
       </MemoryRouter>,
     );
     expect(
-      screen.getByRole("heading", { name: /Lower inference cost/ }),
+      screen.getByRole("heading", { name: /Can an LLM assistant cost less/ }),
     ).toBeInTheDocument();
     expect(
       screen.getByRole("heading", { name: "Calibrated retry policy" }),

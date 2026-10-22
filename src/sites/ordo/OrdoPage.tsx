@@ -1,55 +1,27 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import {
-  ArrowDown,
-  ArrowUpRight,
-  Check,
-  Copy,
-  Download,
-  Github,
-  Linkedin,
-  Menu,
-  Moon,
-  Sun,
-  X,
-  Plus,
-  Minus,
-} from "lucide-react";
-import { motion, useReducedMotion } from "framer-motion";
-import { profile, experience, education } from "@/data/profile";
-import { deliveryWork, type CaseStudy } from "@/data/portfolio";
+import { ArrowUpRight, Menu, Moon, Sun, X } from "lucide-react";
+import type { CaseStudy } from "@/data/portfolio";
 import { CYAN_URL } from "@/lib/sites";
 import { OrdoProjectDialog } from "./components/ProjectShowcase";
-import Sculpture from "./components/Sculpture";
-import {
-  HeroTerminal,
-  OrdoWork,
-  OrdoWorkflow,
-  OrdoShowcase,
-} from "./components/OrdoSections";
+import { OrdoActivity } from "./components/OrdoActivity";
+import { OrdoAbout, OrdoContact, OrdoExperience, OrdoHero } from "./components/OrdoBlocks";
+import { OrdoWork, OrdoWorkflow, OrdoShowcase } from "./components/OrdoSections";
 import {
   DotWordmark,
   OrdoCapabilities,
   OrdoConsole,
   OrdoResearch,
-  PixelSwap,
 } from "./components/OrdoExtras";
 import "./base.css";
 import "./ordo.css";
-
-const tools = ["Python", "FastAPI", "React", "Kotlin", "PostgreSQL", "Docker"];
 
 /** The monochrome edition, led by the ORDO reference film. Deployed on its own. */
 export default function OrdoPage() {
   const [theme, setTheme] = useState<"dark" | "light">("light");
   const [menuOpen, setMenuOpen] = useState(false);
   const [selected, setSelected] = useState<CaseStudy | null>(null);
-  const [openJob, setOpenJob] = useState<string | null>("letstute");
-  const [copied, setCopied] = useState(false);
-  const [copyError, setCopyError] = useState(false);
-  const copyTimer = useRef<ReturnType<typeof setTimeout>>();
   const menuToggle = useRef<HTMLButtonElement>(null);
-  const reducedMotion = useReducedMotion();
 
   useEffect(() => {
     document.documentElement.dataset.portfolioTheme = theme;
@@ -58,7 +30,6 @@ export default function OrdoPage() {
     return () => {
       delete document.documentElement.dataset.portfolioTheme;
       delete document.documentElement.dataset.portfolioEdition;
-      clearTimeout(copyTimer.current);
     };
   }, [theme]);
 
@@ -73,24 +44,6 @@ export default function OrdoPage() {
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
   }, [menuOpen]);
-
-  const copyEmail = async () => {
-    try {
-      await navigator.clipboard.writeText(profile.email);
-      setCopied(true);
-      setCopyError(false);
-      clearTimeout(copyTimer.current);
-      copyTimer.current = setTimeout(() => setCopied(false), 2500);
-    } catch {
-      setCopyError(true);
-    }
-  };
-  const reveal = {
-    initial: reducedMotion ? (false as const) : { opacity: 0, y: 20 },
-    whileInView: { opacity: 1, y: 0 },
-    viewport: { once: true, amount: 0.1 },
-    transition: { duration: 0.55 },
-  };
 
   return (
     <div className="portfolio ordo-edition" data-theme={theme}>
@@ -155,235 +108,17 @@ export default function OrdoPage() {
       </header>
 
       <main id="main">
-        <section className="hero section-wrap">
-          <motion.div
-            className="hero-copy"
-            initial={reducedMotion ? false : { opacity: 0, y: 22 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7 }}
-          >
-            <p className="hero-eyebrow mono">
-              Varun Darji / AI engineer / prospective researcher
-            </p>
-            <h1>
-              Build intelligent
-              <br />
-              systems.
-              <br />
-              <span>Make them useful.</span>
-            </h1>
-            <p className="hero-description">
-              I build retrieval systems, agent workflows and client
-              applications, with attention to evidence, reliability and the
-              people using them.
-            </p>
-            <div className="hero-actions">
-              <a href="#work" className="primary-button">
-                Explore work <ArrowDown size={17} />
-              </a>
-              <a
-                href="/Varun-Darji-Resume.pdf"
-                download
-                className="text-button"
-              >
-                Resume <Download size={16} />
-              </a>
-            </div>
-          </motion.div>
-          <motion.div
-            className="hero-art"
-            initial={reducedMotion ? false : { opacity: 0, scale: 0.94 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 1 }}
-          >
-            <div className="hero-coordinate mono">
-              <span>VARUN / SYSTEMS STUDY</span>
-              <span>INTERACTIVE GEOMETRY</span>
-            </div>
-            <Sculpture dark={theme === "dark"} autoCycle />
-            <HeroTerminal />
-          </motion.div>
-        </section>
-        <div className="ordo-stack-strip section-wrap">
-          <p>Everyday tools across these projects.</p>
-          <div>
-            {tools.map((tool) => (
-              <span key={tool}>
-                <PixelSwap>{tool}</PixelSwap>
-              </span>
-            ))}
-          </div>
-        </div>
-
+        <OrdoHero theme={theme} />
         <OrdoCapabilities />
         <OrdoWork onSelect={setSelected} />
+        <OrdoActivity />
         <OrdoWorkflow />
         <OrdoShowcase />
         <OrdoResearch />
         <OrdoConsole />
-
-        <section id="experience" className="experience-section section-wrap">
-          <motion.div {...reveal} className="section-heading">
-            <h2>
-              Real work.
-              <br />
-              <span>Shared responsibility.</span>
-            </h2>
-            <p>
-              I work with teams, build new products and improve existing ones,
-              and take ownership of the parts I deliver.
-            </p>
-          </motion.div>
-          <div className="experience-list">
-            {experience.map((job) => (
-              <article className="experience-item" key={job.id}>
-                <button
-                  aria-expanded={openJob === job.id}
-                  aria-controls={`job-${job.id}`}
-                  onClick={() => setOpenJob(openJob === job.id ? null : job.id)}
-                >
-                  <span className="experience-period mono">
-                    {job.period.replace(/[—–]/g, "-")}
-                  </span>
-                  <span className="experience-title">
-                    <strong>{job.role}</strong>
-                    <span>{job.company}</span>
-                  </span>
-                  {openJob === job.id ? <Minus size={20} /> : <Plus size={20} />}
-                </button>
-                <div id={`job-${job.id}`} hidden={openJob !== job.id}>
-                  {job.id === "letstute" ? (
-                    <>
-                      <div className="delivery-grid">
-                        {deliveryWork.map((item) => (
-                          <div key={item.title}>
-                            <h3>{item.title}</h3>
-                            <p>{item.text}</p>
-                            <span className="mono">{item.tags}</span>
-                          </div>
-                        ))}
-                      </div>
-                      <p className="confidential-note">
-                        Client systems are private. I can discuss architecture,
-                        my contributions and engineering decisions without
-                        sharing confidential access or data.
-                      </p>
-                    </>
-                  ) : (
-                    <ul className="experience-details">
-                      {job.highlights.map((line) => (
-                        <li key={line}>{line}</li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
-              </article>
-            ))}
-          </div>
-        </section>
-
-        <section id="about" className="about-section section-wrap">
-          <motion.div {...reveal} className="about-statement">
-            <span className="mono about-label">A little about me</span>
-            <h2>
-              Curious about the model.
-              <br />
-              <span>Responsible for the system.</span>
-            </h2>
-            <p>
-              I'm Varun, an AI engineer in Mumbai. I enjoy the work between an
-              interesting model and a useful application: retrieval, backend
-              APIs, evaluation and the interface someone actually uses.
-            </p>
-            <p>
-              Outside client work, I build learning tools and an on-device
-              finance app, and study how to reduce LLM inference costs.
-            </p>
-            <a
-              href={profile.github}
-              target="_blank"
-              rel="noreferrer"
-              className="text-button"
-            >
-              View my GitHub <ArrowUpRight size={17} aria-hidden="true" />
-            </a>
-          </motion.div>
-          <div className="about-details">
-            <div className="toolbox">
-              <h3>What I work with</h3>
-              <div className="toolbox-group">
-                <span>Build</span>
-                <p>Python, FastAPI, TypeScript, React, Java, C++</p>
-              </div>
-              <div className="toolbox-group">
-                <span>Reason</span>
-                <p>RAG, LangGraph, LlamaIndex, hybrid retrieval, evaluation</p>
-              </div>
-              <div className="toolbox-group">
-                <span>Deliver</span>
-                <p>PostgreSQL, Docker, GitHub Actions, GCP, AWS</p>
-              </div>
-            </div>
-            <div className="education-list">
-              <h3>Education</h3>
-              {education.map((item) => (
-                <div key={item.id}>
-                  <span className="mono">{item.year}</span>
-                  <p>
-                    <strong>{item.degree}</strong>
-                    <span>{item.institution}</span>
-                  </p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <section id="contact" className="contact-section section-wrap">
-          <div className="contact-top">
-            <h2>
-              Have something
-              <br />
-              <span>worth building?</span>
-            </h2>
-            <a
-              className="contact-arrow"
-              href={`mailto:${profile.email}`}
-              aria-label="Contact Varun by email"
-            >
-              <ArrowUpRight strokeWidth={1} />
-            </a>
-          </div>
-          <div className="contact-bottom">
-            <div className="email-group">
-              <a href={`mailto:${profile.email}`} className="email-link">
-                {profile.email}
-              </a>
-              <button
-                className="icon-button"
-                onClick={copyEmail}
-                aria-label={copied ? "Email copied" : "Copy email address"}
-              >
-                {copied ? <Check size={18} /> : <Copy size={18} />}
-              </button>
-              <span className="copy-status" role="status">
-                {copied
-                  ? "Copied"
-                  : copyError
-                    ? "Select the address to copy it."
-                    : ""}
-              </span>
-            </div>
-            <div className="social-links">
-              <a href={profile.github} target="_blank" rel="noreferrer">
-                <Github size={16} /> GitHub
-              </a>
-              <a href={profile.linkedin} target="_blank" rel="noreferrer">
-                <Linkedin size={16} /> LinkedIn
-              </a>
-            </div>
-          </div>
-        </section>
+        <OrdoExperience />
+        <OrdoAbout />
+        <OrdoContact />
       </main>
       <DotWordmark />
 

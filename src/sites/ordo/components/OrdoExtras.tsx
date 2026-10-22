@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowDown, ArrowUpRight } from "lucide-react";
 import { motion, useReducedMotion } from "framer-motion";
 import { aiCapabilities, research } from "@/data/portfolio";
 import { useCanvasLoop, type CanvasFrame } from "@/hooks/use-canvas-loop";
@@ -11,6 +11,8 @@ import {
 } from "@/lib/terminal-commands";
 import { CYAN_URL } from "@/lib/sites";
 import CapabilityArt from "./CapabilityArt";
+import { spotlight } from "../spotlight";
+import { content } from "../content";
 
 /** Hovering dissolves the label into pixel noise, then resolves it again. */
 export function PixelSwap({ children }: { children: ReactNode }) {
@@ -62,19 +64,15 @@ export function OrdoCapabilities() {
   return (
     <section id="capabilities" className="ordo-capabilities section-wrap">
       <div className="ordo-section-label">
-        <span>[ 01 / AI CAPABILITIES ]</span>
-        <span>FROM PROJECTS AND CLIENT WORK</span>
+        <span>{content.capabilities.label[0]}</span>
+        <span>{content.capabilities.label[1]}</span>
       </div>
       <h2>
-        What an AI feature needs.
+        {content.capabilities.title[0]}
         <br />
-        <span>Nothing it doesn't.</span>
+        <span>{content.capabilities.title[1]}</span>
       </h2>
-      <p className="ordo-section-intro">
-        Retrieval, agents, evaluation and the applications around them.
-        <br />
-        The diagrams illustrate how each system works.
-      </p>
+      <p className="ordo-section-intro">{content.capabilities.intro}</p>
       <div className="capability-grid">
         {aiCapabilities.map((item, index) => (
           <motion.article
@@ -98,6 +96,14 @@ export function OrdoCapabilities() {
             </div>
             <h3>{item.name}</h3>
             <p>{item.text}</p>
+            {/* The whole card is the hit area; the button carries the label. */}
+            <button
+              type="button"
+              className="capability-link"
+              onClick={() => spotlight(item.target.id, item.name)}
+            >
+              See it in {item.target.label} <ArrowDown size={13} aria-hidden="true" />
+            </button>
           </motion.article>
         ))}
       </div>
@@ -148,21 +154,17 @@ export function OrdoResearch() {
   return (
     <section id="research" className="ordo-research section-wrap">
       <div className="ordo-section-label">
-        <span>[ 05 / RESEARCH ]</span>
-        <span>TWO PROPOSED STUDIES</span>
+        <span>{content.research.label[0]}</span>
+        <span>{content.research.label[1]}</span>
       </div>
       <div className="research-heading">
         <h2>
-          Lower inference cost.
+          {content.research.title[0]}
           <br />
-          <span>Same task quality?</span>
+          <span>{content.research.title[1]}</span>
         </h2>
         <div>
-          <p>
-            I'm a prospective researcher. My proposal,{" "}
-            <em>{research.title.toLowerCase()}</em>, sets out two studies, each
-            framed as a hypothesis to test.
-          </p>
+          <p>{content.research.intro}</p>
           <span className="research-status">{research.status}</span>
         </div>
       </div>
@@ -238,20 +240,17 @@ export function OrdoConsole() {
   return (
     <section id="console" className="ordo-console section-wrap">
       <div className="ordo-section-label">
-        <span>[ 06 / TERMINAL ]</span>
-        <span>KEYBOARD-FRIENDLY</span>
+        <span>{content.console.label[0]}</span>
+        <span>{content.console.label[1]}</span>
       </div>
       <div className="console-grid">
         <div className="console-copy">
           <h2>
-            Prefer a command line?
+            {content.console.title[0]}
             <br />
-            <span>Ask the terminal.</span>
+            <span>{content.console.title[1]}</span>
           </h2>
-          <p>
-            The same resume, as commands. Every answer comes from the data
-            behind this page.
-          </p>
+          <p>{content.console.intro}</p>
           <ol>
             <li>
               <span>01</span>

@@ -1499,7 +1499,7 @@ html[data-portfolio-edition="ordo"], .ordo-edition * { scrollbar-color: #82857d 
 
 /* ---------- Monochrome project dialog: gallery, highlights, live demo ---------- */
 .ordo-project-dialog {
-  width: min(880px, calc(100vw - 32px));
+  width: min(960px, calc(100vw - 32px));
   border-radius: 0;
 }
 .showcase-stage {
@@ -1901,5 +1901,580 @@ html[data-motion="paused"] .ordo-edition *::after {
   /* Anchor jumps clear the 68px sticky header on phones. */
   html[data-portfolio-edition="ordo"] {
     scroll-padding-top: 84px;
+  }
+}
+
+/* ---------- Sculpture interaction ---------- */
+.sculpture canvas[data-interactive] {
+  cursor: grab;
+  touch-action: pan-y;
+}
+.sculpture canvas[data-interactive]:active {
+  cursor: grabbing;
+}
+
+/* ---------- GitHub activity ---------- */
+.ordo-activity {
+  padding-block: 100px 90px;
+  border-top: 1px solid var(--line);
+}
+.activity-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 60px;
+  margin-top: 30px;
+}
+.activity-heading > p {
+  max-width: 340px;
+  font-size: 13px;
+  line-height: 1.75;
+  color: var(--muted);
+}
+.activity-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  margin-top: 50px;
+  border-block: 1px solid var(--line);
+}
+.activity-stats > div {
+  padding: 22px 20px 20px 0;
+}
+.activity-stats > div + div {
+  padding-left: 20px;
+  border-left: 1px solid var(--line);
+}
+.activity-stats dt {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  color: var(--muted);
+}
+.activity-stats dd {
+  margin-top: 10px;
+  font-size: 40px;
+  letter-spacing: -0.06em;
+  line-height: 1;
+}
+.activity-stats dd small {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 11px;
+  letter-spacing: 0;
+  color: var(--muted);
+}
+.activity-calendar-frame {
+  margin-top: 34px;
+  padding: 18px 20px 16px;
+  border: 1px dashed var(--line);
+}
+.activity-calendar-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  font-size: 10px;
+  color: var(--muted);
+}
+.activity-calendar-head > span:first-child {
+  color: var(--ink);
+}
+.live-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  margin-right: 4px;
+  border-radius: 50%;
+  background: var(--ink);
+  vertical-align: 1px;
+  animation: caret-blink 1.6s step-end infinite;
+}
+.activity-scroller {
+  margin-top: 14px;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+.activity-calendar {
+  display: grid;
+  grid-template-columns: repeat(var(--weeks), minmax(9px, 1fr));
+  grid-template-rows: 14px repeat(7, auto);
+  gap: 3px;
+  min-width: calc(var(--weeks) * 12px);
+}
+.activity-month {
+  grid-row: 1;
+  font-size: 9px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.ordo-activity .cell {
+  display: block;
+  aspect-ratio: 1;
+  background: color-mix(in srgb, var(--ink) 7%, transparent);
+}
+.ordo-activity .cell.is-blank {
+  background: none;
+}
+.ordo-activity .cell.level-1 { background: color-mix(in srgb, var(--ink) 30%, transparent); }
+.ordo-activity .cell.level-2 { background: color-mix(in srgb, var(--ink) 52%, transparent); }
+.ordo-activity .cell.level-3 { background: color-mix(in srgb, var(--ink) 76%, transparent); }
+.ordo-activity .cell.level-4 { background: var(--ink); }
+.activity-calendar .cell:not(.is-blank):hover {
+  outline: 1px solid var(--ink);
+  outline-offset: 1px;
+}
+/* Weeks fill in from left to right when the section first appears. */
+.ordo-activity:not(.is-visible) .activity-calendar .cell {
+  opacity: 0;
+}
+.ordo-activity.is-visible .activity-calendar .cell {
+  animation: activity-cell-in 0.5s calc(var(--w) * 14ms) both cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes activity-cell-in {
+  from {
+    opacity: 0;
+    transform: scale(0.2);
+  }
+}
+.activity-legend {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 4px;
+  margin-top: 12px;
+  font-size: 9px;
+  color: var(--muted);
+}
+.activity-legend .cell {
+  width: 10px;
+}
+.activity-legend span:first-child {
+  margin-right: 4px;
+}
+.activity-legend span:last-child {
+  margin-left: 4px;
+}
+.activity-bottom {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  margin-top: 50px;
+}
+.activity-bottom h3 {
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+.language-bar {
+  display: flex;
+  height: 10px;
+  margin-top: 20px;
+  gap: 2px;
+}
+.language-bar span,
+.activity-languages li > i {
+  background: color-mix(in srgb, var(--ink) calc(100% - var(--shade) * 15%), transparent);
+}
+.ordo-activity.is-visible .language-bar span {
+  animation: language-grow 0.9s calc(var(--shade) * 80ms + 300ms) both cubic-bezier(0.16, 1, 0.3, 1);
+  transform-origin: left;
+}
+@keyframes language-grow {
+  from {
+    transform: scaleX(0);
+  }
+}
+.activity-languages ul {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px 30px;
+  margin-top: 20px;
+}
+.activity-languages li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+}
+.activity-languages li > i {
+  width: 8px;
+  height: 8px;
+}
+.activity-languages li > span,
+.activity-recent li > span {
+  margin-left: auto;
+  font-size: 10px;
+  color: var(--muted);
+}
+.activity-recent ul {
+  margin-top: 12px;
+}
+.activity-recent li {
+  display: grid;
+  grid-template-columns: 1fr 90px 100px;
+  gap: 12px;
+  align-items: center;
+  padding-block: 11px;
+  border-bottom: 1px solid var(--line);
+}
+.activity-recent li > span:last-child {
+  text-align: right;
+}
+.activity-recent a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+}
+.activity-recent a:hover {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.ordo-activity .section-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 30px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 11px;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+@media (max-width: 767px) {
+  .ordo-activity {
+    padding-block: 64px 60px;
+  }
+  .activity-heading,
+  .activity-bottom {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 22px;
+  }
+  .activity-bottom {
+    gap: 40px;
+  }
+  .activity-stats {
+    grid-template-columns: 1fr 1fr;
+  }
+  .activity-stats > div:nth-child(3) {
+    padding-left: 0;
+    border-left: 0;
+  }
+  .activity-stats > div:nth-child(n + 3) {
+    border-top: 1px solid var(--line);
+  }
+  .activity-stats dd {
+    font-size: 32px;
+  }
+  .activity-calendar-frame {
+    padding-inline: 12px;
+  }
+  .activity-calendar-head {
+    flex-direction: column;
+    gap: 4px;
+  }
+  .activity-recent li {
+    grid-template-columns: 1fr auto;
+  }
+  .activity-recent li > span:nth-child(2) {
+    display: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ordo-activity .activity-calendar .cell,
+  .ordo-activity .language-bar span {
+    animation: none !important;
+    opacity: 1 !important;
+  }
+}
+
+/* ---------- Capability cards point at their project ---------- */
+.capability-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+.capability-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: auto;
+  padding: 16px 0 0;
+  border: 0;
+  background: none;
+  color: var(--muted);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  letter-spacing: 0.02em;
+  text-align: left;
+  transition: color 0.2s;
+}
+/* Stretch the button over the card so the whole card is clickable. */
+.capability-link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+.capability-link svg {
+  transition: transform 0.25s;
+}
+.capability-card:hover .capability-link {
+  color: var(--ink);
+}
+.capability-card:hover .capability-link svg {
+  transform: translateY(3px);
+}
+.capability-link:focus-visible {
+  outline: none;
+  color: var(--ink);
+}
+.capability-card:has(.capability-link:focus-visible) {
+  outline: 2px solid var(--ink);
+  outline-offset: -2px;
+}
+.capability-card p {
+  margin-bottom: 0 !important;
+}
+
+/* The card a capability points at: an outline closes in, with its label. */
+.is-spotlit {
+  position: relative;
+  z-index: 2;
+}
+.is-spotlit::after {
+  content: "";
+  position: absolute;
+  inset: -6px;
+  border: 1px solid var(--ink);
+  pointer-events: none;
+  animation: spot-ring 2.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.is-spotlit::before {
+  content: "↳ " attr(data-spotlight);
+  position: absolute;
+  top: -16px;
+  left: 14px;
+  z-index: 3;
+  padding: 3px 8px;
+  background: var(--ink);
+  color: var(--page);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  pointer-events: none;
+  animation: spot-tag 2.8s ease both;
+}
+@keyframes spot-ring {
+  0% {
+    opacity: 0;
+    inset: -26px;
+  }
+  18% {
+    opacity: 1;
+    inset: -6px;
+  }
+  78% {
+    opacity: 1;
+    inset: -6px;
+  }
+  100% {
+    opacity: 0;
+    inset: -6px;
+  }
+}
+@keyframes spot-tag {
+  0%,
+  10% {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  22%,
+  80% {
+    opacity: 1;
+    transform: none;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  /* No movement: the outline and label simply show while the class is on. */
+  .is-spotlit::after,
+  .is-spotlit::before {
+    animation: none;
+  }
+}
+
+/* ---------- Education timeline ---------- */
+.edu-timeline {
+  margin-top: 35px;
+  padding-top: 25px;
+  border-top: 1px solid var(--line);
+}
+.edu-timeline ol {
+  position: relative;
+  display: grid;
+  gap: 26px;
+  padding: 4px 0 0;
+  list-style: none;
+}
+/* The rail sits behind the nodes; the inked line draws over it on scroll. */
+.edu-timeline ol::before,
+.edu-line {
+  content: "";
+  position: absolute;
+  top: 10px;
+  bottom: 12px;
+  left: 79px;
+  width: 1px;
+}
+.edu-timeline ol::before {
+  background: var(--line);
+}
+.edu-line {
+  display: block;
+  background: var(--ink);
+  transform-origin: top;
+}
+.edu-timeline li {
+  position: relative;
+  display: grid;
+  grid-template-columns: 60px 20px 1fr;
+  gap: 0;
+  align-items: start;
+}
+.edu-year {
+  padding-top: 2px;
+  font-size: 11px;
+  color: var(--subtle);
+}
+.edu-node {
+  position: relative;
+  z-index: 1;
+  width: 9px;
+  height: 9px;
+  margin: 6px 0 0 15px;
+  border: 1px solid var(--ink);
+  background: var(--page);
+  transition: background 0.4s;
+}
+.edu-timeline li:hover .edu-node {
+  background: var(--ink);
+}
+.edu-copy {
+  padding-left: 16px;
+}
+.edu-copy strong {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+.edu-copy > span {
+  display: block;
+  margin-top: 2px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.edu-copy .edu-detail {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 2px 7px;
+  border: 1px solid var(--line);
+  font-size: 9px;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+.edu-timeline li.is-now .edu-node {
+  background: var(--ink);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--ink) 14%, transparent);
+  animation: edu-pulse 2.4s ease-in-out infinite;
+}
+.edu-timeline li.is-now .edu-year {
+  color: var(--ink);
+}
+@keyframes edu-pulse {
+  50% {
+    box-shadow: 0 0 0 7px color-mix(in srgb, var(--ink) 4%, transparent);
+  }
+}
+@media (max-width: 767px) {
+  .edu-timeline {
+    margin-top: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .edu-timeline li.is-now .edu-node {
+    animation: none;
+  }
+}
+
+/* ---------- Hero: what else is going on ---------- */
+.hero-now {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  margin-top: 28px;
+  font-size: 10px;
+  line-height: 1.6;
+  letter-spacing: 0.01em;
+  color: var(--muted);
+  transition: color 0.2s;
+}
+.hero-now > span:first-child {
+  padding: 2px 7px;
+  border: 1px solid var(--line);
+  color: var(--ink);
+  font-size: 9px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.hero-now:hover {
+  color: var(--ink);
+}
+.hero-now svg {
+  transition: transform 0.25s;
+}
+.hero-now:hover svg {
+  transform: translateY(2px);
+}
+
+/* ---------- Project dialog: idea, then the demo ---------- */
+.dialog-step {
+  display: block;
+  margin-bottom: 14px;
+  font-size: 9px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.dialog-idea {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 40px;
+  padding-top: 6px;
+}
+.dialog-idea > .dialog-step {
+  grid-column: 1 / -1;
+}
+.dialog-demo {
+  margin-block: 34px 40px !important;
+}
+@media (max-width: 767px) {
+  .dialog-idea {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+}
+.activity-stats dd.is-text {
+  font-size: 30px;
+  letter-spacing: -0.04em;
+}
+.activity-stats dd.is-text small {
+  display: block;
+  margin-top: 8px;
+}
+@media (max-width: 767px) {
+  .activity-stats dd.is-text {
+    font-size: 24px;
   }
 }

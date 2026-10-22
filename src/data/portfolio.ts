@@ -127,8 +127,8 @@ export const otherWork = [
 
 export const deliveryWork = [
   {
-    title: "Webex platform",
-    text: "Built and improved the company's lead-generation platform, including its agent workflows, retrieval and evaluation.",
+    title: "Lead-generation platform",
+    text: "Built and improved Webex, LetsTute's lead-generation platform, including its agent workflows, retrieval and evaluation.",
     tags: "Next.js / LangGraph / PostgreSQL",
   },
   {
@@ -143,55 +143,64 @@ export const deliveryWork = [
   },
 ];
 
-/** ORDO capability grid. Every line maps to a project or role on the resume. */
+/**
+ * ORDO capability grid. Every line maps to a project or role on the resume;
+ * `target` is the card or role a click scrolls to.
+ */
 export const aiCapabilities = [
   {
     id: "retrieval",
     name: "Hybrid retrieval",
     source: "StudyForge",
+    target: { id: "studyforge", label: "StudyForge" },
     text: "Dense and BM25 search with rank fusion, diversity selection and reranking, so answers stay tied to their sources.",
-    metaLeft: "33 LABELLED QUERIES",
-    metaRight: "RECALL@1 0.82 → 1.00",
+    metaLeft: "33 TEST QUERIES",
+    metaRight: "RIGHT PASSAGE FIRST: 27 → 33",
   },
   {
     id: "agents",
     name: "Agent orchestration",
     source: "MARA / Webex",
+    target: { id: "mara", label: "MARA" },
     text: "Planner, researcher, summariser, critic and writer agents. In Webex, supervisor and worker agents run within token budgets and guardrails.",
-    metaLeft: "5 AGENTS",
-    metaRight: "QUOTES VERIFIED",
+    metaLeft: "5 AGENTS IN MARA",
+    metaRight: "QUOTE MUST MATCH SOURCE",
   },
   {
     id: "evaluation",
     name: "Evaluation first",
     source: "MARA",
-    text: "Every change is tested on labelled queries against a dense-only baseline before it counts. Notes are kept only if their quote appears in the source.",
+    target: { id: "mara", label: "MARA" },
+    text: "Retrieval changes are scored on labelled queries against a dense-only baseline before I keep them. Notes are kept only if their quote appears in the source.",
     metaLeft: "35 QUERIES · 317 CHUNKS",
-    metaRight: "RECALL@5 0.857 → 0.929",
+    metaRight: "RECALL@5 0.86 → 0.93",
   },
   {
     id: "documents",
     name: "Document intelligence",
     source: "KiranOS ERP",
+    target: { id: "letstute", label: "Client work at LetsTute" },
     text: "Bill OCR with a self-hosted vision model, LLM field extraction with validation checks, and an assistant that cites its sources. I lead implementation and testing.",
-    metaLeft: "AUDIT-LOGGED CALLS",
+    metaLeft: "AUDIT LOG OF MODEL CALLS",
     metaRight: "240+ TESTS",
   },
   {
     id: "media",
     name: "Generative media",
     source: "Webex studio",
+    target: { id: "letstute", label: "Client work at LetsTute" },
     text: "Streamlined image and video generation (Gemini image models, Veo 3.1, Gemini Omni) into one studio workflow that can extend and join clips.",
     metaLeft: "IMAGE → VIDEO",
-    metaRight: "PER-SECOND COST RULES",
+    metaRight: "CLIPS EXTEND AND JOIN",
   },
   {
     id: "ondevice",
     name: "On-device intelligence",
     source: "FinTrack",
+    target: { id: "fintrack", label: "FinTrack" },
     text: "Bank-agnostic SMS parsing, transaction-flow classification and ML Kit OCR that run on the phone.",
-    metaLeft: "EXPENSE / REFUND / TRANSFER",
-    metaRight: "786 TESTS",
+    metaLeft: "7 TRANSACTION FLOWS",
+    metaRight: "RUNS ON THE PHONE",
   },
 ] as const;
 
