@@ -1904,58 +1904,6 @@ html[data-motion="paused"] .ordo-edition *::after {
   }
 }
 
-/* ================= Multi-page: shared page furniture ================= */
-
-/* Current page in the header. */
-.ordo-edition .desktop-links a.active {
-  color: var(--ink);
-  text-decoration: underline;
-  text-underline-offset: 6px;
-  text-decoration-thickness: 1px;
-}
-.ordo-edition .motion-toggle {
-  width: 36px;
-  height: 36px;
-}
-
-/* "Read more" links that end a home-page teaser. */
-.section-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 26px;
-  font-family: "IBM Plex Mono", monospace;
-  font-size: 11px;
-  letter-spacing: 0.02em;
-  text-decoration: underline;
-  text-underline-offset: 4px;
-}
-.section-link:hover {
-  color: var(--muted);
-}
-
-/* Page headers: bracket label, large mono heading, one animated piece. */
-.page-hero,
-.project-hero {
-  padding-block: 56px 70px;
-  border-bottom: 1px solid var(--line);
-}
-.page-hero-grid,
-.project-hero-grid {
-  display: grid;
-  grid-template-columns: 1.05fr 0.95fr;
-  gap: 60px;
-  align-items: center;
-  margin-top: 30px;
-}
-.page-hero h1 > span,
-.project-hero h1 > span {
-  color: var(--muted);
-}
-.project-category {
-  display: block;
-  margin-bottom: 18px;
-  font-size: 10px;
 /* ---------- Sculpture interaction ---------- */
 .sculpture canvas[data-interactive] {
   cursor: grab;
@@ -2499,6 +2447,94 @@ html[data-motion="paused"] .ordo-edition *::after {
   text-transform: uppercase;
   color: var(--muted);
 }
+.dialog-idea {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 40px;
+  padding-top: 6px;
+}
+.dialog-idea > .dialog-step {
+  grid-column: 1 / -1;
+}
+.dialog-demo {
+  margin-block: 34px 40px !important;
+}
+@media (max-width: 767px) {
+  .dialog-idea {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+}
+.activity-stats dd.is-text {
+  font-size: 30px;
+  letter-spacing: -0.04em;
+}
+.activity-stats dd.is-text small {
+  display: block;
+  margin-top: 8px;
+}
+@media (max-width: 767px) {
+  .activity-stats dd.is-text {
+    font-size: 24px;
+  }
+}
+
+/* ================= Multi-page: shared page furniture ================= */
+
+/* Current page in the header. */
+.ordo-edition .desktop-links a.active {
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 6px;
+  text-decoration-thickness: 1px;
+}
+.ordo-edition .motion-toggle {
+  width: 36px;
+  height: 36px;
+}
+
+/* "Read more" links that end a home-page teaser. */
+.section-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 26px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 11px;
+  letter-spacing: 0.02em;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.section-link:hover {
+  color: var(--muted);
+}
+
+/* Page headers: bracket label, large mono heading, one animated piece. */
+.page-hero,
+.project-hero {
+  padding-block: 56px 70px;
+  border-bottom: 1px solid var(--line);
+}
+.page-hero-grid,
+.project-hero-grid {
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  gap: 60px;
+  align-items: center;
+  margin-top: 30px;
+}
+.page-hero h1 > span,
+.project-hero h1 > span {
+  color: var(--muted);
+}
+.project-category {
+  display: block;
+  margin-bottom: 18px;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
 .project-lede {
   margin-top: 22px !important;
   max-width: 520px;
@@ -2816,35 +2852,6 @@ html[data-motion="paused"] .ordo-edition *::after {
   }
   .play-stage iframe {
     height: 72vh;
-.dialog-idea {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px 40px;
-  padding-top: 6px;
-}
-.dialog-idea > .dialog-step {
-  grid-column: 1 / -1;
-}
-.dialog-demo {
-  margin-block: 34px 40px !important;
-}
-@media (max-width: 767px) {
-  .dialog-idea {
-    grid-template-columns: 1fr;
-    gap: 18px;
-  }
-}
-.activity-stats dd.is-text {
-  font-size: 30px;
-  letter-spacing: -0.04em;
-}
-.activity-stats dd.is-text small {
-  display: block;
-  margin-top: 8px;
-}
-@media (max-width: 767px) {
-  .activity-stats dd.is-text {
-    font-size: 24px;
   }
 }
 
