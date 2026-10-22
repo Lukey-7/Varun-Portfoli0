@@ -6,16 +6,11 @@ import {
   useReducedMotion,
   useScroll,
 } from "framer-motion";
-import {
-  selectedWork,
-  otherWork,
-  sprachwegCase,
-  type CaseStudy,
-} from "@/data/portfolio";
+import { Link } from "react-router-dom";
+import { otherWork } from "@/data/portfolio";
 import { CYAN_URL } from "@/lib/sites";
-import ProjectVisual from "@/components/portfolio/ProjectVisual";
-import { tetrisCase } from "../projectShowcase";
-import TetrisMini from "./TetrisMini";
+import { ordoProjects } from "../projects";
+import ProjectArt from "./ProjectArt";
 import Sculpture from "./Sculpture";
 import ParticleField from "./ParticleField";
 
@@ -48,11 +43,8 @@ export function HeroTerminal() {
   );
 }
 
-export function OrdoWork({
-  onSelect,
-}: {
-  onSelect: (project: CaseStudy) => void;
-}) {
+/** The project grid. Each card links to the project's own page. */
+export function OrdoWork() {
   const reduced = useReducedMotion();
   return (
     <section id="work" className="ordo-work section-wrap">
@@ -70,84 +62,38 @@ export function OrdoWork({
         <br />A closer look at the decisions behind the code.
       </p>
       <div className="ordo-project-grid">
-        {selectedWork.map((p, i) => (
+        {ordoProjects.map((project, i) => (
           <motion.article
-            key={p.id}
+            key={project.slug}
             initial={reduced ? false : { opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.1 }}
             transition={{ duration: 0.5, delay: (i % 3) * 0.06 }}
           >
-            <button
-              onClick={() => onSelect(p)}
-              aria-labelledby={`card-${p.id}-title card-${p.id}-action`}
+            <Link
+              to={`/work/${project.slug}`}
               className="ordo-project-button"
+              aria-labelledby={`card-${project.slug}-title card-${project.slug}-action`}
             >
               <div className="ordo-card-top">
                 <span>/{String(i + 1).padStart(2, "0")}</span>
-                <span>{p.stack[0]}</span>
+                <span>{project.tag}</span>
               </div>
-              <div className="ordo-card-art">
-                <ProjectVisual kind={p.visual} />
+              <div
+                className={`ordo-card-art${project.art.type === "visual" ? "" : " ordo-personal-art"}`}
+              >
+                <ProjectArt art={project.art} />
               </div>
               <div className="ordo-card-copy">
-                <h3 id={`card-${p.id}-title`}>{p.name}</h3>
-                <p>{p.description}</p>
-                <span className="ordo-card-action" id={`card-${p.id}-action`}>
-                  View project <ArrowUpRight size={15} aria-hidden="true" />
+                <h3 id={`card-${project.slug}-title`}>{project.study.name}</h3>
+                <p>{project.study.description}</p>
+                <span className="ordo-card-action" id={`card-${project.slug}-action`}>
+                  {project.action} <ArrowUpRight size={15} aria-hidden="true" />
                 </span>
               </div>
-            </button>
+            </Link>
           </motion.article>
         ))}
-        {otherWork.slice(0, 2).map((p, i) => {
-          const body = (
-            <>
-              <div className="ordo-card-top">
-                <span>/{String(selectedWork.length + i + 1).padStart(2, "0")}</span>
-                <span>{p.category}</span>
-              </div>
-              <div className={`ordo-card-art ordo-personal-art ${p.kind}`}>
-                {p.kind === "language" ? (
-                  <div className="language-orbit">
-                    <span>ß</span>
-                    <i>lernen</i>
-                    <i>verstehen</i>
-                    <i>wiederholen</i>
-                  </div>
-                ) : (
-                  <TetrisMini />
-                )}
-              </div>
-              <div className="ordo-card-copy">
-                <h3 id={`card-${p.kind}-title`}>{p.name}</h3>
-                <p>{p.description}</p>
-                <span className="ordo-card-action" id={`card-${p.kind}-action`}>
-                  {p.kind === "language" ? "View project" : "View and play"}{" "}
-                  <ArrowUpRight size={15} aria-hidden="true" />
-                </span>
-              </div>
-            </>
-          );
-          return (
-            <motion.article
-              key={p.name}
-              initial={reduced ? false : { opacity: 0, y: 24 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
-            >
-              {/* Both open their detail here: Sprachweg's source is private, and the arcade is playable. */}
-              <button
-                className="ordo-project-button"
-                aria-labelledby={`card-${p.kind}-title card-${p.kind}-action`}
-                onClick={() => onSelect(p.kind === "language" ? sprachwegCase : tetrisCase)}
-              >
-                {body}
-              </button>
-            </motion.article>
-          );
-        })}
       </div>
       <div className="ordo-archive-row">
         <a href={otherWork[2].href} target="_blank" rel="noreferrer">

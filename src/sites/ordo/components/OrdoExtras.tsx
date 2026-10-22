@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { ArrowUpRight } from "lucide-react";
+import { Link } from "react-router-dom";
 import { motion, useReducedMotion } from "framer-motion";
 import { aiCapabilities, research } from "@/data/portfolio";
 import { useCanvasLoop, type CanvasFrame } from "@/hooks/use-canvas-loop";
@@ -144,6 +145,49 @@ function RetryDiagram() {
   );
 }
 
+/**
+ * The two proposed studies. Brief cards on the home page; with the question,
+ * method, evaluation and measure on the research page.
+ */
+export function ResearchStudies({ detailed = false }: { detailed?: boolean }) {
+  return (
+    <div className={`research-grid${detailed ? "" : " is-brief"}`}>
+      {research.studies.map((study, index) => (
+        <article className="research-card" key={study.id}>
+          <div className="capability-top">
+            <span>{study.tag.toUpperCase()}</span>
+            <span>R/{String(index + 1).padStart(2, "0")}</span>
+          </div>
+          {index === 0 ? <MemoryDiagram /> : <RetryDiagram />}
+          {detailed ? <h2>{study.name}</h2> : <h3>{study.name}</h3>}
+          <p className="research-summary">{study.summary}</p>
+          {detailed && (
+            <dl>
+              <div>
+                <dt>Question</dt>
+                <dd>{study.question}</dd>
+              </div>
+              <div>
+                <dt>Method</dt>
+                <dd>{study.method}</dd>
+              </div>
+              <div>
+                <dt>Evaluation</dt>
+                <dd>{study.evaluation}</dd>
+              </div>
+              <div>
+                <dt>Measured by</dt>
+                <dd>{study.measure}</dd>
+              </div>
+            </dl>
+          )}
+        </article>
+      ))}
+    </div>
+  );
+}
+
+/** Home-page teaser for the research proposal; the full version is /research. */
 export function OrdoResearch() {
   return (
     <section id="research" className="ordo-research section-wrap">
@@ -166,40 +210,10 @@ export function OrdoResearch() {
           <span className="research-status">{research.status}</span>
         </div>
       </div>
-      <div className="research-grid">
-        {research.studies.map((study, index) => (
-          <article className="research-card" key={study.id}>
-            <div className="capability-top">
-              <span>{study.tag.toUpperCase()}</span>
-              <span>R/{String(index + 1).padStart(2, "0")}</span>
-            </div>
-            {index === 0 ? <MemoryDiagram /> : <RetryDiagram />}
-            <h3>{study.name}</h3>
-            <p className="research-summary">{study.summary}</p>
-            <dl>
-              <div>
-                <dt>Question</dt>
-                <dd>{study.question}</dd>
-              </div>
-              <div>
-                <dt>Method</dt>
-                <dd>{study.method}</dd>
-              </div>
-              <div>
-                <dt>Evaluation</dt>
-                <dd>{study.evaluation}</dd>
-              </div>
-              <div>
-                <dt>Measured by</dt>
-                <dd>{study.measure}</dd>
-              </div>
-            </dl>
-          </article>
-        ))}
-      </div>
-      <p className="research-note">
-        {research.costNote} {research.note}
-      </p>
+      <ResearchStudies />
+      <Link to="/research" className="section-link">
+        Read the full proposal <ArrowUpRight size={14} aria-hidden="true" />
+      </Link>
     </section>
   );
 }

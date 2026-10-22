@@ -8,7 +8,7 @@ import {
 } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import CyanPage from "@/sites/cyan/CyanPage";
-import OrdoPage from "@/sites/ordo/OrdoPage";
+import { OrdoRoutes } from "@/sites/ordo/App";
 import { OrdoWorkflow } from "@/sites/ordo/components/OrdoSections";
 import { OrdoConsole } from "@/sites/ordo/components/OrdoExtras";
 
@@ -31,11 +31,18 @@ beforeAll(() => {
   };
   // cmdk scrolls the highlighted item into view.
   Element.prototype.scrollIntoView = () => {};
+  window.scrollTo = () => {};
 });
 afterEach(() => {
   cleanup();
   vi.restoreAllMocks();
 });
+const renderOrdo = (path = "/") =>
+  render(
+    <MemoryRouter initialEntries={[path]}>
+      <OrdoRoutes />
+    </MemoryRouter>,
+  );
 const renderPortfolio = () =>
   render(
     <MemoryRouter>
@@ -161,24 +168,6 @@ describe("portfolio visitor journeys", () => {
     expect(screen.getByText(/Document intelligence/)).toBeInTheDocument();
   });
 
-  it("presents the research proposal as hypotheses in the monochrome edition", () => {
-    render(
-      <MemoryRouter>
-        <OrdoPage />
-      </MemoryRouter>,
-    );
-    expect(
-      screen.getByRole("heading", { name: /Lower inference cost/ }),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole("heading", { name: "Calibrated retry policy" }),
-    ).toBeInTheDocument();
-    expect(screen.getByText(/hypotheses to be tested/)).toBeInTheDocument();
-    expect(
-      screen.getByRole("heading", { name: "Generative media" }),
-    ).toBeInTheDocument();
-  });
-
   it("opens a case study from the cyan command palette", async () => {
     renderPortfolio();
     fireEvent.click(screen.getByRole("button", { name: "Open command palette" }));
@@ -206,21 +195,6 @@ describe("portfolio visitor journeys", () => {
     expect(screen.getByText(/Not a measured result/)).toBeInTheDocument();
   });
 
-  it("opens Sprachweg's details on the monochrome site without a source link", () => {
-    render(
-      <MemoryRouter>
-        <OrdoPage />
-      </MemoryRouter>,
-    );
-    fireEvent.click(
-      screen.getByRole("button", { name: "Sprachweg View project" }),
-    );
-    const dialog = screen.getByRole("dialog");
-    expect(within(dialog).getByRole("heading", { name: "Sprachweg" })).toBeInTheDocument();
-    expect(within(dialog).getByText(/not currently public/)).toBeInTheDocument();
-    expect(within(dialog).queryByRole("link", { name: "View source" })).toBeNull();
-  });
-
   it("lets Tab leave the terminal once a command is complete", () => {
     render(
       <MemoryRouter>
@@ -236,15 +210,60 @@ describe("portfolio visitor journeys", () => {
     expect(fireEvent.keyDown(input, { key: "Tab", shiftKey: true })).toBe(true);
   });
 
-  it("pauses every animation from the hero pause button", () => {
-    render(
-      <MemoryRouter>
-        <OrdoPage />
-      </MemoryRouter>,
+  it("presents the research proposal in full, as hypotheses", () => {
+    renderOrdo("/research");
+    expect(
+      screen.getByRole("heading", { level: 1, name: /Lower inference cost/ }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "Calibrated retry policy" }),
+    ).toBeInTheDocument();
+    expect(screen.getByText(/hypotheses to be tested/)).toBeInTheDocument();
+  });
+
+  it("links the home page to project pages and the full research proposal", () => {
+    renderOrdo("/");
+    expect(screen.getByRole("heading", { name: "Generative media" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Sprachweg View project" })).toHaveAttribute(
+      "href",
+      "/work/sprachweg",
     );
-    fireEvent.click(screen.getByRole("button", { name: "Pause all animations" }));
+    expect(screen.getByRole("link", { name: /Read the full proposal/ })).toHaveAttribute(
+      "href",
+      "/research",
+    );
+  });
+
+  it("shows Sprachweg's page without a source link", () => {
+    renderOrdo("/work/sprachweg");
+    expect(screen.getByRole("heading", { level: 1, name: "Sprachweg" })).toBeInTheDocument();
+    expect(screen.getByText(/not currently public/)).toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: /View on GitHub/ })).toBeNull();
+  });
+
+  it("links each project page to its neighbours", () => {
+    renderOrdo("/work/fintrack");
+    expect(screen.getByRole("heading", { level: 1, name: "FinTrack" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /Next project.*MARA/ })).toHaveAttribute(
+      "href",
+      "/work/mara",
+    );
+    expect(screen.getByRole("link", { name: /Previous project.*StudyForge/ })).toHaveAttribute(
+      "href",
+      "/work/studyforge",
+    );
+  });
+
+  it("shows a 404 for an unknown project", () => {
+    renderOrdo("/work/nope");
+    expect(screen.getByRole("heading", { name: /Nothing here/ })).toBeInTheDocument();
+  });
+
+  it("pauses every animation from the header pause button", () => {
+    renderOrdo("/");
+    fireEvent.click(screen.getAllByRole("button", { name: "Pause all animations" })[0]);
     expect(document.documentElement.dataset.motion).toBe("paused");
-    fireEvent.click(screen.getByRole("button", { name: "Play all animations" }));
+    fireEvent.click(screen.getAllByRole("button", { name: "Play all animations" })[0]);
     expect(document.documentElement.dataset.motion).toBeUndefined();
   });
 });

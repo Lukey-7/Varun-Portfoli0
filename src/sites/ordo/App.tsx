@@ -1,28 +1,32 @@
-import { useEffect } from "react";
-import { BrowserRouter, Link, Navigate, Route, Routes } from "react-router-dom";
-import OrdoPage from "./OrdoPage";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import OrdoLayout from "./OrdoLayout";
+import HomePage from "./pages/HomePage";
+import ProjectPage from "./pages/ProjectPage";
+import ResearchPage from "./pages/ResearchPage";
+import AboutPage from "./pages/AboutPage";
+import PlayPage from "./pages/PlayPage";
+import NotFoundPage from "./pages/NotFoundPage";
 
-function OrdoNotFound() {
-  useEffect(() => {
-    document.title = "Not found | Varun Darji";
-  }, []);
+/** The monochrome site's pages, all inside one shared layout. */
+export function OrdoRoutes() {
   return (
-    <main className="ordo-not-found">
-      <span>[ 404 / NOT FOUND ]</span>
-      <h1>Nothing here.</h1>
-      <Link to="/"><span aria-hidden="true">← </span>Back to the portfolio</Link>
-    </main>
+    <Routes>
+      <Route element={<OrdoLayout />}>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/work/:slug" element={<ProjectPage />} />
+        <Route path="/research" element={<ResearchPage />} />
+        <Route path="/about" element={<AboutPage />} />
+        <Route path="/play" element={<PlayPage />} />
+        <Route path="/ordo" element={<Navigate to="/" replace />} />
+        <Route path="*" element={<NotFoundPage />} />
+      </Route>
+    </Routes>
   );
 }
 
-/** The monochrome site is a single page; anything else is a 404. */
 const App = () => (
   <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-    <Routes>
-      <Route path="/" element={<OrdoPage />} />
-      <Route path="/ordo" element={<Navigate to="/" replace />} />
-      <Route path="*" element={<OrdoNotFound />} />
-    </Routes>
+    <OrdoRoutes />
   </BrowserRouter>
 );
 
