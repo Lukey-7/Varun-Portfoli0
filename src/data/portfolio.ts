@@ -6,7 +6,7 @@ export const selectedWork = [
     visual: "retrieval",
     title: "Your documents. A better way to learn.",
     description:
-      "A document-to-learning platform with hybrid retrieval, cited answers, and 16 structured study tools.",
+      "A document-to-learning platform with hybrid retrieval, cited answers and 16 structured study tools.",
     stack: ["Python", "FastAPI", "Chroma", "Gemini"],
     github: "https://github.com/Lukey-7/StudyForge",
     facts: [
@@ -52,7 +52,7 @@ export const selectedWork = [
     visual: "agents",
     title: "Research that keeps its receipts.",
     description:
-      "Five cooperating agents plan, retrieve and synthesise research with source quotes attached to the work.",
+      "Five cooperating agents plan, retrieve and synthesise research, with a source quote behind each note.",
     stack: ["LlamaIndex", "Haystack", "FastAPI", "Redis"],
     github: "https://github.com/Lukey-7/mara",
     facts: [
@@ -87,7 +87,7 @@ export const selectedWork = [
     approach:
       "I built an event-driven backtester with transaction costs, a point-in-time universe, walk-forward testing and statistical checks. Python bindings connect the numerical core to research workflows.",
     evidence:
-      "Research uses 11.7 years of data and a 606-asset universe. Portfolio optimisation is cross-checked against cvxpy to 1e-8 in CI. There are 89 C++ test cases and 34 Python tests, run on Linux GCC, macOS Clang, Windows MSVC and a sanitizer build. Historical research results are not investment recommendations.",
+      "Research uses 11.7 years of data and a 606-asset universe. Portfolio optimisation is cross-checked against cvxpy to 1e-8 in CI. 89 C++ test cases run on Linux GCC, macOS Clang, Windows MSVC and a sanitizer build, plus 34 Python tests on Linux. Historical research results are not investment recommendations.",
     ownership:
       "Independent engineering and research project. C++ numerical core, Python integration and validation.",
   },
@@ -128,7 +128,7 @@ export const otherWork = [
 export const deliveryWork = [
   {
     title: "Webex platform",
-    text: "Extending and restructuring an existing lead-generation platform, including agent workflows, retrieval and evaluation.",
+    text: "Built and improved the company's lead-generation platform, including its agent workflows, retrieval and evaluation.",
     tags: "Next.js / LangGraph / PostgreSQL",
   },
   {
@@ -138,8 +138,8 @@ export const deliveryWork = [
   },
   {
     title: "KiranOS & deployment",
-    text: "Developing the iOS application and new platform features, while gaining hands-on AWS deployment experience for clients.",
-    tags: "React / Capacitor / AWS",
+    text: "Developing the iOS application and new platform features, deploying on GCP, and gaining hands-on AWS deployment experience for clients.",
+    tags: "React / Capacitor / GCP / AWS",
   },
 ];
 
@@ -157,7 +157,7 @@ export const aiCapabilities = [
     id: "agents",
     name: "Agent orchestration",
     source: "MARA / Webex",
-    text: "Planner, researcher, summariser, critic and writer agents. At work, supervisor and worker agents run within token budgets, and no agent grades its own output.",
+    text: "Planner, researcher, summariser, critic and writer agents. In Webex, supervisor and worker agents run within token budgets and guardrails.",
     metaLeft: "5 AGENTS",
     metaRight: "QUOTES VERIFIED",
   },
@@ -165,7 +165,7 @@ export const aiCapabilities = [
     id: "evaluation",
     name: "Evaluation first",
     source: "MARA",
-    text: "Labelled queries against a dense-only baseline before a change counts as an improvement. Notes are kept only if their quote appears in the source.",
+    text: "Every change is tested on labelled queries against a dense-only baseline before it counts. Notes are kept only if their quote appears in the source.",
     metaLeft: "35 QUERIES · 317 CHUNKS",
     metaRight: "RECALL@5 0.857 → 0.929",
   },
@@ -173,7 +173,7 @@ export const aiCapabilities = [
     id: "documents",
     name: "Document intelligence",
     source: "KiranOS ERP",
-    text: "Bill OCR with a self-hosted vision model, LLM field extraction with validation checks, and a cited assistant. I lead implementation and testing.",
+    text: "Bill OCR with a self-hosted vision model, LLM field extraction with validation checks, and an assistant that cites its sources. I lead implementation and testing.",
     metaLeft: "AUDIT-LOGGED CALLS",
     metaRight: "240+ TESTS",
   },
@@ -181,7 +181,7 @@ export const aiCapabilities = [
     id: "media",
     name: "Generative media",
     source: "Webex studio",
-    text: "Streamlined image and video generation (Gemini image models, Veo 3.1, Gemini Omni) into one studio workflow with clip extension and joins.",
+    text: "Streamlined image and video generation (Gemini image models, Veo 3.1, Gemini Omni) into one studio workflow that can extend and join clips.",
     metaLeft: "IMAGE → VIDEO",
     metaRight: "PER-SECOND COST RULES",
   },
@@ -222,12 +222,12 @@ export const research = {
     {
       id: "retry",
       name: "Calibrated retry policy",
-      tag: "Study 02 · Independent paper",
+      tag: "Study 02 · Separate paper",
       summary: "Spend extra reasoning only when it is likely to help.",
       question:
         "After a low-budget answer, should the system return it or pay for one higher-budget attempt?",
       method:
-        "Estimate the net probability that a retry improves the answer and its incremental cost, and retry only when the benefit justifies the spend.",
+        "Estimate the net probability that a retry improves the answer, and the retry's incremental cost; retry only when the benefit justifies the spend.",
       evaluation:
         "Financial numerical reasoning and an independent arithmetic set. Compared with fixed budgets, random and confidence-based retries, TALE and Plan-and-Budget.",
       measure:
@@ -358,7 +358,7 @@ export const sprachwegCase: CaseStudy = {
     ["FSRS", "spaced repetition"],
   ],
   approach:
-    "Spaced repetition schedules review with FSRS, and Gemini assists practice. Built with TypeScript, Gemini and Prisma.",
+    "FSRS schedules each review and Gemini assists with practice. Built with TypeScript and Prisma.",
   ownership:
     "Personal learning application. The source code is not currently public.",
 };

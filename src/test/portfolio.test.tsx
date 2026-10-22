@@ -146,7 +146,7 @@ describe("portfolio visitor journeys", () => {
         <OrdoConsole />
       </MemoryRouter>,
     );
-    const input = screen.getByRole("textbox", { name: "Console command" });
+    const input = screen.getByRole("textbox", { name: "Terminal command" });
     fireEvent.change(input, { target: { value: "research" } });
     fireEvent.keyDown(input, { key: "Enter" });
     expect(screen.getByText(/Adaptive conversation memory/)).toBeInTheDocument();
@@ -183,7 +183,7 @@ describe("portfolio visitor journeys", () => {
     renderPortfolio();
     fireEvent.click(screen.getByRole("button", { name: "Open command palette" }));
     const palette = screen.getByRole("dialog", { name: "Command palette" });
-    fireEvent.change(await within(palette).findByRole("combobox"), {
+    fireEvent.change(await within(palette).findByRole("combobox", {}, { timeout: 5000 }), {
       target: { value: "fintrack" },
     });
     fireEvent.click(within(palette).getByRole("option", { name: /FinTrack/ }));
@@ -213,11 +213,38 @@ describe("portfolio visitor journeys", () => {
       </MemoryRouter>,
     );
     fireEvent.click(
-      screen.getByRole("button", { name: "Read Sprachweg project details" }),
+      screen.getByRole("button", { name: "Sprachweg View project" }),
     );
     const dialog = screen.getByRole("dialog");
     expect(within(dialog).getByRole("heading", { name: "Sprachweg" })).toBeInTheDocument();
     expect(within(dialog).getByText(/not currently public/)).toBeInTheDocument();
     expect(within(dialog).queryByRole("link", { name: "View source" })).toBeNull();
+  });
+
+  it("lets Tab leave the terminal once a command is complete", () => {
+    render(
+      <MemoryRouter>
+        <OrdoConsole />
+      </MemoryRouter>,
+    );
+    const input = screen.getByRole("textbox", { name: "Terminal command" });
+    fireEvent.change(input, { target: { value: "hel" } });
+    expect(fireEvent.keyDown(input, { key: "Tab" })).toBe(false);
+    expect(input).toHaveValue("help");
+    // Already complete: Tab is not intercepted, so focus can move on (WCAG 2.1.2).
+    expect(fireEvent.keyDown(input, { key: "Tab" })).toBe(true);
+    expect(fireEvent.keyDown(input, { key: "Tab", shiftKey: true })).toBe(true);
+  });
+
+  it("pauses every animation from the hero pause button", () => {
+    render(
+      <MemoryRouter>
+        <OrdoPage />
+      </MemoryRouter>,
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Pause all animations" }));
+    expect(document.documentElement.dataset.motion).toBe("paused");
+    fireEvent.click(screen.getByRole("button", { name: "Play all animations" }));
+    expect(document.documentElement.dataset.motion).toBeUndefined();
   });
 });

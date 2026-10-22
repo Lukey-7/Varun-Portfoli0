@@ -1,12 +1,16 @@
+import { useEffect } from "react";
 import { BrowserRouter, Link, Navigate, Route, Routes } from "react-router-dom";
 import OrdoPage from "./OrdoPage";
 
 function OrdoNotFound() {
+  useEffect(() => {
+    document.title = "Not found | Varun Darji";
+  }, []);
   return (
     <main className="ordo-not-found">
       <span>[ 404 / NOT FOUND ]</span>
       <h1>Nothing here.</h1>
-      <Link to="/">Back to the portfolio ↗</Link>
+      <Link to="/"><span aria-hidden="true">← </span>Back to the portfolio</Link>
     </main>
   );
 }

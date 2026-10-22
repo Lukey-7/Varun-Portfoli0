@@ -29,7 +29,7 @@ function Stage({
           </>
         )}
       </div>
-      <figcaption>
+      <figcaption aria-live="polite">
         <span>
           {String(index + 1).padStart(2, "0")} / {String(media.length).padStart(2, "0")}
         </span>
@@ -96,7 +96,12 @@ export function OrdoProjectDialog({
       aria-labelledby="project-detail-title"
       onCancel={onClose}
       onClick={(event) => {
-        if (event.target === event.currentTarget) onClose();
+        // Close only on the backdrop; the dialog's own scrollbar is part of the dialog.
+        const box = event.currentTarget.getBoundingClientRect();
+        const outside =
+          event.clientX < box.left || event.clientX > box.right ||
+          event.clientY < box.top || event.clientY > box.bottom;
+        if (event.target === event.currentTarget && outside) onClose();
       }}
     >
       {project && (
@@ -118,7 +123,6 @@ export function OrdoProjectDialog({
               <button
                 className="primary-button"
                 onClick={() => setPlaying((value) => !value)}
-                aria-expanded={playing}
               >
                 <Gamepad2 size={16} />
                 {playing ? "Back to screenshots" : showcase.play.label}
@@ -134,7 +138,7 @@ export function OrdoProjectDialog({
           {playing && showcase?.play ? (
             <div className="play-frame">
               <iframe src={showcase.play.src} title={showcase.play.title} />
-              <p className="mono">Click the game to give it the keyboard. Sound starts only when you press play.</p>
+              <p className="mono">Click the game to give it the keyboard; press Tab to leave it. Sound starts only when you press play.</p>
             </div>
           ) : (
             showcase?.media.length ? (
@@ -174,7 +178,7 @@ export function OrdoProjectDialog({
           {showcase?.note && <p className="showcase-note mono">{showcase.note}</p>}
 
           <div className="dialog-links">
-            {(showcase?.links ?? (project.github ? [{ label: "View source", href: project.github }] : [])).map(
+            {(showcase?.links ?? (project.github ? [{ label: "View on GitHub", href: project.github }] : [])).map(
               (link) => (
                 <a
                   key={link.href}

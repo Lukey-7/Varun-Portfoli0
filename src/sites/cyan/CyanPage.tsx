@@ -430,8 +430,8 @@ export default function CyanPage() {
               <span>Shared responsibility.</span>
             </h2>
             <p>
-              Building with teams, extending existing products, and taking
-              ownership of the parts I deliver.
+              I work with teams, build new products and improve existing ones,
+              and take ownership of the parts I deliver.
             </p>
           </motion.div>
           <div className="experience-list">

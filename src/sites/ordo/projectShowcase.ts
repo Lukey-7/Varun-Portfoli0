@@ -45,14 +45,14 @@ export const projectShowcase: Record<string, ProjectShowcase> = {
       },
     ],
     highlights: [
-      "Hybrid retrieval plus MMR and LLM reranking reached Recall@1 1.00 on 33 labelled questions; dense search alone scored 0.82.",
-      "A support check found 37 of 39 book paragraphs backed by their passages (95%). It is a self-check by the same model family, and is reported as one.",
-      "16 study formats generated from your own notes, from MCQ quizzes and flashcards to a podcast script.",
+      "Hybrid retrieval plus MMR and LLM reranking reached Recall@1 1.00 on 33 labelled queries; dense search alone scored 0.82.",
+      "A support check found 37 of 39 book paragraphs backed by their passages (95%). This is a self-check by the same model family, not an independent review.",
+      "16 study tools generated from your own notes, from MCQ quizzes and flashcards to a podcast script.",
       "A new source rewrites only the sections it changes: adding a second source left 6 of 7 sections untouched.",
       "155 backend and 30 frontend tests.",
     ],
     note: "Screenshots show the app's demo mode with sample lecture notes.",
-    links: [{ label: "Source on GitHub", href: "https://github.com/Lukey-7/StudyForge" }],
+    links: [{ label: "View on GitHub", href: "https://github.com/Lukey-7/StudyForge" }],
   },
   fintrack: {
     media: [
@@ -77,7 +77,7 @@ export const projectShowcase: Record<string, ProjectShowcase> = {
       {
         src: "/projects/fintrack-dark.webp",
         alt: "FinTrack home screen in dark mode",
-        caption: "Dark mode; all 114 colour pairs pass WCAG AA",
+        caption: "Dark mode; all 114 colour pairs across both themes pass WCAG AA",
         shape: "phone",
       },
     ],
@@ -89,32 +89,32 @@ export const projectShowcase: Record<string, ProjectShowcase> = {
       "786 unit tests across 12 releases, v1.0.0 to v1.5.2.",
     ],
     note: "Screenshots use a synthetic test inbox; no real financial data.",
-    links: [{ label: "Source on GitHub", href: "https://github.com/Lukey-7/Personal_Finance_app" }],
+    links: [{ label: "View on GitHub", href: "https://github.com/Lukey-7/Personal_Finance_app" }],
   },
   mara: {
     media: [
       {
         src: "/projects/mara-answer.webp",
         alt: "A MARA answer: the question as title, a five-stage plan, find, read, check and write track, the cited answer, and quoted sources in the margin",
-        caption: "Every factual sentence cites a source; the quoted sentence is highlighted",
+        caption: "Factual sentences carry citations; the quoted source sentence is highlighted",
         shape: "wide",
       },
       {
         src: "/projects/mara-ask.webp",
         alt: "The MARA Ask screen: a question box, suggested questions, recent answers and library counts",
-        caption: "Ask screen over the sample library: 18 documents, 317 passages",
+        caption: "Ask screen over the sample library: 18 documents, 317 chunks",
         shape: "wide",
       },
     ],
     highlights: [
-      "On 35 questions over 317 chunks, Recall@5 rose from 0.857 (dense only) to 0.929 with hybrid search and cross-encoder reranking. Reranking costs about 1.8 s per query on a CPU.",
+      "On 35 queries over 317 chunks, Recall@5 rose from 0.857 (dense only) to 0.929 with hybrid search and cross-encoder reranking. Reranking costs about 1.8 s per query on a CPU.",
       "Citation validity is 1.0 by construction: a note survives only if its quote appears verbatim in the cited chunk.",
-      "The answer eval includes one deliberately unanswerable question. Every model replied that no evidence was found instead of inventing a figure.",
+      "The answer evaluation includes one deliberately unanswerable question. Every model replied that no evidence was found instead of inventing a figure.",
       "Five agents (planner, researcher, summariser, critic, writer) share one state object, with a trace per run.",
       "112 tests run with a fake LLM, fake embeddings and fakeredis.",
     ],
-    note: "Screenshots from the project README, over its CC BY-SA Wikipedia sample corpus.",
-    links: [{ label: "Source on GitHub", href: "https://github.com/Lukey-7/mara" }],
+    note: "Screenshots from the project README, showing its CC BY-SA Wikipedia sample corpus.",
+    links: [{ label: "View on GitHub", href: "https://github.com/Lukey-7/mara" }],
   },
   axiomquant: {
     media: [
@@ -139,13 +139,13 @@ export const projectShowcase: Record<string, ProjectShowcase> = {
     ],
     highlights: [
       "Walk-forward over 19 folds: mean in-sample Sharpe 1.03 against 0.38 out of sample, the cost of fitting parameters.",
-      "Survivorship bias, measured: momentum returned +957.7% on five stocks picked with hindsight, but +106.6% on the point-in-time S&P 500 universe.",
+      "Survivorship bias, measured: momentum returned +957.7% on five symbols picked with hindsight (four stocks and SPY), but +106.6% on the point-in-time S&P 500 universe.",
       "The portfolio optimiser is cross-checked against cvxpy to 1e-8 in CI; the check found a real risk-parity bug.",
       "A stationary block bootstrap of Sharpe runs 7.1× faster than NumPy on four threads (2.7× on one).",
-      "89 C++ test cases and 34 Python tests on Linux GCC, macOS Clang, Windows MSVC and a sanitizer build.",
+      "89 C++ test cases on Linux GCC, macOS Clang, Windows MSVC and a sanitizer build, plus 34 Python tests on Linux.",
     ],
     note: "Research and methodology figures, not investment advice.",
-    links: [{ label: "Source on GitHub", href: "https://github.com/Lukey-7/AxiomQuant" }],
+    links: [{ label: "View on GitHub", href: "https://github.com/Lukey-7/AxiomQuant" }],
   },
   sprachweg: {
     media: [
@@ -168,7 +168,7 @@ export const projectShowcase: Record<string, ProjectShowcase> = {
       "React and Vite on the client; Express as a single Vercel function; Postgres through Prisma. Gemini runs only on the server.",
       "118 server tests.",
     ],
-    note: "Screenshots from an earlier build. The source is private.",
+    note: "Screenshots are from an earlier build of the app.",
   },
   tetris: {
     media: [
@@ -196,7 +196,7 @@ export const projectShowcase: Record<string, ProjectShowcase> = {
       src: "/play/arcade/index.html",
       title: "Lukey Arcade: Tetris-89, playable",
     },
-    links: [{ label: "Source on GitHub", href: "https://github.com/Lukey-7/Lukey-tetris" }],
+    links: [{ label: "View on GitHub", href: "https://github.com/Lukey-7/Lukey-tetris" }],
   },
 };
 

@@ -62,18 +62,18 @@ export function OrdoCapabilities() {
   return (
     <section id="capabilities" className="ordo-capabilities section-wrap">
       <div className="ordo-section-label">
-        <span>[ 02 / AI CAPABILITIES ]</span>
+        <span>[ 01 / AI CAPABILITIES ]</span>
         <span>FROM PROJECTS AND CLIENT WORK</span>
       </div>
       <h2>
-        Everything an AI feature needs.
+        What an AI feature needs.
         <br />
         <span>Nothing it doesn't.</span>
       </h2>
       <p className="ordo-section-intro">
         Retrieval, agents, evaluation and the applications around them.
         <br />
-        Diagrams are illustrations of how each system works.
+        The diagrams illustrate how each system works.
       </p>
       <div className="capability-grid">
         {aiCapabilities.map((item, index) => (
@@ -139,7 +139,7 @@ function RetryDiagram() {
       <text x="132" y="17">RETURN</text>
       <rect x="126" y="48" width="96" height="20" className="is-recalled" />
       <text x="132" y="61">RETRY · HIGHER BUDGET</text>
-      <text x="4" y="60">P(BETTER) × COST</text>
+      <text x="4" y="60">P(BETTER) VS COST</text>
     </svg>
   );
 }
@@ -149,19 +149,19 @@ export function OrdoResearch() {
     <section id="research" className="ordo-research section-wrap">
       <div className="ordo-section-label">
         <span>[ 05 / RESEARCH ]</span>
-        <span>PROSPECTIVE RESEARCHER</span>
+        <span>TWO PROPOSED STUDIES</span>
       </div>
       <div className="research-heading">
         <h2>
           Lower inference cost.
           <br />
-          <span>Same task quality.</span>
+          <span>Same task quality?</span>
         </h2>
         <div>
           <p>
-            I'm a prospective researcher working on the cost of LLM assistants.
-            My proposal, <em>{research.title.toLowerCase()}</em>, sets out two
-            experimental studies.
+            I'm a prospective researcher. My proposal,{" "}
+            <em>{research.title.toLowerCase()}</em>, sets out two studies, each
+            framed as a hypothesis to test.
           </p>
           <span className="research-status">{research.status}</span>
         </div>
@@ -231,15 +231,15 @@ export function OrdoConsole() {
     setTab(CONSOLE_TABS.includes(trimmed.toLowerCase()) ? trimmed.toLowerCase() : null);
     const result = runCommand(trimmed);
     setHistory((value) =>
-      result ? [...value, result] : [{ command: "", output: "Console cleared.\n" }],
+      result ? [...value, result] : [{ command: "", output: "Terminal cleared.\n" }],
     );
   };
 
   return (
     <section id="console" className="ordo-console section-wrap">
       <div className="ordo-section-label">
-        <span>[ 06 / CONSOLE ]</span>
-        <span>THE ORIGINAL TERMINAL</span>
+        <span>[ 06 / TERMINAL ]</span>
+        <span>KEYBOARD-FRIENDLY</span>
       </div>
       <div className="console-grid">
         <div className="console-copy">
@@ -249,14 +249,14 @@ export function OrdoConsole() {
             <span>Ask the terminal.</span>
           </h2>
           <p>
-            The same résumé, as commands. Every answer comes from the data
+            The same resume, as commands. Every answer comes from the data
             behind this page.
           </p>
           <ol>
             <li>
               <span>01</span>
               <strong>Type a command</strong>
-              <small>help lists everything, including research and ai.</small>
+              <small>"help" lists every command, including "research" and "ai".</small>
             </li>
             <li>
               <span>02</span>
@@ -268,7 +268,7 @@ export function OrdoConsole() {
               <strong>Go full screen</strong>
               <small>
                 <a href={`${CYAN_URL}/terminal`}>
-                  Open the original terminal <ArrowUpRight size={12} />
+                  Open the full-screen terminal <ArrowUpRight size={12} aria-hidden="true" />
                 </a>
               </small>
             </li>
@@ -291,6 +291,7 @@ export function OrdoConsole() {
             className="console-body"
             onClick={() => inputRef.current?.focus()}
           >
+            <div role="log" aria-label="Terminal output">
             {history.map((entry, index) => (
               <div key={index} className="console-entry">
                 {entry.command && (
@@ -298,11 +299,15 @@ export function OrdoConsole() {
                     <span>❯</span> {entry.command}
                   </p>
                 )}
-                <pre className={entry.isError ? "is-error" : undefined}>
+                <pre
+                  className={entry.isError ? "is-error" : undefined}
+                  aria-hidden={entry.output === ASCII_ART || undefined}
+                >
                   {entry.output}
                 </pre>
               </div>
             ))}
+            </div>
             <label className="console-input">
               <span aria-hidden="true">❯</span>
               <input
@@ -323,15 +328,15 @@ export function OrdoConsole() {
                     const next = cursor - 1;
                     setCursor(Math.max(next, -1));
                     setInput(next >= 0 ? past[past.length - 1 - next] : "");
-                  } else if (event.key === "Tab" && input) {
+                  } else if (event.key === "Tab" && !event.shiftKey && input) {
                     const match = completeCommand(input);
-                    if (match) {
+                    if (match && match !== input.trim().toLowerCase()) {
                       event.preventDefault();
                       setInput(match);
                     }
                   }
                 }}
-                aria-label="Console command"
+                aria-label="Terminal command"
                 placeholder="type a command..."
                 spellCheck={false}
                 autoComplete="off"

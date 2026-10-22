@@ -21,7 +21,7 @@ import ParticleField from "./ParticleField";
 
 export function HeroTerminal() {
   return (
-    <div className="hero-terminal" aria-label="Portfolio project index">
+    <div className="hero-terminal" role="group" aria-label="Portfolio project index">
       <div className="terminal-chrome">
         <span>~/varun/projects</span>
         <span>readme</span>
@@ -38,7 +38,7 @@ export function HeroTerminal() {
         <br />
         <span className="terminal-check">✓</span> FinTrack / local-first finance
         <br />
-        <span className="terminal-check">✓</span> MARA / verified research
+        <span className="terminal-check">✓</span> MARA / quote-checked research
         <span className="terminal-caret" aria-hidden="true" />
       </code>
       <a href="#console">
@@ -57,11 +57,11 @@ export function OrdoWork({
   return (
     <section id="work" className="ordo-work section-wrap">
       <div className="ordo-section-label">
-        <span>[ SELECTED / PROJECTS ]</span>
+        <span>[ 02 / SELECTED PROJECTS ]</span>
         <span>INDEPENDENT ENGINEERING</span>
       </div>
       <h2>
-        Built to solve real problems.
+        Built to solve specific problems.
         <br />
         <span>Designed to be understood.</span>
       </h2>
@@ -80,7 +80,7 @@ export function OrdoWork({
           >
             <button
               onClick={() => onSelect(p)}
-              aria-label={`Read ${p.name} case study`}
+              aria-labelledby={`card-${p.id}-title card-${p.id}-action`}
               className="ordo-project-button"
             >
               <div className="ordo-card-top">
@@ -91,10 +91,10 @@ export function OrdoWork({
                 <ProjectVisual kind={p.visual} />
               </div>
               <div className="ordo-card-copy">
-                <h3>{p.name}</h3>
+                <h3 id={`card-${p.id}-title`}>{p.name}</h3>
                 <p>{p.description}</p>
-                <span className="ordo-card-action">
-                  Explore project <ArrowUpRight size={15} />
+                <span className="ordo-card-action" id={`card-${p.id}-action`}>
+                  View project <ArrowUpRight size={15} aria-hidden="true" />
                 </span>
               </div>
             </button>
@@ -104,7 +104,7 @@ export function OrdoWork({
           const body = (
             <>
               <div className="ordo-card-top">
-                <span>/0{i + 5}</span>
+                <span>/{String(selectedWork.length + i + 1).padStart(2, "0")}</span>
                 <span>{p.category}</span>
               </div>
               <div className={`ordo-card-art ordo-personal-art ${p.kind}`}>
@@ -120,11 +120,11 @@ export function OrdoWork({
                 )}
               </div>
               <div className="ordo-card-copy">
-                <h3>{p.name}</h3>
+                <h3 id={`card-${p.kind}-title`}>{p.name}</h3>
                 <p>{p.description}</p>
-                <span className="ordo-card-action">
+                <span className="ordo-card-action" id={`card-${p.kind}-action`}>
                   {p.kind === "language" ? "View project" : "View and play"}{" "}
-                  <ArrowUpRight size={15} />
+                  <ArrowUpRight size={15} aria-hidden="true" />
                 </span>
               </div>
             </>
@@ -140,7 +140,7 @@ export function OrdoWork({
               {/* Both open their detail here: Sprachweg's source is private, and the arcade is playable. */}
               <button
                 className="ordo-project-button"
-                aria-label={`Read ${p.name} project details`}
+                aria-labelledby={`card-${p.kind}-title card-${p.kind}-action`}
                 onClick={() => onSelect(p.kind === "language" ? sprachwegCase : tetrisCase)}
               >
                 {body}
@@ -151,10 +151,10 @@ export function OrdoWork({
       </div>
       <div className="ordo-archive-row">
         <a href={otherWork[2].href} target="_blank" rel="noreferrer">
-          Also exploring: DND AI Game <ArrowUpRight size={13} />
+          Experimental: DND AI Game <ArrowUpRight size={13} aria-hidden="true" />
         </a>
         <a href={`${CYAN_URL}/nexus`}>
-          Full project archive <ArrowUpRight size={13} />
+          Browse the full archive <ArrowUpRight size={13} aria-hidden="true" />
         </a>
       </div>
     </section>
@@ -167,13 +167,13 @@ const stages = [
     heading: "Define the contract.",
     description:
       "Turn a requirement into typed inputs, outputs and tools before writing the pipeline.",
-    file: "studyforge/config.py",
+    file: "backend/app/config.py",
     status: "CONFIGURING",
     code: [
-      "$ studyforge configure",
-      "→ sources      pdf, slides, lectures",
-      "→ outputs      cited chapters",
-      "→ study tools  schema-validated",
+      "# configure: what goes in and out",
+      "→ sources      pdf, word, notes, photos, audio",
+      "→ outputs      cited book sections",
+      "→ study tools  16, schema-validated",
       "→ retriever    dense + bm25",
       "✓ contract ready",
     ],
@@ -187,20 +187,20 @@ const stages = [
     name: "Build",
     heading: "Connect the pieces.",
     description:
-      "Turn the requirements into a working interface, retrieval pipeline and API.",
-    file: "studyforge/retrieve.py",
+      "Build the interface, retrieval pipeline and API against that contract.",
+    file: "backend/app/retrieval/retriever.py",
     status: "BUILDING",
     code: [
-      "$ studyforge build",
+      "# build: the retrieval pipeline",
       "→ documents → chunks → index",
       "→ dense + bm25 → rank fusion",
       "→ diversity selection (mmr)",
       "→ llm rerank",
-      "✓ Source-linked context",
+      "✓ source-linked context",
     ],
     metric: "185",
     unit: "TESTS",
-    caption: "Automated tests in the repository",
+    caption: "155 backend and 30 frontend tests",
     nodes: ["DENSE", "BM25", "RERANK"],
     form: 0,
   },
@@ -209,14 +209,14 @@ const stages = [
     heading: "Make quality observable.",
     description:
       "Compare retrieval changes on labelled queries and inspect failures before calling a result an improvement.",
-    file: "evals/retrieval.py",
+    file: "backend/eval/run_eval.py",
     status: "SCORING",
     code: [
-      "$ studyforge eval --queries 33",
-      "→ baseline  recall@1  0.82",
-      "→ hybrid    recall@1  1.00",
-      "→ mrr@10    0.89 → 1.00",
-      "→ scope     this evaluation set",
+      "$ python eval/run_eval.py",
+      "→ dense                recall@1  0.82",
+      "→ hybrid+mmr+rerank    recall@1  1.00",
+      "→ mrr@10               0.89 → 1.00",
+      "→ scope                this evaluation set",
       "✓ 33 labelled queries",
     ],
     metric: "1.00",
@@ -227,22 +227,22 @@ const stages = [
   },
   {
     name: "Deploy",
-    heading: "Carry it into the real world.",
+    heading: "Ship it, then improve it.",
     description:
-      "Package the application, test the failure paths and use deployment feedback to improve the next release.",
+      "Package the application, run the backend tests and a container health check on every push, then fix what fails.",
     file: ".github/workflows/ci.yml",
-    status: "SHIPPING",
+    status: "VERIFYING",
     code: [
       "$ git push",
       "→ ci        github actions",
-      "→ tests     185 in the suite",
+      "→ tests     155 backend (pytest)",
       "→ image     docker build",
-      "→ feedback  next release",
+      "→ health    /health check",
       "✓ Docker + CI",
     ],
     metric: "CI",
     unit: "DOCKER",
-    caption: "Docker + CI on every push",
+    caption: "Docker build and health check on every push",
     nodes: ["ANSWER", "OUTPUT"],
     form: 0,
   },
@@ -329,7 +329,7 @@ export function OrdoWorkflow() {
     >
       <div className="section-wrap">
         <div className="ordo-section-label">
-          <span>[ 03 / THE PROCESS ]</span>
+          <span>[ 03 / PROCESS ]</span>
           <span>IDEA → IMPLEMENTATION</span>
         </div>
         <div className="ordo-flow-heading">
@@ -339,7 +339,7 @@ export function OrdoWorkflow() {
             <span>One connected workflow.</span>
           </h2>
           <p>
-            Configure, build, evaluate and ship. Each step feeds the next,
+            Configure, build, evaluate and deploy. Each step feeds the next,
             shown here with StudyForge, my retrieval project.
           </p>
         </div>
@@ -375,7 +375,7 @@ export function OrdoWorkflow() {
                   }
                 }}
               >
-                <span>0{i + 1}</span>
+                <span aria-hidden="true">0{i + 1}</span>
                 {s.name}
                 {active === i && (
                   <i
@@ -388,7 +388,7 @@ export function OrdoWorkflow() {
                 )}
               </button>
             ))}
-            <p>SCROLL OR SELECT A STAGE</p>
+            <p aria-hidden="true">SELECT A STAGE TO STOP THE TOUR</p>
           </div>
           <div
             id="ordo-flow-panel"
@@ -460,7 +460,7 @@ export function OrdoWorkflow() {
               </div>
               <Sculpture bare shape={item.form} detail={56} />
             </div>
-            <div className="flow-note" aria-live="polite">
+            <div className="flow-note" aria-live={manual ? "polite" : "off"}>
               <strong>{item.heading}</strong>
               <p>{item.description}</p>
             </div>
@@ -494,7 +494,7 @@ export function OrdoShowcase() {
           <div className="ordo-section-label">
             <span>[ 04 / SYSTEM ]</span>
             <span>
-              PHASE 0{phase + 1} — {PHASES[phase]}
+              PHASE 0{phase + 1} / {PHASES[phase]}
             </span>
           </div>
           <ParticleField progress={scrollYProgress} count={count} />
@@ -518,7 +518,7 @@ export function OrdoShowcase() {
             <p>
               Retrieval. Evaluation. Interfaces.
               <br />
-              The work between a model and a useful product.
+              What turns a model into a useful product.
             </p>
           </div>
           <div className="showcase-progress" aria-hidden="true">

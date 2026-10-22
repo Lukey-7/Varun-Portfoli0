@@ -1275,7 +1275,7 @@ html[data-portfolio-edition="ordo"], .ordo-edition * { scrollbar-color: #82857d 
   caret-color: #a8d8b0;
 }
 .console-input input::placeholder {
-  color: #6f766b;
+  color: #8d9488;
 }
 .console-status {
   display: flex;
@@ -1874,5 +1874,32 @@ html[data-portfolio-edition="ordo"], .ordo-edition * { scrollbar-color: #82857d 
   }
   .ordo-project-button:hover .ordo-card-art > * {
     scale: none;
+  }
+}
+
+/* ---------- Accessibility details ---------- */
+/* Focus rings stay visible on the dark terminal panels in the light theme. */
+.ordo-edition .hero-terminal,
+.ordo-edition .console-window {
+  --accent: #e8ece2;
+}
+/* The tab row scrolls sideways, so keep its focus ring inside the clip. */
+.console-tabs button:focus-visible {
+  outline-offset: -3px;
+}
+.play-frame iframe:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+}
+/* The page-wide pause (hero pause button) also stops CSS animation loops. */
+html[data-motion="paused"] .ordo-edition *,
+html[data-motion="paused"] .ordo-edition *::before,
+html[data-motion="paused"] .ordo-edition *::after {
+  animation-play-state: paused !important;
+}
+@media (max-width: 767px) {
+  /* Anchor jumps clear the 68px sticky header on phones. */
+  html[data-portfolio-edition="ordo"] {
+    scroll-padding-top: 84px;
   }
 }

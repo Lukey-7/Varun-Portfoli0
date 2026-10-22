@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import type { MotionValue } from "framer-motion";
+import { isMotionPaused } from "@/lib/motion-pause";
 import { position } from "./geometry";
 
 /** Scroll progress → how assembled the knot is (0 scattered, 1 formed). */
@@ -97,7 +98,9 @@ export default function ParticleField({
       last = now;
       const reduced = media.matches;
       const a = reduced ? 1 : assembly(progress.get());
-      if (!reduced) angle += dt * 0.00011 * (1.6 - a);
+      // Scrolling still assembles the knot while paused; only the drift stops.
+      const paused = isMotionPaused();
+      if (!reduced && !paused) angle += dt * 0.00011 * (1.6 - a);
       const cosY = Math.cos(angle),
         sinY = Math.sin(angle),
         cosX = Math.cos(0.42),
@@ -109,7 +112,7 @@ export default function ParticleField({
       for (let i = 0; i < total; i++) {
         const k = i * 3;
         // Scattered particles drift; assembled ones settle onto the knot.
-        const drift = reduced ? 0 : (1 - a) * 0.12 * Math.sin(now * 0.0006 + i);
+        const drift = reduced || paused ? 0 : (1 - a) * 0.12 * Math.sin(now * 0.0006 + i);
         const x = cloud[k] + (knot[k] - cloud[k]) * a + drift;
         const y = cloud[k + 1] + (knot[k + 1] - cloud[k + 1]) * a;
         const z = cloud[k + 2] + (knot[k + 2] - cloud[k + 2]) * a;

@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { isMotionPaused } from "@/lib/motion-pause";
 
 export interface CanvasPointer {
   x: number;
@@ -84,8 +85,10 @@ export function useCanvasLoop(draw: (frame: CanvasFrame) => void) {
         colourAge = 0;
         readColours();
       }
-      if (media.matches && !dirty) return;
-      if (!media.matches) clock += dt;
+      // Reduced motion and the page-wide pause both freeze the clock.
+      const frozen = media.matches || isMotionPaused();
+      if (frozen && !dirty) return;
+      if (!frozen) clock += dt;
       dirty = false;
       ctx.clearRect(0, 0, width, height);
       drawRef.current({
@@ -96,7 +99,7 @@ export function useCanvasLoop(draw: (frame: CanvasFrame) => void) {
         pointer,
         ink,
         page,
-        reduced: media.matches,
+        reduced: frozen,
       });
     };
     const resizer = new ResizeObserver(resize);

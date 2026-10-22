@@ -48,6 +48,7 @@ export default function OrdoPage() {
   const [copied, setCopied] = useState(false);
   const [copyError, setCopyError] = useState(false);
   const copyTimer = useRef<ReturnType<typeof setTimeout>>();
+  const menuToggle = useRef<HTMLButtonElement>(null);
   const reducedMotion = useReducedMotion();
 
   useEffect(() => {
@@ -64,7 +65,10 @@ export default function OrdoPage() {
   useEffect(() => {
     if (!menuOpen) return;
     const onKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setMenuOpen(false);
+      if (event.key === "Escape") {
+        setMenuOpen(false);
+        menuToggle.current?.focus();
+      }
     };
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
@@ -119,6 +123,7 @@ export default function OrdoPage() {
               Contact me <ArrowUpRight size={15} />
             </a>
             <button
+              ref={menuToggle}
               className="icon-button mobile-menu-toggle"
               aria-expanded={menuOpen}
               aria-controls="mobile-navigation"
@@ -200,7 +205,7 @@ export default function OrdoPage() {
           </motion.div>
         </section>
         <div className="ordo-stack-strip section-wrap">
-          <p>Built with tools that get the work done.</p>
+          <p>Everyday tools across these projects.</p>
           <div>
             {tools.map((tool) => (
               <span key={tool}>
@@ -225,8 +230,8 @@ export default function OrdoPage() {
               <span>Shared responsibility.</span>
             </h2>
             <p>
-              Building with teams, extending existing products, and taking
-              ownership of the parts I deliver.
+              I work with teams, build new products and improve existing ones,
+              and take ownership of the parts I deliver.
             </p>
           </motion.div>
           <div className="experience-list">
@@ -291,9 +296,8 @@ export default function OrdoPage() {
               APIs, evaluation and the interface someone actually uses.
             </p>
             <p>
-              Outside client work, I build learning tools, explore on-device
-              finance applications, and investigate how to reduce LLM token
-              costs.
+              Outside client work, I build learning tools and an on-device
+              finance app, and study how to reduce LLM inference costs.
             </p>
             <a
               href={profile.github}
@@ -301,7 +305,7 @@ export default function OrdoPage() {
               rel="noreferrer"
               className="text-button"
             >
-              Explore my GitHub <ArrowUpRight size={17} />
+              View my GitHub <ArrowUpRight size={17} aria-hidden="true" />
             </a>
           </motion.div>
           <div className="about-details">
@@ -386,9 +390,13 @@ export default function OrdoPage() {
       <footer className="portfolio-footer section-wrap">
         <span>© {new Date().getFullYear()} Varun Darji</span>
         <div>
-          <a href="#console">Console</a>
-          <a href={CYAN_URL}>Cyan edition ↗</a>
-          <a href="#main">Back to top ↑</a>
+          <a href="#console">Terminal</a>
+          <a href={CYAN_URL}>
+            Cyan edition <span aria-hidden="true">↗</span>
+          </a>
+          <a href="#main">
+            Back to top <span aria-hidden="true">↑</span>
+          </a>
         </div>
       </footer>
       <aside className="edition-switch" aria-label="Portfolio design edition">

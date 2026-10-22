@@ -9,7 +9,7 @@ import { selectedWork, otherWork } from './portfolio';
 export const profile = {
   name: 'Varun Rajesh Darji',
   shortName: 'VARUN',
-  role: 'AI/ML Engineer',
+  role: 'AI Engineer',
   tagline: 'Building at the intersection of LLMs and production systems',
   location: 'Mumbai, Maharashtra',
   timezone: 'IST (UTC+5:30)',
@@ -20,7 +20,7 @@ export const profile = {
   linkedin: 'https://www.linkedin.com/in/varun-darji-5713472a9/',
   linkedinHandle: 'varun-darji-5713472a9',
   summary:
-    'AI Engineer at LetsTute and M.Sc. Computer Science graduate. Building retrieval systems, agent workflows, backend APIs and client applications. My work includes extending existing platforms, testing ERP intelligence features and gaining hands-on AWS deployment experience.',
+    'AI Engineer at LetsTute and M.Sc. Computer Science graduate. I build retrieval systems, agent workflows, backend APIs and client applications. My work includes building and improving the Webex platform, leading implementation and testing of ERP intelligence features, and deploying KiranOS on GCP while gaining hands-on AWS experience.',
 } as const;
 
 /* ---------------------------------------------------------------- skills */
@@ -65,7 +65,7 @@ export const skills: Skill[] = [
     short: 'C++',
     category: 'Languages',
     description:
-      'C++20 for performance-critical numerical work. The quantitative trading engine leans on STL, Eigen, OpenMP and CMake.',
+      'C++20 for performance-critical numerical work. The quantitative research engine leans on STL, Eigen, OpenMP and CMake.',
     connections: ['python', 'data'],
   },
   {
@@ -74,7 +74,7 @@ export const skills: Skill[] = [
     short: 'JVA',
     category: 'Languages',
     description:
-      'Backend services for a fintech platform: REST APIs, third-party payment integrations and agile delivery in a remote team.',
+      'Backend services for a fintech platform: REST APIs, third-party API integrations (PayPal shipment tracking) and agile delivery in a remote team.',
     connections: ['databases', 'docker'],
   },
   {
@@ -119,7 +119,7 @@ export const skills: Skill[] = [
     short: 'VEC',
     category: 'AI/ML',
     description:
-      'ChromaDB and embedding stores in production: index design, text-embedding-004, similarity tuning and hybrid search strategies.',
+      'ChromaDB and embedding stores: index design, Gemini and local bge-small embeddings, similarity tuning and hybrid search.',
     connections: ['rag', 'databases', 'llm'],
   },
   {
@@ -155,7 +155,7 @@ export const skills: Skill[] = [
     short: 'GCP',
     category: 'Cloud & DevOps',
     description:
-      'Deploying and maintaining containerised AI applications on GCP, including build pipelines and runtime configuration.',
+      'Deploying and maintaining containerised services for KiranOS on GCP, including build pipelines and runtime configuration.',
     connections: ['docker', 'cicd', 'python'],
   },
   {
@@ -227,11 +227,11 @@ export const experience: Experience[] = [
     period: 'Aug 2026 — Present',
     current: true,
     highlights: [
-      'Extending and restructuring the existing Webex platform, including AI workflows and application features.',
+      'Built and improved Webex, the company\'s lead-generation platform, including its AI workflows and application features.',
       'Leading implementation and testing of AI features for a secured client ERP.',
-      'Developing the KiranOS iOS application and gaining hands-on AWS deployment experience for clients.',
+      'Developing the KiranOS iOS application, deploying it on GCP and gaining hands-on AWS deployment experience for clients.',
     ],
-    stack: ['Python', 'LLMs', 'RAG', 'AWS', 'Docker', 'FastAPI'],
+    stack: ['Python', 'LLMs', 'RAG', 'GCP', 'AWS', 'Docker', 'FastAPI'],
   },
   {
     id: 'techit',

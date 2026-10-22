@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Pause, Play } from "lucide-react";
 import { motion, type MotionStyle } from "framer-motion";
+import { setMotionPaused, useMotionPaused } from "@/lib/motion-pause";
 import { position, type Point } from "./geometry";
 
 const forms = ["Knot", "Sphere", "Wave"] as const;
@@ -32,8 +33,9 @@ export default function Sculpture({
   const [chosen, setChosen] = useState(0);
   const [picked, setPicked] = useState(false);
   const form = shape ?? chosen;
-  const [paused, setPaused] = useState(false);
-  const pausedRef = useRef(false);
+  // The hero's pause button pauses every animation on the page.
+  const paused = useMotionPaused();
+  const pausedRef = useRef(paused);
   const [reduced, setReduced] = useState(false);
 
   useEffect(() => {
@@ -253,8 +255,9 @@ export default function Sculpture({
       <motion.canvas
         ref={canvasRef}
         style={canvasStyle}
-        role="img"
-        aria-label={`Interactive ${forms[form].toLowerCase()} particle sculpture`}
+        role={bare ? undefined : "img"}
+        aria-hidden={bare || undefined}
+        aria-label={bare ? undefined : `Interactive ${forms[form].toLowerCase()} particle sculpture`}
         onPointerMove={(event) => {
           if (reduced || event.pointerType !== "mouse") return;
           const bounds = event.currentTarget.getBoundingClientRect();
@@ -285,9 +288,10 @@ export default function Sculpture({
         </div>
         <button
           className="icon-button"
-          aria-label={paused ? "Play animation" : "Pause animation"}
+          aria-label={paused || reduced ? "Play all animations" : "Pause all animations"}
+          title={paused ? "Play all animations" : "Pause all animations"}
           disabled={reduced}
-          onClick={() => setPaused((value) => !value)}
+          onClick={() => setMotionPaused(!paused)}
         >
           {paused || reduced ? <Play size={14} /> : <Pause size={14} />}
         </button>

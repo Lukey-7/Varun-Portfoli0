@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useReducedMotion } from "framer-motion";
+import { useMotionPaused } from "@/lib/motion-pause";
 
 const COLS = 8;
 const ROWS = 8;
@@ -42,6 +43,7 @@ const fits = (board: number[], { cells, row, col }: Falling) =>
 /** A tiny self-playing Tetris for the arcade card: pieces fall, lock and clear lines. */
 export default function TetrisMini() {
   const reduced = useReducedMotion();
+  const paused = useMotionPaused();
   const ref = useRef<HTMLDivElement>(null);
   const board = useRef(startBoard());
   const piece = useRef<Falling | null>(null);
@@ -59,7 +61,7 @@ export default function TetrisMini() {
   }, []);
 
   useEffect(() => {
-    if (reduced || !visible) return;
+    if (reduced || paused || !visible) return;
     let clearTimer: ReturnType<typeof setTimeout>;
     const tick = () => {
       const current = piece.current;
@@ -102,7 +104,7 @@ export default function TetrisMini() {
       clearInterval(timer);
       clearTimeout(clearTimer);
     };
-  }, [reduced, visible]);
+  }, [reduced, paused, visible]);
 
   const p = piece.current;
   const falling = new Set(p ? p.cells.map(([r, c]) => (p.row + r) * COLS + p.col + c) : []);

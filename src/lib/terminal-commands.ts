@@ -85,14 +85,14 @@ Available commands:
   help        Show this help message
   about       Who Varun is, in a box
   whoami      One-line summary
-  ai          AI features I work on
+  ai          AI capabilities, by project
   research    Research proposal
   experience  Professional experience log
   education   Degrees and diplomas
   skills      Full technical stack
   projects    Featured and side projects
   contact     Every way to reach out
-  resume      Condensed resume dump
+  resume      Plain-text resume
   github      Open GitHub profile
   linkedin    Open LinkedIn profile
   email       Email address
@@ -114,7 +114,7 @@ Available commands:
 └────────────────────────────────────────────────┘
 `,
   whoami: () => `${profile.name} — ${profile.role}, ${profile.location}.\n\n${profile.summary}`,
-  ai: () => `\nAI features:\n\n${buildCapabilities()}\n`,
+  ai: () => `\nAI capabilities:\n\n${buildCapabilities()}\n`,
   research: () => `\n${buildResearch()}\n`,
   experience: () => `\n${buildExperience()}\n`,
   education: () => `\n${buildEducation()}\n`,
