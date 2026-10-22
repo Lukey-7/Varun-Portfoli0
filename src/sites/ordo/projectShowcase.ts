@@ -14,6 +14,12 @@ export interface ShowcaseMedia {
 }
 
 export interface ProjectShowcase {
+  /** One sentence a non-engineer understands: what it does for someone. */
+  pitch: string;
+  /** The idea, for projects whose case study has no problem statement. */
+  idea?: string;
+  /** Headline facts for this site; falls back to the shared case-study facts. */
+  facts?: [string, string][];
   media: ShowcaseMedia[];
   highlights: string[];
   note?: string;
@@ -24,6 +30,12 @@ export interface ProjectShowcase {
 
 export const projectShowcase: Record<string, ProjectShowcase> = {
   studyforge: {
+    pitch:
+      "Turns your lecture notes into a cited textbook, study tools and a chat that points to the exact passage behind each answer.",
+    facts: [
+      ["33 of 33", "test queries with the right passage ranked first, up from 27"],
+      ["16", "study tools from one set of notes"],
+    ],
     media: [
       {
         src: "/projects/studyforge-workspace.webp",
@@ -45,16 +57,22 @@ export const projectShowcase: Record<string, ProjectShowcase> = {
       },
     ],
     highlights: [
-      "Hybrid retrieval plus MMR and LLM reranking reached Recall@1 1.00 on 33 labelled queries; dense search alone scored 0.82.",
+      "With hybrid retrieval, MMR and LLM reranking, the right passage ranked first for 33 of 33 labelled queries, against 27 with dense search alone (Recall@1 0.82 → 1.00). It is a small set: a check, not a guarantee.",
       "A support check found 37 of 39 book paragraphs backed by their passages (95%). This is a self-check by the same model family, not an independent review.",
       "16 study tools generated from your own notes, from MCQ quizzes and flashcards to a podcast script.",
       "A new source rewrites only the sections it changes: adding a second source left 6 of 7 sections untouched.",
-      "155 backend and 30 frontend tests.",
+      "155 backend tests run with a Docker build and a health check on every push; the frontend adds 30 more.",
     ],
     note: "Screenshots show the app's demo mode with sample lecture notes.",
     links: [{ label: "View on GitHub", href: "https://github.com/Lukey-7/StudyForge" }],
   },
   fintrack: {
+    pitch:
+      "Reads bank SMS on your phone and turns them into a ledger that can tell a refund from a transfer.",
+    facts: [
+      ["7", "transaction flows, from expense to settlement"],
+      ["Offline", "bill OCR for Latin and Devanagari text"],
+    ],
     media: [
       {
         src: "/projects/fintrack-home.webp",
@@ -92,6 +110,12 @@ export const projectShowcase: Record<string, ProjectShowcase> = {
     links: [{ label: "View on GitHub", href: "https://github.com/Lukey-7/Personal_Finance_app" }],
   },
   mara: {
+    pitch:
+      "A research assistant whose five agents keep a note only if its quote really appears in the source.",
+    facts: [
+      ["5", "agents sharing one traced workflow"],
+      ["0.86 → 0.93", "Recall@5 on 35 queries, against dense-only search"],
+    ],
     media: [
       {
         src: "/projects/mara-answer.webp",
@@ -107,7 +131,7 @@ export const projectShowcase: Record<string, ProjectShowcase> = {
       },
     ],
     highlights: [
-      "On 35 queries over 317 chunks, Recall@5 rose from 0.857 (dense only) to 0.929 with hybrid search and cross-encoder reranking. Reranking costs about 1.8 s per query on a CPU.",
+      "On 35 queries over 317 chunks, Recall@5 rose from 0.86 (dense only) to 0.93 with hybrid search and cross-encoder reranking. Reranking costs about 1.8 s per query on a CPU.",
       "Citation validity is 1.0 by construction: a note survives only if its quote appears verbatim in the cited chunk.",
       "The answer evaluation includes one deliberately unanswerable question. Every model replied that no evidence was found instead of inventing a figure.",
       "Five agents (planner, researcher, summariser, critic, writer) share one state object, with a trace per run.",
@@ -117,6 +141,8 @@ export const projectShowcase: Record<string, ProjectShowcase> = {
     links: [{ label: "View on GitHub", href: "https://github.com/Lukey-7/mara" }],
   },
   axiomquant: {
+    pitch:
+      "A C++ backtesting engine built to catch the results that only look good because of luck, hindsight or unpaid costs.",
     media: [
       {
         src: "/projects/axiomquant/walk_forward.svg",
@@ -148,6 +174,10 @@ export const projectShowcase: Record<string, ProjectShowcase> = {
     links: [{ label: "View on GitHub", href: "https://github.com/Lukey-7/AxiomQuant" }],
   },
   sprachweg: {
+    pitch:
+      "A daily German session in one app: reviews, grammar, sentence mining, speaking practice and graded reading, from A0 to B2.",
+    idea:
+      "Reviews are scheduled with FSRS, so each word comes back just before it is likely to be forgotten. Gemini helps with practice and feedback, and runs only on the server.",
     media: [
       {
         src: "/projects/sprachweg-review.webp",
@@ -171,6 +201,10 @@ export const projectShowcase: Record<string, ProjectShowcase> = {
     note: "Screenshots are from an earlier build of the app.",
   },
   tetris: {
+    pitch:
+      "A Game Boy-style arcade with Tetris and a space shooter, playable right here.",
+    idea:
+      "Game loops, rendering and sound without a framework or a build step: Tetris with five modes, a Galaga-style shooter, and every sound synthesised in the browser.",
     media: [
       {
         src: "/projects/arcade-tetris.webp",

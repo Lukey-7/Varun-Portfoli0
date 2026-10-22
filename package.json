@@ -14,7 +14,8 @@
     "preview:cyan": "vite preview --mode cyan",
     "preview:ordo": "vite preview --mode ordo",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "sync:github": "node scripts/sync-github.mjs"
   },
   "dependencies": {
     "@fontsource-variable/space-grotesk": "^5.3.0",

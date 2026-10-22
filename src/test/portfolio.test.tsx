@@ -213,7 +213,7 @@ describe("portfolio visitor journeys", () => {
   it("presents the research proposal in full, as hypotheses", () => {
     renderOrdo("/research");
     expect(
-      screen.getByRole("heading", { level: 1, name: /Lower inference cost/ }),
+      screen.getByRole("heading", { level: 1, name: /Can an LLM assistant cost less/ }),
     ).toBeInTheDocument();
     expect(
       screen.getByRole("heading", { name: "Calibrated retry policy" }),

@@ -2,10 +2,6 @@ import { useEffect, useRef, useState } from "react";
 import { Link, NavLink, useLocation, useOutlet } from "react-router-dom";
 import {
   ArrowUpRight,
-  Check,
-  Copy,
-  Github,
-  Linkedin,
   Menu,
   Moon,
   Pause,
@@ -14,10 +10,10 @@ import {
   X,
 } from "lucide-react";
 import { motion, useReducedMotion } from "framer-motion";
-import { profile } from "@/data/profile";
 import { CYAN_URL } from "@/lib/sites";
 import { setMotionPaused, useMotionPaused } from "@/lib/motion-pause";
 import { DotWordmark } from "./components/OrdoExtras";
+import { OrdoContact } from "./components/OrdoBlocks";
 import "./base.css";
 import "./ordo.css";
 
@@ -58,9 +54,6 @@ function useScrollOnNavigate() {
 export default function OrdoLayout() {
   const [theme, setTheme] = useState<"dark" | "light">("light");
   const [menuOpen, setMenuOpen] = useState(false);
-  const [copied, setCopied] = useState(false);
-  const [copyError, setCopyError] = useState(false);
-  const copyTimer = useRef<ReturnType<typeof setTimeout>>();
   const menuToggle = useRef<HTMLButtonElement>(null);
   const reduced = useReducedMotion();
   const paused = useMotionPaused();
@@ -76,7 +69,6 @@ export default function OrdoLayout() {
       delete document.documentElement.dataset.portfolioEdition;
     };
   }, [theme]);
-  useEffect(() => () => clearTimeout(copyTimer.current), []);
   useEffect(() => setMenuOpen(false), [location.pathname]);
 
   useEffect(() => {
@@ -90,18 +82,6 @@ export default function OrdoLayout() {
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
   }, [menuOpen]);
-
-  const copyEmail = async () => {
-    try {
-      await navigator.clipboard.writeText(profile.email);
-      setCopied(true);
-      setCopyError(false);
-      clearTimeout(copyTimer.current);
-      copyTimer.current = setTimeout(() => setCopied(false), 2500);
-    } catch {
-      setCopyError(true);
-    }
-  };
 
   return (
     <div className="portfolio ordo-edition" data-theme={theme}>
@@ -192,47 +172,7 @@ export default function OrdoLayout() {
         {outlet}
       </motion.main>
 
-      <section id="contact" className="contact-section section-wrap">
-        <div className="contact-top">
-          <h2>
-            Have something
-            <br />
-            <span>worth building?</span>
-          </h2>
-          <a
-            className="contact-arrow"
-            href={`mailto:${profile.email}`}
-            aria-label="Contact Varun by email"
-          >
-            <ArrowUpRight strokeWidth={1} />
-          </a>
-        </div>
-        <div className="contact-bottom">
-          <div className="email-group">
-            <a href={`mailto:${profile.email}`} className="email-link">
-              {profile.email}
-            </a>
-            <button
-              className="icon-button"
-              onClick={copyEmail}
-              aria-label={copied ? "Email copied" : "Copy email address"}
-            >
-              {copied ? <Check size={18} /> : <Copy size={18} />}
-            </button>
-            <span className="copy-status" role="status">
-              {copied ? "Copied" : copyError ? "Select the address to copy it." : ""}
-            </span>
-          </div>
-          <div className="social-links">
-            <a href={profile.github} target="_blank" rel="noreferrer">
-              <Github size={16} /> GitHub
-            </a>
-            <a href={profile.linkedin} target="_blank" rel="noreferrer">
-              <Linkedin size={16} /> LinkedIn
-            </a>
-          </div>
-        </div>
-      </section>
+      <OrdoContact />
       <DotWordmark />
 
       <footer className="portfolio-footer section-wrap">

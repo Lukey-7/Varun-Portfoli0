@@ -4,6 +4,7 @@ import { research } from "@/data/portfolio";
 import type { OrdoContext } from "../OrdoLayout";
 import Sculpture from "../components/Sculpture";
 import { ResearchStudies } from "../components/OrdoExtras";
+import { content } from "../content";
 
 /** The research proposal in full. Hypotheses to test, not results. */
 export default function ResearchPage() {
@@ -16,22 +17,18 @@ export default function ResearchPage() {
     <article className="research-page">
       <header className="page-hero section-wrap">
         <div className="ordo-section-label">
-          <span>[ RESEARCH / PROPOSAL ]</span>
-          <span>TWO PROPOSED STUDIES</span>
+          <span>{content.researchPage.label[0]}</span>
+          <span>{content.researchPage.label[1]}</span>
         </div>
         <div className="page-hero-grid">
           <div className="page-hero-copy">
-            <span className="mono project-category">Prospective researcher</span>
+            <span className="mono project-category">{content.researchPage.category}</span>
             <h1>
-              Lower inference cost.
+              {content.research.title[0]}
               <br />
-              <span>Same task quality?</span>
+              <span>{content.research.title[1]}</span>
             </h1>
-            <p className="project-lede">
-              My proposal, <em>{research.title.toLowerCase()}</em>, sets out two
-              experimental studies on the cost of LLM assistants. Each is framed
-              as a hypothesis to test against simpler baselines.
-            </p>
+            <p className="project-lede">{content.researchPage.intro}</p>
             <span className="research-status">{research.status}</span>
           </div>
           <div className="page-hero-art">

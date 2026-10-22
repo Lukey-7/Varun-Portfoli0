@@ -13,31 +13,37 @@ import { ordoProjects } from "../projects";
 import ProjectArt from "./ProjectArt";
 import Sculpture from "./Sculpture";
 import ParticleField from "./ParticleField";
+import { content } from "../content";
 
 export function HeroTerminal() {
+  const t = content.heroTerminal;
   return (
-    <div className="hero-terminal" role="group" aria-label="Portfolio project index">
+    <div className="hero-terminal" role="group" aria-label="What Varun is working on">
       <div className="terminal-chrome">
-        <span>~/varun/projects</span>
-        <span>readme</span>
+        <span>{t.path}</span>
+        <span>{t.file}</span>
       </div>
       <code>
-        <span className="terminal-command">$ cat engineering.txt</span>
+        <span className="terminal-command">$ cat {t.file}</span>
         <br />
-        retrieval + agents + applications
+        <span className="terminal-dim"># updated {t.updated}</span>
         <br />
-        <span className="terminal-dim">source → context → answer</span>
+        {t.rows.map(([key, value]) => (
+          <span key={key} className="terminal-row">
+            <span className="terminal-dim">{key.padEnd(6, "\u00a0")}</span> {value}
+            <br />
+          </span>
+        ))}
         <br />
-        <br />
-        <span className="terminal-check">✓</span> StudyForge / learning systems
-        <br />
-        <span className="terminal-check">✓</span> FinTrack / local-first finance
-        <br />
-        <span className="terminal-check">✓</span> MARA / quote-checked research
-        <span className="terminal-caret" aria-hidden="true" />
+        {t.projects.map(([name, line], index) => (
+          <span key={name}>
+            <span className="terminal-check">✓</span> {name} / {line}
+            {index < t.projects.length - 1 ? <br /> : <span className="terminal-caret" aria-hidden="true" />}
+          </span>
+        ))}
       </code>
       <a href="#console">
-        Open interactive terminal <ArrowUpRight size={12} />
+        {t.link} <ArrowUpRight size={12} />
       </a>
     </div>
   );
@@ -49,22 +55,20 @@ export function OrdoWork() {
   return (
     <section id="work" className="ordo-work section-wrap">
       <div className="ordo-section-label">
-        <span>[ 02 / SELECTED PROJECTS ]</span>
-        <span>INDEPENDENT ENGINEERING</span>
+        <span>{content.work.label[0]}</span>
+        <span>{content.work.label[1]}</span>
       </div>
       <h2>
-        Built to solve specific problems.
+        {content.work.title[0]}
         <br />
-        <span>Designed to be understood.</span>
+        <span>{content.work.title[1]}</span>
       </h2>
-      <p className="ordo-section-intro">
-        Retrieval, mobile applications and systems research.
-        <br />A closer look at the decisions behind the code.
-      </p>
+      <p className="ordo-section-intro">{content.work.intro}</p>
       <div className="ordo-project-grid">
         {ordoProjects.map((project, i) => (
           <motion.article
             key={project.slug}
+            id={`spot-${project.slug}`}
             initial={reduced ? false : { opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.1 }}
@@ -97,10 +101,10 @@ export function OrdoWork() {
       </div>
       <div className="ordo-archive-row">
         <a href={otherWork[2].href} target="_blank" rel="noreferrer">
-          Experimental: DND AI Game <ArrowUpRight size={13} aria-hidden="true" />
+          {content.work.archive.experimental} <ArrowUpRight size={13} aria-hidden="true" />
         </a>
         <a href={`${CYAN_URL}/nexus`}>
-          Browse the full archive <ArrowUpRight size={13} aria-hidden="true" />
+          {content.work.archive.all} <ArrowUpRight size={13} aria-hidden="true" />
         </a>
       </div>
     </section>
@@ -275,7 +279,7 @@ export function OrdoWorkflow() {
     >
       <div className="section-wrap">
         <div className="ordo-section-label">
-          <span>[ 03 / PROCESS ]</span>
+          <span>[ 04 / PROCESS ]</span>
           <span>IDEA → IMPLEMENTATION</span>
         </div>
         <div className="ordo-flow-heading">
@@ -438,7 +442,7 @@ export function OrdoShowcase() {
       <div className="showcase-sticky">
         <div className="section-wrap showcase-inner">
           <div className="ordo-section-label">
-            <span>[ 04 / SYSTEM ]</span>
+            <span>[ 05 / SYSTEM ]</span>
             <span>
               PHASE 0{phase + 1} / {PHASES[phase]}
             </span>

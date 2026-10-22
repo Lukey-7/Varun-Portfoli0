@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { ArrowLeft, ArrowRight, ArrowUpRight, Gamepad2 } from "lucide-react";
+import { ArrowDown, ArrowLeft, ArrowRight, ArrowUpRight } from "lucide-react";
 import { findProject, ordoProjects } from "../projects";
 import { projectShowcase } from "../projectShowcase";
 import ProjectArt from "../components/ProjectArt";
 import { ProjectGallery } from "../components/ProjectShowcase";
+import { hasDemo, ProjectDemo } from "../demos/ProjectDemo";
 import NotFoundPage from "./NotFoundPage";
 
 /** One project's case study: animated icon, gallery, verified detail, next and previous. */
@@ -25,12 +26,15 @@ export default function ProjectPage() {
   const index = ordoProjects.indexOf(project);
   const previous = ordoProjects[(index - 1 + ordoProjects.length) % ordoProjects.length];
   const next = ordoProjects[(index + 1) % ordoProjects.length];
-  const sections = [
+  const idea = [
     ["The problem", study.problem],
-    ["What I built", study.approach],
-    ["How I checked it", study.evidence],
-    ["My contribution", study.ownership],
+    ["What I built", study.approach ?? showcase?.idea],
   ].filter(([, text]) => text) as [string, string][];
+  const proof = [
+    ["How I checked it", study.evidence],
+    ["My part", study.ownership],
+  ].filter(([, text]) => text) as [string, string][];
+  const facts = showcase?.facts ?? study.facts;
   const links =
     showcase?.links ?? (study.github ? [{ label: "View on GitHub", href: study.github }] : []);
 
@@ -48,10 +52,10 @@ export default function ProjectPage() {
           <div className="project-hero-copy">
             <span className="mono project-category">{study.category}</span>
             <h1>{study.name}</h1>
-            <p className="project-lede">{study.description}</p>
-            {study.facts.length > 0 && (
+            <p className="project-lede">{showcase?.pitch ?? study.description}</p>
+            {facts.length > 0 && (
               <div className="project-facts">
-                {study.facts.map(([value, label]) => (
+                {facts.map(([value, label]) => (
                   <div key={label}>
                     <strong>{value}</strong>
                     <span>{label}</span>
@@ -60,15 +64,15 @@ export default function ProjectPage() {
               </div>
             )}
             <div className="project-actions">
-              {showcase?.play && (
-                <Link to="/play" className="primary-button">
-                  <Gamepad2 size={16} aria-hidden="true" /> Play it here
-                </Link>
+              {hasDemo(project.showcaseId) && (
+                <a href="#try-it" className="primary-button">
+                  {showcase?.play ? "Play it here" : "Try the demo"} <ArrowDown size={16} aria-hidden="true" />
+                </a>
               )}
               {links.map((link) => (
                 <a
                   key={link.href}
-                  className={showcase?.play ? "text-button" : "primary-button"}
+                  className={hasDemo(project.showcaseId) ? "text-button" : "primary-button"}
                   href={link.href}
                   target="_blank"
                   rel="noreferrer"
@@ -94,6 +98,30 @@ export default function ProjectPage() {
         </section>
       ) : null}
 
+      {idea.length > 0 && (
+        <section className="project-idea section-wrap">
+          <span className="mono project-step">01 / The idea</span>
+          {idea.map(([heading, text]) => (
+            <div key={heading}>
+              <h2>{heading}</h2>
+              <p>{text}</p>
+            </div>
+          ))}
+        </section>
+      )}
+
+      {hasDemo(project.showcaseId) && (
+        <section id="try-it" className="project-demo section-wrap">
+          <span className="mono project-step">02 / Try it</span>
+          <ProjectDemo id={project.showcaseId} />
+          {showcase?.play && (
+            <Link to="/play" className="section-link">
+              Open the arcade page <ArrowUpRight size={14} aria-hidden="true" />
+            </Link>
+          )}
+        </section>
+      )}
+
       <section className="project-body section-wrap">
         {showcase?.highlights.length ? (
           <div className="project-highlights">
@@ -106,7 +134,7 @@ export default function ProjectPage() {
           </div>
         ) : null}
         <div className="project-story">
-          {sections.map(([heading, text]) => (
+          {proof.map(([heading, text]) => (
             <section key={heading}>
               <h2>{heading}</h2>
               <p>{text}</p>
