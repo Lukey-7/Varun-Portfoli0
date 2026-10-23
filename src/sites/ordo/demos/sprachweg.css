@@ -1,0 +1,494 @@
+/* Sprachweg demo: the FSRS review step of the daily session.
+   Layout follows the demo's own width (container queries). */
+.sw-demo {
+  container: sw / inline-size;
+}
+.sw-demo p {
+  margin: 0;
+}
+
+/* ---------- The five daily steps; only review is live ---------- */
+.sw-demo .sw-steps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.sw-demo .sw-steps li {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 30px;
+  padding: 4px 10px;
+  border: 1px solid var(--line);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  line-height: 1.4;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.sw-demo .sw-steps li[aria-current="step"] {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--page);
+}
+.sw-demo .sw-step-num {
+  opacity: 0.7;
+}
+.sw-demo .sw-steps-note {
+  margin-top: 8px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+/* ---------- Layout ---------- */
+/* Phones read card, memory state, then upcoming reviews. Wider demos put the
+   memory state in its own column beside the other two. */
+.sw-demo .sw-layout {
+  display: grid;
+  grid-template-areas: "main" "memory" "upcoming";
+  gap: 16px 20px;
+  margin-top: 16px;
+}
+.sw-demo .sw-main,
+.sw-demo .sw-memory,
+.sw-demo .sw-upcoming {
+  min-width: 0;
+}
+.sw-demo .sw-main {
+  grid-area: main;
+  container: sw-main / inline-size;
+}
+.sw-demo .sw-memory {
+  grid-area: memory;
+}
+.sw-demo .sw-upcoming {
+  grid-area: upcoming;
+}
+
+/* ---------- The card ---------- */
+.sw-demo .sw-card-meta {
+  min-height: 15px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  line-height: 1.5;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+.sw-demo .sw-card-wrap {
+  margin-top: 8px;
+  perspective: 1400px;
+}
+.sw-demo .sw-card {
+  display: grid;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  text-align: left;
+  transform-style: preserve-3d;
+  transition: transform 0.55s cubic-bezier(0.2, 0.75, 0.2, 1);
+}
+.sw-demo .sw-card.is-flipped {
+  transform: rotateY(180deg);
+}
+.sw-demo .sw-card:focus-visible {
+  outline-offset: 3px;
+}
+.sw-demo .sw-face {
+  grid-area: 1 / 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 176px;
+  padding: 14px 18px 16px;
+  border: 1px solid var(--line);
+  background: var(--page);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  transition: border-color 0.2s;
+}
+.sw-demo .sw-front {
+  border-style: dashed;
+}
+.sw-demo .sw-back {
+  transform: rotateY(180deg);
+}
+.sw-demo .sw-card:hover .sw-face {
+  border-color: var(--ink);
+}
+.sw-demo .sw-face-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9px;
+  line-height: 1.5;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.sw-demo .sw-level {
+  padding: 0 4px;
+  border: 1px solid var(--line);
+}
+.sw-demo .sw-prompt {
+  margin-top: auto;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+.sw-demo .sw-meaning {
+  margin-bottom: auto;
+  font-size: 25px;
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: -0.035em;
+}
+.sw-demo .sw-word {
+  margin-top: 4px;
+  font-size: 27px;
+  font-weight: 500;
+  line-height: 1.15;
+  letter-spacing: -0.035em;
+}
+.sw-demo .sw-article {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.66em;
+  font-weight: 400;
+  letter-spacing: 0;
+  color: var(--muted);
+}
+.sw-demo .sw-example {
+  margin-top: auto;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.sw-demo .sw-translation {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+.sw-demo .sw-done {
+  display: grid;
+  align-content: center;
+  justify-items: start;
+  gap: 12px;
+  min-height: 176px;
+  margin-top: 8px;
+  padding: 18px;
+  border: 1px dashed var(--line);
+}
+.sw-demo .sw-done p {
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--ink);
+}
+.sw-demo .sw-hint {
+  margin-top: 8px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+/* ---------- Ratings, each with the interval it would schedule ---------- */
+.sw-demo .sw-rates {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+  margin-top: 10px;
+}
+.sw-demo .sw-rate {
+  position: relative;
+  display: grid;
+  justify-items: start;
+  gap: 2px;
+  min-height: 52px;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--ink);
+  text-align: left;
+  transition: border-color 0.2s, background 0.2s;
+}
+.sw-demo .sw-rate:hover:not(:disabled) {
+  border-color: var(--ink);
+  background: color-mix(in srgb, var(--ink) 5%, transparent);
+}
+.sw-demo .sw-rate:disabled {
+  opacity: 0.55;
+}
+.sw-demo .sw-rate-name {
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.3;
+}
+.sw-demo .sw-rate-gap {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10.5px;
+  line-height: 1.4;
+  white-space: nowrap;
+  color: var(--muted);
+}
+.sw-demo .sw-rate kbd {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  padding: 0 4px;
+  border: 1px solid var(--line);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+/* ---------- Memory state ---------- */
+.sw-demo .sw-memory-box {
+  padding: 12px 14px 14px;
+  border: 1px solid var(--line);
+}
+.sw-demo .sw-memory-title {
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--ink);
+}
+.sw-demo .sw-memory-sub {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  font-weight: 400;
+  color: var(--muted);
+}
+.sw-demo .sw-stats {
+  margin: 8px 0 0;
+  border-top: 1px solid var(--line);
+}
+.sw-demo .sw-stats > div {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 2px 12px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--line);
+}
+.sw-demo .sw-stats dt,
+.sw-demo .sw-glossary dt {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9px;
+  line-height: 1.4;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.sw-demo .sw-stats dd {
+  margin: 0;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 12px;
+  line-height: 1.4;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  color: var(--ink);
+}
+.sw-demo .sw-curve {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-top: 10px;
+  overflow: visible;
+}
+.sw-demo .sw-curve text {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9px;
+  fill: var(--muted);
+}
+.sw-demo .sw-curve-line {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 1.3;
+}
+.sw-demo .sw-curve-axis {
+  stroke: var(--line);
+}
+.sw-demo .sw-curve-target {
+  stroke: var(--muted);
+  stroke-dasharray: 3 3;
+}
+.sw-demo .sw-curve-due {
+  stroke: var(--ink);
+  stroke-dasharray: 1 2;
+}
+.sw-demo .sw-curve-now {
+  fill: var(--ink);
+}
+.sw-demo .sw-memory-note {
+  margin-top: 6px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  line-height: 1.55;
+  color: var(--muted);
+}
+.sw-demo .sw-later {
+  min-height: 40px;
+  margin-top: 10px;
+  font-size: 12.5px;
+}
+.sw-demo .sw-glossary {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+}
+.sw-demo .sw-glossary dd {
+  margin: 1px 0 0;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--ink);
+}
+
+/* ---------- Upcoming reviews, as a timeline ---------- */
+.sw-demo .sw-empty {
+  padding: 12px 14px;
+  border: 1px dashed var(--line);
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+.sw-demo .sw-timeline {
+  display: grid;
+  gap: 10px;
+  max-height: 188px;
+  margin: 0;
+  padding: 2px 4px 2px 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  list-style: none;
+  scrollbar-width: thin;
+  scrollbar-color: var(--line) transparent;
+}
+.sw-demo .sw-timeline li {
+  position: relative;
+  padding-left: 20px;
+}
+/* The rail runs through the gap to the next day's marker. */
+.sw-demo .sw-timeline li::before {
+  content: "";
+  position: absolute;
+  top: 4px;
+  bottom: -14px;
+  left: 4px;
+  width: 1px;
+  background: var(--line);
+}
+.sw-demo .sw-timeline li:last-child::before {
+  display: none;
+}
+.sw-demo .sw-timeline li::after {
+  content: "";
+  position: absolute;
+  top: 4px;
+  left: 0;
+  width: 9px;
+  height: 9px;
+  border: 1px solid var(--ink);
+  background: var(--page);
+}
+.sw-demo .sw-timeline li.is-due::after {
+  background: var(--ink);
+}
+.sw-demo .sw-tl-day {
+  display: block;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+.sw-demo .sw-tl-words {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 4px;
+}
+.sw-demo .sw-tl-word {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 7px;
+  min-height: 40px;
+  padding: 6px 10px;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--ink);
+  font-size: 12.5px;
+  line-height: 1.4;
+  transition: border-color 0.2s;
+}
+.sw-demo .sw-tl-word:hover {
+  border-color: var(--ink);
+}
+.sw-demo .sw-tl-word:focus-visible {
+  outline-offset: -3px;
+}
+.sw-demo .sw-tl-gaps {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9.5px;
+  color: var(--muted);
+}
+
+.sw-demo .sw-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---------- Wider demos ---------- */
+@container sw-main (min-width: 360px) {
+  .sw-demo .sw-rates {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+@container sw (min-width: 640px) {
+  .sw-demo .sw-layout {
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+    /* Any extra height from the memory column goes below the timeline. */
+    grid-template-rows: auto 1fr;
+    grid-template-areas: "main memory" "upcoming memory";
+    align-items: start;
+  }
+}
+
+/* ---------- Motion ---------- */
+@keyframes sw-arrive {
+  from {
+    opacity: 0;
+    transform: translateX(14px);
+  }
+}
+.sw-demo .sw-card-wrap.is-arriving {
+  animation: sw-arrive 0.32s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+/* Paused or reduced motion: flips and arrivals happen at once. */
+.sw-demo.is-still *,
+html[data-motion="paused"] .sw-demo * {
+  animation: none !important;
+  transition: none !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  .sw-demo * {
+    animation: none !important;
+    transition: none !important;
+  }
+}

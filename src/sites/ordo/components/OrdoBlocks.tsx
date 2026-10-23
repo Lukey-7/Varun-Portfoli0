@@ -65,8 +65,9 @@ export function OrdoHero({ theme }: { theme: "dark" | "light" }) {
           </div>
           <a className="hero-now mono" href={hero.now.href}>
             <span>{hero.now.label}</span>
-            {hero.now.text}
-            <ArrowDown size={13} aria-hidden="true" />
+            <span>
+              {hero.now.text} <ArrowDown size={13} aria-hidden="true" />
+            </span>
           </a>
         </motion.div>
         <motion.div

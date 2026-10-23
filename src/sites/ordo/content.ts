@@ -110,6 +110,30 @@ export const content = {
     ] as [string, string][],
   },
 
+  /** Multi-page site only: the home page's pointer to /about. */
+  aboutTeaser: {
+    label: ["[ 08 / ABOUT ]", "MUMBAI / IST"] as Label,
+    text: "I'm Varun, an AI engineer at LetsTute in Mumbai, with an M.Sc. in Computer Science. I enjoy the work between an interesting model and a useful application: retrieval, backend APIs, evaluation and the interface someone actually uses.",
+    link: "Experience, education and toolbox",
+  },
+
+  /** Multi-page site only: the research page header. */
+  researchPage: {
+    label: ["[ RESEARCH / PROPOSAL ]", "TWO STUDIES / NOT YET RUN"] as Label,
+    category: "Research proposal",
+    intro:
+      "My proposal, reducing inference cost in large language model assistants, sets out two studies on the cost of LLM assistants. Each is a hypothesis to test against simpler baselines, and neither has been run yet. Each study below has a small interactive version of its idea.",
+  },
+
+  /** Multi-page site only: /play. */
+  playPage: {
+    label: ["[ PLAY / LUKEY ARCADE ]", "TWO GAMES / NO BUILD STEP"] as Label,
+    title: ["Two games I built", "to play in the browser."] as Heading,
+    intro:
+      "A Game Boy-style Tetris with five modes and a Galaga-style space shooter. Plain HTML, CSS and JavaScript, with every sound synthesised by Web Audio. Pick a cartridge and press start.",
+    link: "How they are built",
+  },
+
   contact: {
     title: ["Write to me about a project", "here, or about the research."] as Heading,
   },

@@ -2432,6 +2432,7 @@ html[data-motion="paused"] .ordo-edition *::after {
   color: var(--ink);
 }
 .hero-now svg {
+  vertical-align: -2px;
   transition: transform 0.25s;
 }
 .hero-now:hover svg {

@@ -1,0 +1,623 @@
+/* Lukey Arcade cabinet (see ArcadeDemo.tsx).
+   A cartridge selector, a device frame that shows one game-only page at the
+   window size it was designed for (scaled uniformly with a transform), a
+   press-start cover and a key legend. The chrome uses the edition tokens only;
+   the games bring their own colour. Every selector starts with .arcade-cabinet
+   or .arcade-demo. Layout follows the cabinet's own width (container queries),
+   so it works inside a dialog column as well as on a full page. */
+
+.arcade-cabinet {
+  /* Tallest the game screen may be: 560px, less on short screens so the whole
+     game and its bezel (about 120px) stay in view. --arcade-w and --arcade-h
+     (unitless, the game page's native size) are set inline by the component. */
+  --arcade-max-h: min(560px, max(240px, calc(100vh - 120px)));
+  /* Bezel padding plus its 1px line, per side. */
+  --arcade-bezel: 9px;
+  container: arcade-cabinet / inline-size;
+  width: 100%;
+  min-width: 0;
+  color: var(--ink);
+}
+@supports (height: 1svh) {
+  .arcade-cabinet {
+    --arcade-max-h: min(560px, max(240px, calc(100svh - 120px)));
+  }
+}
+.arcade-cabinet.is-full {
+  --arcade-max-h: min(78vh, 760px);
+}
+@supports (height: 1svh) {
+  .arcade-cabinet.is-full {
+    --arcade-max-h: min(78svh, 760px);
+  }
+}
+.arcade-cabinet *,
+.arcade-cabinet *::before,
+.arcade-cabinet *::after {
+  box-sizing: border-box;
+}
+
+/* ---------- Layout ---------- */
+.arcade-cabinet__layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas: "carts" "machine" "legend";
+  gap: 20px;
+  align-items: start;
+}
+.arcade-cabinet.is-full .arcade-cabinet__layout {
+  grid-template-areas: "carts" "machine" "legend" "details";
+}
+.arcade-cabinet__carts {
+  grid-area: carts;
+  min-width: 0;
+}
+.arcade-cabinet__machine {
+  grid-area: machine;
+  min-width: 0;
+}
+.arcade-cabinet__legend {
+  grid-area: legend;
+  min-width: 0;
+}
+.arcade-cabinet__details {
+  grid-area: details;
+  min-width: 0;
+}
+
+/* ---------- Mono labels: [ CHOOSE A GAME ] ............ 2 CARTRIDGES ---------- */
+.arcade-cabinet__label {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0 0 10px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9px;
+  line-height: 1.5;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.arcade-cabinet__label > span:first-child {
+  color: var(--ink);
+}
+.arcade-cabinet__label > span:first-child::before {
+  content: "[ ";
+  content: "[ " / "";
+}
+.arcade-cabinet__label > span:first-child::after {
+  content: " ]";
+  content: " ]" / "";
+}
+
+/* ---------- Cartridges ---------- */
+.arcade-cabinet__cart-list {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 8px;
+}
+.arcade-cabinet__cart {
+  position: relative;
+  display: grid;
+  align-content: start;
+  gap: 6px;
+  width: 100%;
+  min-height: 44px;
+  margin: 0;
+  padding: 12px 14px 13px 22px;
+  border: 1px solid var(--line);
+  border-radius: 0;
+  background: var(--page);
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color 0.2s,
+    background-color 0.2s;
+}
+/* The cartridge's label edge: filled in for the one in the slot. */
+.arcade-cabinet__cart::before {
+  content: "";
+  position: absolute;
+  top: 12px;
+  bottom: 12px;
+  left: 9px;
+  width: 3px;
+  background: var(--line);
+  transition: background-color 0.2s;
+}
+.arcade-cabinet__cart:hover {
+  border-color: var(--ink);
+}
+.arcade-cabinet__cart[aria-pressed="true"] {
+  border-color: var(--ink);
+  background: var(--panel);
+}
+.arcade-cabinet__cart[aria-pressed="true"]::before {
+  background: var(--ink);
+}
+.arcade-cabinet__cart-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9px;
+  line-height: 1.5;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.arcade-cabinet__cart-top > span:last-child:not(:first-child) {
+  color: var(--ink);
+}
+.arcade-cabinet__cart-name {
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+}
+.arcade-cabinet__cart-blurb {
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: var(--muted);
+}
+.arcade-cabinet__cart-meta {
+  margin-top: 2px;
+  padding-top: 8px;
+  border-top: 1px dashed var(--line);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+.arcade-cabinet__cart-meta b {
+  margin-right: 4px;
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+/* ---------- The machine: bezel, marquee, screen, deck ---------- */
+/* Sized from the game's native size so the bezel hugs the screen: no wider
+   than the column, the max height, or MAX_SCALE (1.25) times native. */
+.arcade-cabinet__unit {
+  width: min(
+    100%,
+    calc(var(--arcade-max-h) * var(--arcade-w) / var(--arcade-h) + 2 * var(--arcade-bezel)),
+    calc(var(--arcade-w) * 1.25px + 2 * var(--arcade-bezel))
+  );
+  margin-inline: auto;
+}
+.arcade-cabinet__bezel {
+  padding: 0 calc(var(--arcade-bezel) - 1px) calc(var(--arcade-bezel) - 1px);
+  border: 1px solid var(--line);
+  background: var(--panel);
+  transition: border-color 0.2s;
+}
+.arcade-cabinet__bezel.has-keys {
+  border-color: var(--ink);
+}
+.arcade-cabinet__marquee {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  min-height: 32px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9px;
+  line-height: 1.4;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.arcade-cabinet__marquee > span:last-child {
+  white-space: nowrap;
+}
+.arcade-cabinet__status {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+  color: var(--ink);
+}
+.arcade-cabinet__led {
+  display: inline-block;
+  flex: none;
+  width: 6px;
+  height: 6px;
+  background: var(--ink);
+}
+.arcade-cabinet__led[data-state="ready"] {
+  animation: arcade-cabinet-blink 1.6s steps(1, end) infinite;
+}
+.arcade-cabinet__led[data-state="away"] {
+  background: transparent;
+  box-shadow: inset 0 0 0 1px var(--ink);
+}
+@keyframes arcade-cabinet-blink {
+  50% {
+    opacity: 0.15;
+  }
+}
+
+/* The measured box. Its width comes from CSS only; the screen inside it is
+   sized in whole pixels by the component. */
+.arcade-cabinet__fit {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+.arcade-cabinet__screen {
+  position: relative;
+  flex: none;
+  overflow: hidden;
+  container-type: size;
+  background: var(--page);
+  box-shadow: 0 0 0 1px var(--line);
+}
+.arcade-cabinet__bezel.has-keys .arcade-cabinet__screen {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+}
+.arcade-cabinet__frame {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: block;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  transform-origin: 0 0;
+}
+.arcade-cabinet__loading {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* ---------- Press-start cover ---------- */
+.arcade-cabinet__cover {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  gap: 12px;
+  padding: 16px;
+  padding: clamp(12px, 5cqw, 24px);
+  background-color: var(--page);
+  background-image: radial-gradient(var(--line) 1px, transparent 1.5px);
+  background-size: 14px 14px;
+  background-position: 7px 7px;
+  color: var(--ink);
+  cursor: pointer;
+}
+.arcade-cabinet__cover-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.arcade-cabinet__cover-top > span:first-child::before {
+  content: "[ ";
+  content: "[ " / "";
+}
+.arcade-cabinet__cover-top > span:first-child::after {
+  content: " ]";
+  content: " ]" / "";
+}
+.arcade-cabinet__cover-main {
+  align-self: center;
+  display: grid;
+  gap: 10px;
+}
+.arcade-cabinet__cover-name {
+  margin: 0;
+  font-size: 26px;
+  font-size: clamp(19px, 8.5cqw, 40px);
+  font-weight: 500;
+  line-height: 1.05;
+  letter-spacing: -0.045em;
+}
+.arcade-cabinet__cover-copy {
+  max-width: 32ch;
+  margin: 0;
+  font-size: 13px;
+  font-size: clamp(11.5px, 3.5cqw, 14px);
+  line-height: 1.55;
+  color: var(--muted);
+}
+.arcade-cabinet__cover-foot {
+  display: grid;
+  gap: 10px;
+}
+.arcade-cabinet__start {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 48px;
+  margin: 0;
+  padding: 0 18px;
+  border: 1px solid var(--accent);
+  border-radius: 0;
+  background: var(--accent);
+  color: var(--button-ink);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: filter 0.2s;
+}
+.arcade-cabinet__start:hover {
+  filter: brightness(1.15);
+}
+.arcade-cabinet__caret {
+  display: inline-block;
+  width: 7px;
+  height: 12px;
+  background: currentColor;
+  animation: arcade-cabinet-blink 1.2s steps(1, end) infinite;
+}
+.arcade-cabinet__cover-note {
+  margin: 0;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9px;
+  line-height: 1.5;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-align: center;
+}
+
+/* ---------- Deck: restart and the full arcade ---------- */
+.arcade-cabinet__deck {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  padding-top: 8px;
+}
+.arcade-cabinet__btn {
+  display: inline-flex;
+  flex: 1 1 auto;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 40px;
+  margin: 0;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+.arcade-cabinet__btn:hover:not(:disabled) {
+  border-color: var(--ink);
+}
+.arcade-cabinet__btn:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+.arcade-cabinet__hint {
+  margin: 10px 0 0;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+
+/* ---------- Controls legend ---------- */
+.arcade-cabinet__keys {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  column-gap: 24px;
+  margin: 0;
+  border-top: 1px solid var(--line);
+}
+.arcade-cabinet__key-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 4px 12px;
+  min-height: 38px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--line);
+}
+.arcade-cabinet__key-row dt {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 0;
+  margin: 0;
+}
+.arcade-cabinet__key-row dd {
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 1.35;
+  text-align: right;
+}
+.arcade-cabinet__key {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  height: 24px;
+  margin: 0 2px 0 0;
+  padding: 0 6px;
+  border: 1px solid var(--line);
+  border-bottom-width: 2px;
+  border-radius: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 1;
+}
+.arcade-cabinet__key.is-wide {
+  min-width: 48px;
+}
+.arcade-cabinet__or {
+  margin: 0 5px 0 3px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  color: var(--subtle);
+}
+.arcade-cabinet__aside {
+  margin: 12px 0 0;
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+.arcade-cabinet__aside b {
+  margin-right: 6px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+.arcade-cabinet__fine {
+  margin: 10px 0 0;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+
+/* ---------- Details (full size only) ---------- */
+.arcade-cabinet__facts {
+  display: grid;
+  margin: 0;
+  border-top: 1px solid var(--line);
+}
+.arcade-cabinet__facts > div {
+  display: grid;
+  grid-template-columns: 84px minmax(0, 1fr);
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--line);
+}
+.arcade-cabinet__facts dt {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9px;
+  line-height: 2;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.arcade-cabinet__facts dd {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+/* Read by screen readers, not shown. */
+.arcade-cabinet__sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---------- Container widths ---------- */
+@container arcade-cabinet (min-width: 440px) {
+  .arcade-cabinet__cart-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@container arcade-cabinet (min-width: 560px) {
+  .arcade-cabinet__keys {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+/* Compact on a wide column: selector and controls beside the frame. */
+@container arcade-cabinet (min-width: 640px) {
+  .arcade-cabinet.is-compact .arcade-cabinet__layout {
+    grid-template-columns: minmax(220px, 260px) minmax(0, 1fr);
+    grid-template-rows: auto 1fr;
+    grid-template-areas:
+      "carts machine"
+      "legend machine";
+    column-gap: 24px;
+  }
+  .arcade-cabinet.is-compact .arcade-cabinet__cart-list,
+  .arcade-cabinet.is-compact .arcade-cabinet__keys {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+/* Full: details, selector and controls on the left, the cabinet on the right. */
+@container arcade-cabinet (min-width: 860px) {
+  .arcade-cabinet.is-full .arcade-cabinet__layout {
+    grid-template-columns: minmax(260px, 340px) minmax(0, 1fr);
+    grid-template-rows: auto auto 1fr;
+    grid-template-areas:
+      "carts machine"
+      "legend machine"
+      "details machine";
+    column-gap: clamp(28px, 4cqw, 56px);
+    row-gap: 28px;
+  }
+  .arcade-cabinet.is-full .arcade-cabinet__cart-list,
+  .arcade-cabinet.is-full .arcade-cabinet__keys {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* ---------- Motion ---------- */
+/* The page-wide pause (useMotionPaused) and reduced motion both stop the
+   blinking light and caret, leaving them visible. */
+.arcade-cabinet.is-still .arcade-cabinet__led,
+.arcade-cabinet.is-still .arcade-cabinet__caret {
+  animation: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .arcade-cabinet *,
+  .arcade-cabinet *::before,
+  .arcade-cabinet *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* ---------- Inside the demo shell ---------- */
+.arcade-demo .demo-body {
+  min-width: 0;
+}

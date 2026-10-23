@@ -11,6 +11,7 @@ import {
 } from "@/lib/terminal-commands";
 import { CYAN_URL } from "@/lib/sites";
 import CapabilityArt from "./CapabilityArt";
+import { ResearchLabs } from "./ResearchLabs";
 import { spotlight } from "../spotlight";
 import { content } from "../content";
 
@@ -59,7 +60,12 @@ export function PixelSwap({ children }: { children: ReactNode }) {
   );
 }
 
-export function OrdoCapabilities() {
+/** `onMissingTarget` handles a card whose project or role is on another page. */
+export function OrdoCapabilities({
+  onMissingTarget,
+}: {
+  onMissingTarget?: (id: string) => void;
+} = {}) {
   const reduced = useReducedMotion();
   return (
     <section id="capabilities" className="ordo-capabilities section-wrap">
@@ -100,7 +106,9 @@ export function OrdoCapabilities() {
             <button
               type="button"
               className="capability-link"
-              onClick={() => spotlight(item.target.id, item.name)}
+              onClick={() => {
+                if (!spotlight(item.target.id, item.name)) onMissingTarget?.(item.target.id);
+              }}
             >
               See it in {item.target.label} <ArrowDown size={13} aria-hidden="true" />
             </button>
@@ -199,6 +207,7 @@ export function OrdoResearch() {
           </article>
         ))}
       </div>
+      <ResearchLabs />
       <p className="research-note">
         {research.costNote} {research.note}
       </p>

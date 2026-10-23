@@ -1,0 +1,351 @@
+/* MARA demo: five agent lanes, a quote check and a cited answer.
+   Every selector starts with .mara-demo. */
+.mara-demo .mara-layout {
+  container: mara-demo / inline-size;
+  display: grid;
+  gap: 20px;
+}
+.mara-demo .mara-controls {
+  display: grid;
+  gap: 10px;
+}
+.mara-demo .mara-presets {
+  align-items: center;
+}
+.mara-demo .mara-inline-label {
+  flex: none;
+  margin: 0 8px 0 0;
+}
+.mara-demo .mara-question {
+  max-width: 62ch;
+  font-size: 16px;
+  line-height: 1.5;
+  letter-spacing: -0.01em;
+}
+.mara-demo .mara-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+}
+.mara-demo .mara-actions .demo-btn {
+  min-width: 112px;
+}
+.mara-demo .mara-status {
+  flex: 1 1 220px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  line-height: 1.55;
+  color: var(--muted);
+}
+.mara-demo .mara-stage {
+  display: grid;
+  gap: 20px;
+  min-width: 0;
+}
+
+/* ---------- Lanes ---------- */
+.mara-demo .mara-lanes {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--line);
+  list-style: none;
+}
+.mara-demo .mara-lane {
+  border-bottom: 1px solid var(--line);
+}
+/* The open lane carries an ink rule down its left edge. */
+.mara-demo .mara-lane[data-open] {
+  box-shadow: inset 2px 0 0 var(--ink);
+}
+.mara-demo .mara-lane-head {
+  display: grid;
+  grid-template-columns: 26px 92px minmax(0, 1fr) auto;
+  grid-template-areas: "num name sum state";
+  align-items: center;
+  gap: 4px 10px;
+  width: 100%;
+  min-height: 44px;
+  padding: 8px 8px 8px 10px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+}
+.mara-demo button.mara-lane-head:hover {
+  background: color-mix(in srgb, var(--ink) 4%, transparent);
+}
+.mara-demo button.mara-lane-head:focus-visible {
+  outline-offset: -2px;
+}
+.mara-demo .mara-lane-num {
+  grid-area: num;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  color: var(--muted);
+}
+.mara-demo .mara-lane-name {
+  grid-area: name;
+  font-size: 13px;
+  font-weight: 500;
+}
+.mara-demo .mara-lane-sum {
+  grid-area: sum;
+  min-width: 0;
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--muted);
+}
+.mara-demo .mara-lane-state {
+  grid-area: state;
+  padding: 0 5px;
+  border: 1px solid var(--line);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.mara-demo .mara-lane[data-state="done"] .mara-lane-state {
+  border-color: var(--ink);
+  color: var(--ink);
+}
+.mara-demo .mara-lane[data-state="next"] .mara-lane-state {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--page);
+}
+.mara-demo .mara-lane[data-state="waiting"] .mara-lane-name {
+  color: var(--muted);
+}
+.mara-demo .mara-lane-body {
+  padding: 2px 10px 16px 46px;
+}
+.mara-demo .mara-rule {
+  margin-bottom: 10px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+.mara-demo .mara-list {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  font-size: 13px;
+  line-height: 1.55;
+  list-style: none;
+}
+.mara-demo .mara-hits {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+.mara-demo .mara-hit {
+  padding: 1px 6px;
+  border: 1px solid var(--line);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+}
+.mara-demo .mara-hit b {
+  font-weight: 500;
+}
+.mara-demo .mara-foot {
+  margin-top: 10px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9.5px;
+  line-height: 1.55;
+  color: var(--muted);
+}
+.mara-demo .mara-note-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  color: var(--muted);
+}
+.mara-demo .mara-note q {
+  display: block;
+  margin-top: 4px;
+  overflow-wrap: anywhere;
+}
+.mara-demo .mara-flag {
+  padding: 0 5px;
+  border: 1px dashed var(--ink);
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+.mara-demo .mara-gap {
+  margin-top: 8px;
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+.mara-demo .mara-badge {
+  padding: 0 5px;
+  border: 1px solid var(--ink);
+  font-size: 9px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+/* Dropped notes and coverage gaps get a filled badge, so they read without colour. */
+.mara-demo .mara-note.is-dropped .mara-badge,
+.mara-demo .mara-cover.is-gap .mara-badge {
+  background: var(--ink);
+  color: var(--page);
+}
+/* The dropped quote is struck through and framed with a dashed rule. */
+.mara-demo .mara-struck-quote {
+  display: block;
+  margin-top: 4px;
+  padding-left: 10px;
+  border-left: 1px dashed var(--ink);
+  color: var(--muted);
+  text-decoration: line-through;
+  text-decoration-thickness: 1px;
+  overflow-wrap: anywhere;
+}
+.mara-demo .mara-diff {
+  display: block;
+  margin-top: 4px;
+  font-size: 12.5px;
+}
+.mara-demo .mara-cover-question {
+  display: block;
+  margin-top: 4px;
+}
+
+/* ---------- Writer output ---------- */
+.mara-demo .mara-output {
+  display: grid;
+  align-content: start;
+  gap: 10px;
+  min-width: 0;
+  padding: 14px 16px 6px;
+  border: 1px solid var(--line);
+}
+.mara-demo .mara-output .demo-label {
+  margin: 0;
+}
+.mara-demo .mara-output .mara-sources-label {
+  margin-top: 6px;
+}
+.mara-demo .mara-wait {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+.mara-demo .mara-answer {
+  font-size: 15px;
+  line-height: 1.7;
+}
+.mara-demo .mara-cite {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  color: var(--muted);
+}
+.mara-demo .mara-sources {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.mara-demo .mara-source-head {
+  display: block;
+  margin-bottom: 4px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+}
+.mara-demo .mara-sources p {
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+.mara-demo .mara-sources mark {
+  background: color-mix(in srgb, var(--ink) 14%, transparent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--ink) 14%, transparent);
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.mara-demo .mara-none > p:first-child {
+  font-size: 15px;
+  line-height: 1.6;
+}
+.mara-demo .mara-library {
+  margin-top: 4px;
+  border-top: 1px dashed var(--line);
+}
+.mara-demo .mara-library summary {
+  display: flex;
+  align-items: center;
+  min-height: 40px;
+  list-style: none;
+  cursor: pointer;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  color: var(--muted);
+}
+.mara-demo .mara-library summary::-webkit-details-marker {
+  display: none;
+}
+.mara-demo .mara-library summary::before {
+  content: "+";
+  width: 16px;
+}
+.mara-demo .mara-library[open] summary::before {
+  content: "−";
+}
+.mara-demo .mara-library summary:hover {
+  color: var(--ink);
+}
+.mara-demo .mara-library summary:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.mara-demo .mara-library ul {
+  display: grid;
+  gap: 8px;
+  max-height: 260px;
+  margin: 0 0 10px;
+  padding: 0 8px 0 0;
+  overflow-y: auto;
+  font-size: 12px;
+  line-height: 1.55;
+  color: var(--muted);
+  list-style: none;
+}
+.mara-demo .mara-library-doc {
+  color: var(--ink);
+}
+
+@container mara-demo (min-width: 760px) {
+  .mara-demo .mara-stage {
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+    align-items: start;
+  }
+}
+/* Narrow: the lane summary drops below the agent's name. */
+@container mara-demo (max-width: 479px) {
+  .mara-demo .mara-lane-head {
+    grid-template-columns: 22px minmax(0, 1fr) auto;
+    grid-template-areas:
+      "num name state"
+      ". sum sum";
+  }
+  .mara-demo .mara-lane-body {
+    padding-left: 10px;
+  }
+}

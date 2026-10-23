@@ -9,7 +9,6 @@ import {
 import { MemoryRouter } from "react-router-dom";
 import CyanPage from "@/sites/cyan/CyanPage";
 import OrdoPage from "@/sites/ordo/OrdoPage";
-import { OrdoWorkflow } from "@/sites/ordo/components/OrdoSections";
 import { OrdoConsole } from "@/sites/ordo/components/OrdoExtras";
 
 beforeAll(() => {
@@ -65,24 +64,6 @@ describe("portfolio visitor journeys", () => {
     );
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     expect(document.body.style.overflow).not.toBe("hidden");
-  });
-
-  it("supports keyboard workflow navigation and changes the visible explanation", () => {
-    render(<OrdoWorkflow />);
-    fireEvent.keyDown(screen.getByRole("tab", { name: /Build/ }), {
-      key: "ArrowDown",
-    });
-    expect(screen.getByRole("tab", { name: /Evaluate/ })).toHaveAttribute(
-      "aria-selected",
-      "true",
-    );
-    expect(screen.getByRole("tabpanel")).toHaveTextContent(
-      "33 labelled queries",
-    );
-    fireEvent.keyDown(screen.getByRole("tab", { name: /Evaluate/ }), {
-      key: "End",
-    });
-    expect(screen.getByRole("tabpanel")).toHaveTextContent("Docker + CI");
   });
 
   it("closes the mobile menu after choosing a section and switches appearance", () => {

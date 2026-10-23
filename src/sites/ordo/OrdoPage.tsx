@@ -6,7 +6,8 @@ import { CYAN_URL } from "@/lib/sites";
 import { OrdoProjectDialog } from "./components/ProjectShowcase";
 import { OrdoActivity } from "./components/OrdoActivity";
 import { OrdoAbout, OrdoContact, OrdoExperience, OrdoHero } from "./components/OrdoBlocks";
-import { OrdoWork, OrdoWorkflow, OrdoShowcase } from "./components/OrdoSections";
+import { OrdoWork, OrdoShowcase } from "./components/OrdoSections";
+import { OrdoProcess } from "./components/OrdoProcess";
 import {
   DotWordmark,
   OrdoCapabilities,
@@ -112,7 +113,7 @@ export default function OrdoPage() {
         <OrdoCapabilities />
         <OrdoWork onSelect={setSelected} />
         <OrdoActivity />
-        <OrdoWorkflow />
+        <OrdoProcess />
         <OrdoShowcase />
         <OrdoResearch />
         <OrdoConsole />
