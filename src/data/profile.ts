@@ -253,7 +253,7 @@ export const experience: Experience[] = [
     location: 'Mumbai',
     period: 'Jul 2024 — Apr 2025',
     highlights: [
-      'Automated administrative workflows, reducing manual effort by 30% and data errors by 20%.',
+      'Automated administrative workflows: by my own rough timing they took about 30% less manual effort, with about 20% fewer data errors than earlier staff reports.',
       'Managed and validated 500+ numerical and alphanumeric records per semester.',
     ],
     stack: ['Python', 'Automation', 'Data Validation'],

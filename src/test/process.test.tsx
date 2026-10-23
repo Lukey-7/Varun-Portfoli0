@@ -132,7 +132,7 @@ describe("ORDO process section", () => {
       "Score every change against the baseline.",
     );
     expect(panel).toHaveTextContent("33 labelled queries");
-    expect(panel).toHaveTextContent("not a guarantee for unseen documents");
+    expect(panel).toHaveTextContent("a development check, not a held-out benchmark");
     expect(panel).toHaveTextContent("37 of 39 book paragraphs");
     expect(screen.getByText("Tour stopped at Evaluate.")).toBeInTheDocument();
   });

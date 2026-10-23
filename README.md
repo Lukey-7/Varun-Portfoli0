@@ -55,7 +55,7 @@ npm run preview:ordo
 
 Interaction tests cover case-study opening/closing, workflow keyboard navigation, mobile navigation, appearance switching, clipboard success/failure and employment disclosures. Legacy pages load on demand. Unused starter providers no longer inflate the landing-page bundle.
 
-This is a local review build on `codex/portfolio-two-directions`. No remote push or public deployment was performed. `vercel.json` preserves SPA routes for a future deployment.
+Not deployed yet. `vercel.json` preserves SPA routes for a future deployment.
 
 ## Contact
 

@@ -149,11 +149,11 @@ const STAGES: Stage[] = [
     gate: "It has to beat the baseline on that set. If it does not, it goes back to Build (loop A).",
     artifact: "Scorecard · 33 labelled queries",
     caption: [
-      "Each cell is one labelled query, in no set order. Results on this set, not a guarantee for unseen documents.",
+      "Each cell is one labelled query, in no set order. The 33 questions and their labels were written for the repo and used to compare layers: a development check, not a held-out benchmark.",
       "A support check found 37 of 39 book paragraphs backed by their passages (95%). It is a self-check by the same model family, not an independent review.",
     ],
     summary:
-      "Dense retrieval alone ranked the right passage first for 27 of 33 labelled queries: Recall@1 0.82, MRR@10 0.89. Misses go back to Build. The hybrid pipeline ranked it first for 33 of 33: Recall@1 1.00, MRR@10 1.00, so it beat the baseline.",
+      "Dense retrieval alone ranked the right passage first for 27 of 33 labelled queries: Recall@1 0.82, MRR@10 0.89. Misses go back to Build. Hybrid search and MMR left rank 1 where it was; adding the LLM rerank put it first for 33 of 33 (Recall@1 1.00, MRR@10 1.00), so the change beat the baseline.",
     duration: SCORE.duration,
   },
   {
@@ -1060,8 +1060,8 @@ function ScoreArt({ t }: { t: number }) {
           : sending
             ? `↺ ${MISSES.size} misses go back to Build`
             : sweepingB
-              ? `run 2 · hybrid · query ${pad(scoredB + 1)} / 33`
-              : `run 2 · hybrid · ${scoredB} / 33 at rank 1`;
+              ? `run 2 · with rerank · query ${pad(scoredB + 1)} / 33`
+              : `run 2 · with rerank · ${scoredB} / 33 at rank 1`;
 
   const runs = [
     {
@@ -1071,7 +1071,7 @@ function ScoreArt({ t }: { t: number }) {
       mrr: t >= SCORE.denseResult ? "0.89" : "—",
     },
     {
-      name: "Hybrid",
+      name: "With LLM rerank",
       note: passed ? "✓ beats baseline" : " ",
       hits: scoredB > 0 ? scoredB : null,
       mrr: t >= SCORE.hybridResult ? "1.00" : "—",
@@ -1113,7 +1113,7 @@ function ScoreArt({ t }: { t: number }) {
             <i className="proc-cell is-miss">×</i> missed
           </span>
           <span>
-            <i className="proc-cell is-fixed" /> fixed by hybrid
+            <i className="proc-cell is-fixed" /> fixed by the rerank
           </span>
         </p>
       </div>

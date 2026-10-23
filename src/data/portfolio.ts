@@ -18,7 +18,7 @@ export const selectedWork = [
     approach:
       "I combined dense and BM25 retrieval with rank fusion, diversity selection and reranking. Structured generation produces cited learning material and schema-validated study tools through a FastAPI backend.",
     evidence:
-      "On a 33-query labelled evaluation, Recall@1 improved from 0.82 to 1.00 and MRR@10 from 0.89 to 1.00. These are results on that evaluation set, not a guarantee for unseen documents. The repository includes 185 tests and Docker CI.",
+      "On 33 labelled questions over three short documents, Recall@1 rose from 0.82 (dense only) to 1.00 and MRR@10 from 0.89 to 1.00 once an LLM rerank layer was added. The questions and labels were written for the repo and used to compare layers, so this is a development check, not a held-out benchmark. The repository includes 185 tests and Docker CI.",
     ownership:
       "Independent project. Python API, retrieval pipeline, evaluation and application integration.",
   },

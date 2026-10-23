@@ -14,6 +14,7 @@ import { CYAN_URL } from "@/lib/sites";
 import { setMotionPaused, useMotionPaused } from "@/lib/motion-pause";
 import { DotWordmark } from "./components/OrdoExtras";
 import { OrdoContact } from "./components/OrdoBlocks";
+import { content } from "./content";
 import "./base.css";
 import "./ordo.css";
 
@@ -176,7 +177,9 @@ export default function OrdoLayout() {
       <DotWordmark />
 
       <footer className="portfolio-footer section-wrap">
-        <span>© {new Date().getFullYear()} Varun Darji</span>
+        <span>
+          © {new Date().getFullYear()} Varun Darji · Updated {content.updated}
+        </span>
         <div>
           <Link to="/#console">Terminal</Link>
           <Link to="/play">Play</Link>
