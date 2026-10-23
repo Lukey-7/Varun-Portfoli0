@@ -2854,3 +2854,48 @@ html[data-motion="paused"] .ordo-edition *::after {
     padding-block: 40px 0;
   }
 }
+
+/* ---------- Research page: what I am looking for ---------- */
+.research-looking {
+  max-width: 540px;
+  margin-top: 26px;
+  padding: 18px 20px 16px;
+  border: 1px solid var(--ink);
+}
+.research-looking strong {
+  display: block;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.research-looking p {
+  margin-top: 8px !important;
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--ink);
+}
+.research-looking .section-link {
+  margin-top: 12px;
+}
+
+/* ---------- Header: five pages ---------- */
+.ordo-edition .header-contact {
+  white-space: nowrap;
+}
+@media (max-width: 1240px) {
+  .ordo-edition .desktop-links {
+    gap: 24px;
+    margin-right: 28px;
+  }
+}
+/* On tablets the five links don't fit beside the actions, so the menu takes over. */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .ordo-edition .desktop-links {
+    display: none;
+  }
+  .ordo-edition .mobile-menu-toggle {
+    display: inline-flex;
+  }
+}

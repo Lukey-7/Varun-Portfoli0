@@ -1,0 +1,227 @@
+/* ---------- /writing and /writing/:slug ---------- */
+.writing-index h1 > span,
+.writing-post h1 > span {
+  color: var(--muted);
+}
+.writing-index h1,
+.writing-post h1 {
+  margin-top: 30px !important;
+}
+
+.writing-list {
+  display: grid;
+  gap: 0;
+  padding-block: 40px 90px;
+  border-top: 1px solid var(--line);
+}
+.writing-card {
+  display: grid;
+  gap: 10px;
+  padding: 28px 0;
+  border-bottom: 1px solid var(--line);
+  transition: background 0.25s;
+}
+.writing-card > .mono {
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+.writing-card strong {
+  font-size: clamp(22px, 2.6vw, 34px);
+  font-weight: 500;
+  letter-spacing: -0.04em;
+  line-height: 1.2;
+}
+.writing-card strong span {
+  color: var(--muted);
+}
+.writing-card p {
+  max-width: 680px;
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--muted);
+}
+.writing-card-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+}
+.writing-card:hover strong {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 6px;
+}
+
+/* The post: one readable column, figures may run wider. */
+.writing-body {
+  max-width: 760px;
+  margin-inline: auto;
+  padding-block: 50px 90px;
+}
+.writing-body > p,
+.writing-body > ul li {
+  font-size: 17px;
+  line-height: 1.8;
+  color: var(--ink);
+}
+.writing-body > p {
+  margin-top: 18px !important;
+}
+.writing-body > h2 {
+  margin-top: 46px !important;
+  font-size: 24px;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+}
+.writing-body > ul {
+  display: grid;
+  gap: 12px;
+  margin-top: 16px;
+  padding: 0;
+  list-style: none;
+}
+.writing-body > ul li {
+  position: relative;
+  padding-left: 26px;
+}
+.writing-body > ul li::before {
+  content: "—";
+  position: absolute;
+  left: 0;
+  color: var(--muted);
+}
+.writing-body code {
+  padding: 1px 6px;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.82em;
+}
+
+.writing-table,
+.writing-bars {
+  margin: 28px 0 0;
+}
+.writing-table-scroll {
+  overflow-x: auto;
+  border: 1px solid var(--ink);
+}
+.writing-table table {
+  width: 100%;
+  min-width: 520px;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+.writing-table th,
+.writing-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+}
+.writing-table thead th {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.writing-table td {
+  font-family: "IBM Plex Mono", monospace;
+  font-variant-numeric: tabular-nums;
+}
+.writing-table tbody th {
+  font-weight: 500;
+}
+.writing-table tr:last-child th,
+.writing-table tr:last-child td {
+  border-bottom: 0;
+}
+.writing-table tr.is-highlight {
+  background: var(--ink);
+  color: var(--page);
+}
+.writing-table figcaption,
+.writing-bars figcaption {
+  margin-top: 10px;
+  font-size: 10px;
+  letter-spacing: 0.03em;
+  color: var(--muted);
+}
+
+.writing-bars ol {
+  display: grid;
+  gap: 10px;
+  padding: 20px;
+  border: 1px dashed var(--line);
+  list-style: none;
+}
+.writing-bars li {
+  display: grid;
+  grid-template-columns: 140px 1fr 70px;
+  gap: 14px;
+  align-items: center;
+  font-size: 13px;
+}
+.writing-bar-track {
+  height: 14px;
+  background: color-mix(in srgb, var(--ink) 7%, transparent);
+}
+.writing-bar-track i {
+  display: block;
+  height: 100%;
+  background: color-mix(in srgb, var(--ink) 45%, transparent);
+  transform-origin: left;
+}
+.writing-bars li.is-highlight .writing-bar-track i {
+  background: var(--ink);
+}
+.writing-bars li.is-highlight {
+  font-weight: 500;
+}
+.writing-bar-value {
+  font-size: 11px;
+  text-align: right;
+  color: var(--muted);
+}
+
+.writing-sources {
+  margin-top: 56px;
+  padding-top: 24px;
+  border-top: 1px solid var(--ink);
+}
+.writing-sources h2 {
+  font-size: 16px;
+  font-weight: 500;
+}
+.writing-sources ul {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 0;
+  list-style: none;
+}
+.writing-sources a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+@media (max-width: 767px) {
+  .writing-body {
+    padding-block: 34px 60px;
+  }
+  .writing-body > p,
+  .writing-body > ul li {
+    font-size: 16px;
+  }
+  .writing-bars li {
+    grid-template-columns: 96px 1fr 56px;
+    gap: 10px;
+    font-size: 12px;
+  }
+}

@@ -6,6 +6,7 @@ import { projectShowcase } from "../projectShowcase";
 import ProjectArt from "../components/ProjectArt";
 import { ProjectGallery } from "../components/ProjectShowcase";
 import { hasDemo, ProjectDemo } from "../demos/ProjectDemo";
+import { posts } from "../writing";
 import NotFoundPage from "./NotFoundPage";
 
 /** One project's case study: animated icon, gallery, verified detail, next and previous. */
@@ -35,6 +36,7 @@ export default function ProjectPage() {
     ["My part", study.ownership],
   ].filter(([, text]) => text) as [string, string][];
   const facts = showcase?.facts ?? study.facts;
+  const writeUp = posts.find((post) => post.project === project.slug);
   const links =
     showcase?.links ?? (study.github ? [{ label: "View on GitHub", href: study.github }] : []);
 
@@ -68,6 +70,11 @@ export default function ProjectPage() {
                 <a href="#try-it" className="primary-button">
                   {showcase?.play ? "Play it here" : "Try the demo"} <ArrowDown size={16} aria-hidden="true" />
                 </a>
+              )}
+              {writeUp && (
+                <Link to={`/writing/${writeUp.slug}`} className="text-button">
+                  Read the write-up <ArrowUpRight size={16} aria-hidden="true" />
+                </Link>
               )}
               {links.map((link) => (
                 <a

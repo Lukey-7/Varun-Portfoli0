@@ -25,6 +25,7 @@ export interface OrdoContext {
 const NAV = [
   { label: "Work", to: "/#work" },
   { label: "Research", to: "/research" },
+  { label: "Journey", to: "/journey" },
   { label: "About", to: "/about" },
   { label: "Play", to: "/play" },
 ];
@@ -182,6 +183,8 @@ export default function OrdoLayout() {
         </span>
         <div>
           <Link to="/#console">Terminal</Link>
+          <Link to="/journey">Journey</Link>
+          <Link to="/writing">Writing</Link>
           <Link to="/play">Play</Link>
           <a href={CYAN_URL}>
             Cyan edition <span aria-hidden="true">↗</span>

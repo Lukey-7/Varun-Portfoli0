@@ -6,6 +6,8 @@ import ResearchPage from "./pages/ResearchPage";
 import AboutPage from "./pages/AboutPage";
 import PlayPage from "./pages/PlayPage";
 import NotFoundPage from "./pages/NotFoundPage";
+import JourneyPage from "./pages/JourneyPage";
+import WritingPage from "./pages/WritingPage";
 
 /** The monochrome site's pages, all inside one shared layout. */
 export function OrdoRoutes() {
@@ -17,6 +19,9 @@ export function OrdoRoutes() {
         <Route path="/research" element={<ResearchPage />} />
         <Route path="/about" element={<AboutPage />} />
         <Route path="/play" element={<PlayPage />} />
+        <Route path="/journey" element={<JourneyPage />} />
+        <Route path="/writing" element={<WritingPage />} />
+        <Route path="/writing/:slug" element={<WritingPage />} />
         <Route path="/ordo" element={<Navigate to="/" replace />} />
         <Route path="*" element={<NotFoundPage />} />
       </Route>

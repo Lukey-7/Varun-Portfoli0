@@ -9,6 +9,8 @@ export default defineConfig({
     globals: true,
     setupFiles: ["./src/test/setup.ts"],
     include: ["src/**/*.{test,spec}.{ts,tsx}"],
+    // Full-page renders in jsdom can take several seconds when files run in parallel.
+    testTimeout: 15000,
   },
   resolve: {
     alias: {

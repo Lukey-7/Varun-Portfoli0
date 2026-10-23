@@ -1,3 +1,20 @@
 {
-  "rewrites": [{ "source": "/((?!.*\\.).*)", "destination": "/index.html" }]
+  "rewrites": [
+    {
+      "source": "/work/:slug",
+      "destination": "/work/:slug/index.html"
+    },
+    {
+      "source": "/writing/:slug",
+      "destination": "/writing/:slug/index.html"
+    },
+    {
+      "source": "/(research|journey|writing|about|play)",
+      "destination": "/$1/index.html"
+    },
+    {
+      "source": "/((?!.*\\.).*)",
+      "destination": "/index.html"
+    }
+  ]
 }

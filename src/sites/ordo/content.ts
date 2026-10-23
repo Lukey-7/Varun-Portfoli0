@@ -116,9 +116,33 @@ export const content = {
 
   /** Multi-page site only: the home page's pointer to /about. */
   aboutTeaser: {
-    label: ["[ 08 / ABOUT ]", "MUMBAI / IST"] as Label,
+    label: ["[ 09 / ABOUT ]", "MUMBAI / IST"] as Label,
     text: "I'm Varun, an AI engineer at LetsTute in Mumbai, with an M.Sc. in Computer Science. I enjoy the work between an interesting model and a useful application: retrieval, backend APIs, evaluation and the interface someone actually uses.",
     link: "Experience, education and toolbox",
+  },
+
+  /** Multi-page site only: the latest journey entries on the home page. */
+  journeyTeaser: {
+    label: ["[ 08 / JOURNEY ]", "LATEST ENTRIES"] as Label,
+    title: ["What I have been doing,", "most recent first."] as Heading,
+    link: "The whole journey",
+  },
+
+  /** Multi-page site only: /journey. */
+  journeyPage: {
+    label: ["[ JOURNEY / LOG ]", "NEWEST FIRST"] as Label,
+    category: "A running log",
+    title: ["Work, projects and study,", "dated as they happened."] as Heading,
+    intro:
+      "I add a line when something ships, starts or changes. Dates come from my résumé and from GitHub.",
+    now: "Now",
+  },
+
+  /** Multi-page site only: /writing. */
+  writingPage: {
+    label: ["[ WRITING ]", "NOTES ON THE WORK"] as Label,
+    title: ["Write-ups on what I built", "and what I measured."] as Heading,
+    intro: "Longer notes behind the projects, with every number taken from the project's own results.",
   },
 
   /** Multi-page site only: the research page header. */
@@ -127,6 +151,11 @@ export const content = {
     category: "Research proposal",
     intro:
       "My proposal, reducing inference cost in large language model assistants, sets out two studies on the cost of LLM assistants. Each is a hypothesis to test against simpler baselines, and neither has been run yet. Each study below has a small interactive version of its idea.",
+    lookingFor: {
+      title: "What I am looking for",
+      text: "A research position where I can run these two studies, with a group working on efficient inference, memory or evaluation for LLM systems. I am also open to AI engineering roles where retrieval and evaluation are central to the work.",
+      link: "Write to me",
+    },
   },
 
   /** Multi-page site only: /play. */

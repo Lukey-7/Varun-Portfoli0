@@ -8,6 +8,7 @@ import { OrdoActivity } from "../components/OrdoActivity";
 import { OrdoShowcase, OrdoWork } from "../components/OrdoSections";
 import { OrdoProcess } from "../components/OrdoProcess";
 import { OrdoCapabilities, OrdoConsole, OrdoResearch } from "../components/OrdoExtras";
+import { JourneyTeaser } from "./JourneyPage";
 
 /** The landing page: every signature animation, in the order of the reference film. */
 export default function HomePage() {
@@ -28,6 +29,7 @@ export default function HomePage() {
       <OrdoShowcase />
       <OrdoResearch />
       <OrdoConsole />
+      <JourneyTeaser />
 
       <section id="about" className="about-teaser section-wrap">
         <div className="ordo-section-label">

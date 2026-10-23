@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useOutletContext } from "react-router-dom";
+import { ArrowDown } from "lucide-react";
 import { research } from "@/data/portfolio";
 import type { OrdoContext } from "../OrdoLayout";
 import Sculpture from "../components/Sculpture";
@@ -31,6 +32,13 @@ export default function ResearchPage() {
             </h1>
             <p className="project-lede">{content.researchPage.intro}</p>
             <span className="research-status">{research.status}</span>
+            <div className="research-looking">
+              <strong>{content.researchPage.lookingFor.title}</strong>
+              <p>{content.researchPage.lookingFor.text}</p>
+              <a href="#contact" className="section-link">
+                {content.researchPage.lookingFor.link} <ArrowDown size={14} aria-hidden="true" />
+              </a>
+            </div>
           </div>
           <div className="page-hero-art">
             <Sculpture dark={theme === "dark"} autoCycle />
