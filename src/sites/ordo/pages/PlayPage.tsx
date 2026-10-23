@@ -1,15 +1,12 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { ArrowUpRight } from "lucide-react";
+import { content } from "../content";
+import { ArcadeCabinet } from "../demos/ArcadeDemo";
 
-const GAMES = [
-  { id: "tetris", label: "Tetris-89", src: "/play/arcade/index.html" },
-  { id: "space", label: "Star Vanguard", src: "/play/arcade/space.html" },
-] as const;
-
-/** Lukey Arcade, full width: a playable copy of the public Lukey-tetris repository. */
+/** Lukey Arcade: both games in a cabinet sized to each one, not squeezed into a page. */
 export default function PlayPage() {
-  const [game, setGame] = useState<(typeof GAMES)[number]>(GAMES[0]);
+  const { playPage } = content;
   useEffect(() => {
     document.title = "Play | Varun Darji";
   }, []);
@@ -18,44 +15,25 @@ export default function PlayPage() {
     <article className="play-page">
       <header className="page-hero section-wrap">
         <div className="ordo-section-label">
-          <span>[ PLAY / LUKEY ARCADE ]</span>
-          <span>NO BUILD STEP · WEB AUDIO</span>
+          <span>{playPage.label[0]}</span>
+          <span>{playPage.label[1]}</span>
         </div>
         <div className="play-head">
           <h1>
-            Play the arcade.
+            {playPage.title[0]}
             <br />
-            <span>Two games, one page.</span>
+            <span>{playPage.title[1]}</span>
           </h1>
           <div>
-            <div className="play-switch" role="group" aria-label="Game">
-              {GAMES.map((item) => (
-                <button
-                  key={item.id}
-                  aria-pressed={game.id === item.id}
-                  onClick={() => setGame(item)}
-                >
-                  {item.label}
-                </button>
-              ))}
-            </div>
-            <p className="mono play-help">
-              Click the game to give it the keyboard; press Tab to leave it.
-              Sound starts only when you press play.
-            </p>
+            <p className="project-lede">{playPage.intro}</p>
+            <Link to="/work/arcade" className="section-link">
+              {playPage.link} <ArrowUpRight size={14} aria-hidden="true" />
+            </Link>
           </div>
         </div>
       </header>
-      <section className="section-wrap play-stage">
-        <iframe key={game.id} src={game.src} title={`${game.label}, playable`} />
-        <div className="play-links">
-          <a href={game.src} target="_blank" rel="noreferrer">
-            Open full screen <ArrowUpRight size={13} aria-hidden="true" />
-          </a>
-          <Link to="/work/arcade">
-            About the project <ArrowUpRight size={13} aria-hidden="true" />
-          </Link>
-        </div>
+      <section className="section-wrap play-stage" aria-label="Arcade">
+        <ArcadeCabinet size="full" />
       </section>
     </article>
   );

@@ -1,0 +1,551 @@
+/* FinTrack demo: a synthetic SMS inbox read into a ledger.
+   Layout follows the demo's own width (container queries), so it works in
+   the project dialog and in a page column alike. */
+.ft-demo {
+  container: ft / inline-size;
+}
+.ft-demo p {
+  margin: 0;
+}
+
+/* ---------- Toolbar and status ---------- */
+.ft-demo .ft-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 18px;
+}
+.ft-demo .ft-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+}
+.ft-demo .ft-status-line {
+  min-height: 15px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  line-height: 1.5;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+/* ---------- Inbox list and parsed detail ---------- */
+.ft-demo .ft-panes {
+  display: grid;
+  gap: 14px;
+  margin-top: 14px;
+}
+.ft-demo .ft-pane {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.ft-demo .ft-list {
+  position: relative;
+  max-height: 312px;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border: 1px solid var(--line);
+  list-style: none;
+  scrollbar-width: thin;
+  scrollbar-color: var(--line) transparent;
+}
+.ft-demo .ft-list > li + li {
+  border-top: 1px solid var(--line);
+}
+.ft-demo .ft-row {
+  position: relative;
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 46px;
+  padding: 6px 12px 6px 10px;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  text-align: left;
+  transition: background 0.2s;
+}
+.ft-demo .ft-row:hover {
+  background: color-mix(in srgb, var(--ink) 4%, transparent);
+}
+.ft-demo .ft-row[aria-pressed="true"] {
+  background: color-mix(in srgb, var(--ink) 8%, transparent);
+  box-shadow: inset 2px 0 0 var(--ink);
+}
+.ft-demo .ft-row:focus-visible {
+  outline-offset: -3px;
+}
+.ft-demo .ft-row-num {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  color: var(--subtle);
+}
+.ft-demo .ft-row-main {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+.ft-demo .ft-row-label,
+.ft-demo .ft-row-sub,
+.ft-demo .ft-row-raw {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ft-demo .ft-row-label {
+  font-size: 13px;
+  line-height: 1.3;
+}
+.ft-demo .ft-row-sub {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9.5px;
+  line-height: 1.4;
+  color: var(--muted);
+}
+.ft-demo .ft-row-raw {
+  font-size: 12px;
+  line-height: 1.35;
+  color: var(--muted);
+}
+.ft-demo .ft-row-side {
+  display: grid;
+  justify-items: end;
+  gap: 3px;
+}
+.ft-demo .ft-row-amount {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 12px;
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.ft-demo .ft-row-amount.is-void {
+  color: var(--muted);
+  text-decoration: line-through;
+}
+.ft-demo .ft-tag {
+  padding: 1px 5px;
+  border: 1px solid var(--line);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9px;
+  line-height: 1.4;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--muted);
+}
+.ft-demo .ft-tag.is-counted {
+  border-color: var(--ink);
+  color: var(--ink);
+}
+.ft-demo .ft-tag.is-duplicate {
+  border-style: dashed;
+  border-color: var(--muted);
+}
+.ft-demo .ft-tag.is-review {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--page);
+}
+
+.ft-demo .ft-detail {
+  container: ft-detail / inline-size;
+  flex: 1;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  scrollbar-width: thin;
+  scrollbar-color: var(--line) transparent;
+}
+.ft-demo .ft-detail:focus-visible {
+  outline-offset: -2px;
+}
+.ft-demo .ft-detail-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px 10px;
+}
+.ft-demo .ft-detail-head {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  line-height: 1.5;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.ft-demo .ft-status {
+  display: inline-block;
+  padding: 2px 7px;
+  border: 1px solid var(--ink);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  line-height: 1.5;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+.ft-demo .ft-status.is-duplicate {
+  border-style: dashed;
+}
+.ft-demo .ft-status.is-ignored {
+  border-color: var(--line);
+  color: var(--muted);
+}
+.ft-demo .ft-status.is-review {
+  background: var(--ink);
+  color: var(--page);
+}
+.ft-demo .ft-sms {
+  margin-top: 10px;
+  padding: 9px 12px;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  font-size: 12.5px;
+  line-height: 1.75;
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+.ft-demo .ft-mark {
+  padding: 1px 2px;
+  background: color-mix(in srgb, var(--ink) 9%, transparent);
+  box-shadow: inset 0 -1px 0 var(--ink);
+  color: inherit;
+}
+.ft-demo .ft-mark-tag {
+  display: inline-block;
+  margin: 0 2px 0 3px;
+  padding: 0 3px;
+  border: 1px solid var(--line);
+  background: var(--page);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9px;
+  line-height: 1.4;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  vertical-align: 1px;
+  color: var(--muted);
+}
+.ft-demo .ft-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 7px 14px;
+  margin: 10px 0 0;
+}
+@container ft-detail (min-width: 340px) {
+  .ft-demo .ft-fields {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+.ft-demo .ft-fields dt {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9px;
+  line-height: 1.4;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.ft-demo .ft-fields dd {
+  margin: 2px 0 0;
+  font-size: 13px;
+  line-height: 1.35;
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+.ft-demo .ft-fields dd.is-empty {
+  color: var(--subtle);
+}
+.ft-demo .ft-why {
+  display: grid;
+  gap: 3px;
+  margin: 10px 0 0;
+  padding: 8px 0 0;
+  border-top: 1px dashed var(--line);
+  list-style: none;
+}
+.ft-demo .ft-why li {
+  position: relative;
+  padding-left: 16px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10.5px;
+  line-height: 1.55;
+  color: var(--muted);
+}
+.ft-demo .ft-why li::before {
+  content: "";
+  position: absolute;
+  top: 0.78em;
+  left: 0;
+  width: 8px;
+  height: 1px;
+  background: var(--ink);
+}
+.ft-demo .ft-hint {
+  margin-top: 10px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10.5px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+.ft-demo .ft-rules ol {
+  display: grid;
+  gap: 8px;
+  margin: 10px 0 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: ft-rule;
+}
+.ft-demo .ft-rules li {
+  position: relative;
+  padding-left: 26px;
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: var(--ink);
+  counter-increment: ft-rule;
+}
+.ft-demo .ft-rules li::before {
+  content: counter(ft-rule, decimal-leading-zero);
+  position: absolute;
+  top: 2px;
+  left: 0;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  color: var(--muted);
+}
+
+/* ---------- Your own message ---------- */
+.ft-demo .ft-own textarea {
+  min-height: 132px;
+}
+.ft-demo .ft-privacy {
+  margin: 8px 0 14px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+/* ---------- Ledger and review queue ---------- */
+.ft-demo .ft-bottom {
+  display: grid;
+  gap: 14px;
+  margin-top: 14px;
+}
+.ft-demo .ft-ledger,
+.ft-demo .ft-review {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.ft-demo .ft-totals {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  margin: 0;
+  border: 1px solid var(--line);
+  background: var(--line);
+}
+.ft-demo .ft-totals > div {
+  padding: 8px 12px 9px;
+  background: var(--page);
+}
+.ft-demo .ft-totals dt {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9px;
+  line-height: 1.4;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.ft-demo .ft-totals dd {
+  margin: 2px 0 0;
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+.ft-demo .ft-totals > .is-net {
+  background: var(--ink);
+}
+.ft-demo .ft-totals > .is-net dt,
+.ft-demo .ft-totals > .is-net dd {
+  color: var(--page);
+}
+.ft-demo .ft-formula {
+  margin-top: 8px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--ink);
+}
+.ft-demo .ft-outside {
+  margin-top: 2px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+.ft-demo .ft-review-item,
+.ft-demo .ft-review-empty {
+  flex: 1;
+  padding: 12px;
+  border: 1px dashed var(--line);
+}
+.ft-demo .ft-review-item + .ft-review-item {
+  margin-top: 8px;
+}
+.ft-demo .ft-review-what {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--ink);
+}
+.ft-demo .ft-review-what strong {
+  font-weight: 500;
+}
+.ft-demo .ft-review-meta {
+  margin-top: 2px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+.ft-demo .ft-review-empty {
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+.ft-demo .ft-review-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+.ft-demo .ft-choice {
+  flex: 1 1 auto;
+  min-height: 40px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--ink);
+  font-size: 12.5px;
+  font-weight: 500;
+  transition: border-color 0.2s, background 0.2s, color 0.2s;
+}
+.ft-demo .ft-choice:hover {
+  border-color: var(--ink);
+}
+.ft-demo .ft-choice[aria-pressed="true"] {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--page);
+}
+
+.ft-demo .ft-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---------- Wider demos: side by side, fixed pane height ---------- */
+@container ft (min-width: 640px) {
+  .ft-demo .ft-panes {
+    grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+  }
+  .ft-demo .ft-list,
+  .ft-demo .ft-detail {
+    height: 324px;
+    max-height: none;
+  }
+  .ft-demo .ft-detail {
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+  .ft-demo .ft-bottom {
+    grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+  }
+  .ft-demo .ft-totals {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+@container ft (max-width: 420px) {
+  .ft-demo .ft-row {
+    grid-template-columns: 18px minmax(0, 1fr) auto;
+    gap: 8px;
+    padding-inline: 8px 10px;
+  }
+  .ft-demo .ft-totals dd {
+    font-size: 17px;
+  }
+}
+
+/* ---------- Motion: each message is read in turn ---------- */
+@keyframes ft-arrive {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+}
+@keyframes ft-sweep {
+  from {
+    transform: scaleX(0);
+  }
+}
+.ft-demo .ft-row.is-fresh .ft-row-main,
+.ft-demo .ft-row.is-fresh .ft-row-side {
+  animation: ft-arrive 0.36s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.ft-demo .ft-row.is-fresh .ft-row-side {
+  animation-delay: 0.08s;
+}
+.ft-demo .ft-row.is-fresh::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 1px;
+  background: var(--ink);
+  transform-origin: left;
+  animation: ft-sweep 0.4s ease-out both;
+}
+.ft-demo .ft-detail.is-fresh .ft-status,
+.ft-demo .ft-detail.is-fresh .ft-sms {
+  animation: ft-arrive 0.3s ease-out both;
+}
+.ft-demo .ft-detail.is-fresh .ft-fields > div {
+  animation: ft-arrive 0.3s ease-out both;
+  animation-delay: calc(0.1s + var(--i, 0) * 0.04s);
+}
+.ft-demo .ft-detail.is-fresh .ft-why {
+  animation: ft-arrive 0.3s 0.34s ease-out both;
+}
+/* Paused or reduced motion shows end states, never a half-played frame. */
+.ft-demo.is-still *,
+.ft-demo.is-still *::after,
+html[data-motion="paused"] .ft-demo *,
+html[data-motion="paused"] .ft-demo *::after {
+  animation: none !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ft-demo *,
+  .ft-demo *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}

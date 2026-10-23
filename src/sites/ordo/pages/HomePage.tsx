@@ -5,7 +5,8 @@ import type { OrdoContext } from "../OrdoLayout";
 import { content } from "../content";
 import { OrdoHero } from "../components/OrdoBlocks";
 import { OrdoActivity } from "../components/OrdoActivity";
-import { OrdoShowcase, OrdoWork, OrdoWorkflow } from "../components/OrdoSections";
+import { OrdoShowcase, OrdoWork } from "../components/OrdoSections";
+import { OrdoProcess } from "../components/OrdoProcess";
 import { OrdoCapabilities, OrdoConsole, OrdoResearch } from "../components/OrdoExtras";
 
 /** The landing page: every signature animation, in the order of the reference film. */
@@ -23,7 +24,7 @@ export default function HomePage() {
       <OrdoCapabilities onMissingTarget={(id) => navigate(`/about#spot-${id}`)} />
       <OrdoWork />
       <OrdoActivity />
-      <OrdoWorkflow />
+      <OrdoProcess />
       <OrdoShowcase />
       <OrdoResearch />
       <OrdoConsole />

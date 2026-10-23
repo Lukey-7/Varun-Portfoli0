@@ -4,6 +4,7 @@ import { research } from "@/data/portfolio";
 import type { OrdoContext } from "../OrdoLayout";
 import Sculpture from "../components/Sculpture";
 import { ResearchStudies } from "../components/OrdoExtras";
+import { ResearchLabs } from "../components/ResearchLabs";
 import { content } from "../content";
 
 /** The research proposal in full. Hypotheses to test, not results. */
@@ -39,6 +40,7 @@ export default function ResearchPage() {
 
       <section className="section-wrap research-page-body">
         <ResearchStudies detailed />
+        <ResearchLabs />
         <p className="research-note">
           {research.costNote} {research.note}
         </p>

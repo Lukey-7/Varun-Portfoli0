@@ -1,0 +1,1069 @@
+/* Interactive explainers for the two proposed studies (ResearchLab.tsx).
+   Illustrations, not results. Every selector is prefixed with .rlab-; the
+   layout responds to the explainer's own width, so it works inside a study
+   card or across the full section. */
+
+.rlab-lab {
+  container: rlab / inline-size;
+  margin-top: 24px;
+  border: 1px dashed var(--line);
+  background: var(--page);
+  color: var(--ink);
+  font-size: 13px;
+  line-height: 1.6;
+}
+.rlab-lab .rlab-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---------- Shared frame and type ---------- */
+.rlab-lab .rlab-kicker,
+.rlab-lab .rlab-label {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.rlab-lab .rlab-kicker {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 9px 14px;
+  border-bottom: 1px dashed var(--line);
+}
+.rlab-lab .rlab-label {
+  display: block;
+  margin-bottom: 8px;
+}
+.rlab-lab .rlab-head {
+  padding: 16px 14px 0;
+}
+.rlab-lab .rlab-head h4 {
+  font-size: 17px;
+  font-weight: 500;
+  line-height: 1.3;
+  letter-spacing: -0.03em;
+}
+.rlab-lab .rlab-head p {
+  max-width: 64ch;
+  margin-top: 6px;
+  font-size: 13px;
+  line-height: 1.65;
+  color: var(--muted);
+}
+.rlab-lab .rlab-body {
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+  padding: 16px 14px;
+}
+.rlab-lab .rlab-body + .rlab-body {
+  border-top: 1px dashed var(--line);
+}
+.rlab-lab .rlab-body > * {
+  min-width: 0;
+}
+.rlab-lab .rlab-hint {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+.rlab-lab .rlab-honesty {
+  padding: 12px 14px 14px;
+  border-top: 1px dashed var(--line);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  line-height: 1.65;
+  color: var(--ink);
+}
+
+/* ---------- Buttons ---------- */
+.rlab-lab .rlab-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-width: 40px;
+  min-height: 40px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--ink);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  transition: border-color 0.2s, background-color 0.2s;
+}
+.rlab-lab .rlab-btn:hover:not(:disabled) {
+  border-color: var(--ink);
+}
+.rlab-lab .rlab-btn.is-primary {
+  min-width: 86px;
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--page);
+}
+.rlab-lab .rlab-btn svg {
+  flex: none;
+}
+
+/* ---------- Range inputs ---------- */
+.rlab-lab .rlab-range {
+  --rlab-fill: 50%;
+  -webkit-appearance: none;
+  appearance: none;
+  display: block;
+  width: 100%;
+  height: 40px;
+  margin: 0;
+  background: transparent;
+  cursor: pointer;
+}
+.rlab-lab .rlab-range::-webkit-slider-runnable-track {
+  height: 2px;
+  background: linear-gradient(to right, var(--ink) var(--rlab-fill), var(--line) var(--rlab-fill));
+}
+.rlab-lab .rlab-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  margin-top: -7px;
+  border: 3px solid var(--page);
+  border-radius: 0;
+  background: var(--ink);
+  box-shadow: 0 0 0 1px var(--ink);
+}
+.rlab-lab .rlab-range::-moz-range-track {
+  height: 2px;
+  background: var(--line);
+}
+.rlab-lab .rlab-range::-moz-range-progress {
+  height: 2px;
+  background: var(--ink);
+}
+.rlab-lab .rlab-range::-moz-range-thumb {
+  width: 10px;
+  height: 10px;
+  border: 3px solid var(--page);
+  border-radius: 0;
+  background: var(--ink);
+  box-shadow: 0 0 0 1px var(--ink);
+}
+
+/* ---------- Study 01: controls ---------- */
+.rlab-lab .rlab-controls {
+  display: grid;
+  gap: 8px;
+}
+.rlab-lab .rlab-transport {
+  display: flex;
+  gap: 6px;
+}
+.rlab-lab .rlab-scrub .rlab-label {
+  margin-bottom: 0;
+}
+.rlab-lab .rlab-latest {
+  display: grid;
+  gap: 2px;
+  padding: 10px 12px;
+  border-left: 2px solid var(--ink);
+  background: var(--panel);
+}
+.rlab-lab .rlab-latest-tag {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.rlab-lab .rlab-latest-text {
+  font-size: 14px;
+  line-height: 1.45;
+}
+.rlab-lab .rlab-latest-note {
+  font-size: 12px;
+  color: var(--muted);
+}
+.rlab-lab .rlab-memory-main,
+.rlab-lab .rlab-memory-rows {
+  display: grid;
+  gap: 14px;
+  min-width: 0;
+}
+
+/* ---------- Study 01: legend and checks key ---------- */
+.rlab-lab .rlab-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.rlab-lab .rlab-legend li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.rlab-lab .rlab-legend .rlab-cell {
+  width: 14px;
+  height: 14px;
+  font-size: 0;
+}
+.rlab-lab .rlab-swatch {
+  display: inline-block;
+  width: 16px;
+  height: 4px;
+  background: var(--ink);
+}
+.rlab-lab .rlab-checks-key ul {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.rlab-lab .rlab-checks-key .rlab-label {
+  margin-bottom: 4px;
+}
+
+/* ---------- Study 01: strategy rows ---------- */
+.rlab-lab .rlab-rows {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.rlab-lab .rlab-row {
+  display: grid;
+  gap: 6px;
+  width: 100%;
+  padding: 10px 12px 12px;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--ink);
+  text-align: left;
+  transition: border-color 0.2s, background-color 0.2s, box-shadow 0.2s;
+}
+.rlab-lab .rlab-row:hover {
+  border-color: color-mix(in srgb, var(--ink) 45%, transparent);
+}
+.rlab-lab .rlab-row[aria-pressed="true"] {
+  border-color: var(--ink);
+  background: var(--panel);
+  box-shadow: inset 3px 0 0 var(--ink);
+}
+.rlab-lab button.rlab-row:focus-visible,
+.rlab-lab button.rlab-q:focus-visible {
+  outline-offset: 2px;
+}
+.rlab-lab .rlab-row-head,
+.rlab-lab .rlab-row-meta {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+}
+.rlab-lab .rlab-row-name {
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+.rlab-lab .rlab-row-tag,
+.rlab-lab .rlab-row-meta {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.rlab-lab .rlab-row[aria-pressed="true"] .rlab-row-tag {
+  color: var(--ink);
+}
+.rlab-lab .rlab-row-tokens {
+  font-size: 11px;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* Message cells: fill and pattern carry the state, with a key above. */
+.rlab-lab .rlab-cells {
+  --rlab-gap: 2px;
+  --rlab-cols: 11;
+  --rlab-from: 0;
+  --rlab-count: 0;
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(var(--rlab-cols), minmax(0, 1fr));
+  gap: var(--rlab-gap);
+  max-width: 460px;
+  margin-top: 4px;
+}
+.rlab-lab .rlab-cell {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 24px;
+  border: 1px solid var(--line);
+  background-color: transparent;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9px;
+  font-style: normal;
+  color: var(--subtle);
+  transition: background-color 0.35s, border-color 0.35s, color 0.35s;
+}
+.rlab-lab .rlab-cell[data-state="sent"] {
+  border-color: var(--ink);
+  background-color: var(--ink);
+  color: var(--page);
+}
+.rlab-lab .rlab-cell[data-state="summarised"] {
+  border-color: color-mix(in srgb, var(--ink) 45%, transparent);
+  background-image: repeating-linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--ink) 30%, transparent) 0 1px,
+    transparent 1px 4px
+  );
+  color: var(--ink);
+}
+.rlab-lab .rlab-cell[data-state="future"] {
+  border-style: dashed;
+  border-color: color-mix(in srgb, var(--ink) 18%, transparent);
+  color: color-mix(in srgb, var(--ink) 30%, transparent);
+}
+/* A record cites this message: a corner mark. */
+.rlab-lab .rlab-cell[data-recorded]::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 4px;
+  height: 4px;
+  background: var(--ink);
+}
+.rlab-lab .rlab-cell[data-state="sent"][data-recorded]::after {
+  background: var(--page);
+}
+/* A record marks this instruction as superseded: a strike through the cell. */
+.rlab-lab .rlab-cell[data-superseded]::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top right,
+    transparent calc(50% - 0.6px),
+    currentColor calc(50% - 0.6px),
+    currentColor calc(50% + 0.6px),
+    transparent calc(50% + 0.6px)
+  );
+}
+/* The frame around what is sent word for word slides as the window moves. */
+.rlab-lab .rlab-window {
+  position: absolute;
+  top: -3px;
+  bottom: -3px;
+  left: calc(var(--rlab-from) * (100% + var(--rlab-gap)) / var(--rlab-cols) - 3px);
+  width: calc(var(--rlab-count) * (100% + var(--rlab-gap)) / var(--rlab-cols) - var(--rlab-gap) + 6px);
+  border: 1px solid var(--ink);
+  pointer-events: none;
+  transition: left 0.45s cubic-bezier(0.2, 0.7, 0.2, 1), width 0.45s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.rlab-lab .rlab-bar {
+  display: block;
+  height: 4px;
+  max-width: 460px;
+  margin-top: 4px;
+  background: color-mix(in srgb, var(--ink) 9%, transparent);
+}
+.rlab-lab .rlab-bar > span {
+  display: block;
+  height: 100%;
+  background: var(--ink);
+  transform-origin: left;
+  transition: transform 0.45s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+/* The two checks: icon in a box, plus words. A failed check is inverted. */
+.rlab-lab .rlab-checks {
+  display: grid;
+  gap: 3px;
+  margin-top: 4px;
+}
+.rlab-lab .rlab-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  line-height: 1.5;
+  color: var(--ink);
+}
+.rlab-lab .rlab-check-mark {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  margin-top: 0.5px;
+  border: 1px solid var(--ink);
+}
+.rlab-lab .rlab-check[data-state="fail"] .rlab-check-mark {
+  background: var(--ink);
+  color: var(--page);
+}
+.rlab-lab .rlab-check[data-state="pending"] {
+  color: var(--muted);
+}
+.rlab-lab .rlab-check[data-state="pending"] .rlab-check-mark {
+  border-style: dashed;
+  border-color: var(--muted);
+}
+
+/* ---------- Study 01: transcript ---------- */
+.rlab-lab .rlab-transcript {
+  min-width: 0;
+  margin: 0;
+  border: 1px solid var(--line);
+}
+.rlab-lab .rlab-transcript figcaption {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 2px 12px;
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--line);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.rlab-lab .rlab-transcript figcaption > span:first-child {
+  color: var(--ink);
+}
+.rlab-lab .rlab-omitted {
+  margin: 10px 12px 0;
+  padding: 5px 8px;
+  border: 1px dashed var(--line);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  color: var(--muted);
+}
+.rlab-lab .rlab-lines {
+  display: grid;
+  gap: 5px;
+  margin: 0;
+  padding: 10px 12px;
+  list-style: none;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10.5px;
+  line-height: 1.55;
+}
+.rlab-lab .rlab-line {
+  display: grid;
+  grid-template-columns: 78px minmax(0, 1fr);
+  gap: 10px;
+}
+.rlab-lab .rlab-line-tag {
+  padding-top: 1px;
+  font-size: 9px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.rlab-lab .rlab-line-text {
+  overflow-wrap: anywhere;
+}
+.rlab-lab .rlab-line.is-assistant .rlab-line-text {
+  color: var(--muted);
+}
+.rlab-lab .rlab-line.is-summary .rlab-line-text,
+.rlab-lab .rlab-line.is-record .rlab-line-text {
+  padding-left: 8px;
+  border-left: 2px solid var(--ink);
+}
+.rlab-lab .rlab-line.is-summary .rlab-line-text {
+  background-image: repeating-linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--ink) 7%, transparent) 0 1px,
+    transparent 1px 5px
+  );
+}
+.rlab-lab .rlab-status {
+  padding: 0 4px;
+  border: 1px solid currentColor;
+  font-size: 9px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.rlab-lab .rlab-source {
+  color: var(--muted);
+}
+.rlab-lab .rlab-rule {
+  display: grid;
+  gap: 6px;
+  padding: 10px 12px 12px;
+  border-top: 1px dashed var(--line);
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+
+/* ---------- Study 02: inputs ---------- */
+.rlab-lab .rlab-retry-inputs {
+  display: grid;
+  justify-items: start;
+  gap: 10px;
+}
+.rlab-lab .rlab-sliders {
+  display: grid;
+  gap: 4px;
+  width: 100%;
+}
+.rlab-lab .rlab-slider-head {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+.rlab-lab .rlab-slider-label {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 12.5px;
+  line-height: 1.4;
+}
+.rlab-lab .rlab-symbol {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border: 1px solid var(--ink);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  line-height: 1;
+}
+.rlab-lab .rlab-value {
+  margin-left: auto;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Study 02: equation and verdict ---------- */
+.rlab-lab .rlab-retry-result {
+  display: grid;
+  gap: 10px;
+}
+.rlab-lab .rlab-equation {
+  padding: 12px 14px;
+  border: 1px dashed var(--line);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 11px;
+  line-height: 1.7;
+  font-variant-numeric: tabular-nums;
+}
+.rlab-lab .rlab-eq-formula {
+  color: var(--muted);
+}
+.rlab-lab .rlab-eq-terms {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 4px 10px;
+  margin-top: 4px;
+}
+.rlab-lab .rlab-eq-terms > span {
+  display: grid;
+}
+.rlab-lab .rlab-eq-terms b {
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.5;
+}
+.rlab-lab .rlab-eq-terms > .rlab-eq-op {
+  padding-top: 2px;
+  font-size: 13px;
+}
+.rlab-lab .rlab-eq-terms small {
+  font-size: 8.5px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.rlab-lab .rlab-eq-compare {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px dashed var(--line);
+}
+.rlab-lab .rlab-eq-compare strong {
+  font-weight: 500;
+  text-transform: uppercase;
+}
+.rlab-lab .rlab-verdict {
+  padding: 12px 14px 14px;
+  border: 1px solid var(--ink);
+  transition: background-color 0.3s, color 0.3s;
+}
+.rlab-lab .rlab-verdict strong {
+  display: block;
+  font-size: 40px;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  text-transform: uppercase;
+}
+.rlab-lab .rlab-verdict strong.is-fresh {
+  animation: rlab-verdict 0.34s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.rlab-lab .rlab-verdict p {
+  margin-top: 8px;
+  font-size: 12.5px;
+  line-height: 1.5;
+}
+/* Retry inverts the panel, so the verdict never rests on colour alone. */
+.rlab-lab .rlab-verdict[data-verdict="retry"] {
+  background: var(--ink);
+  color: var(--page);
+}
+.rlab-lab .rlab-verdict[data-verdict="retry"] .rlab-label {
+  color: color-mix(in srgb, var(--page) 74%, var(--ink));
+}
+@keyframes rlab-verdict {
+  from {
+    opacity: 0.3;
+    transform: translateY(8px);
+  }
+}
+
+/* ---------- Study 02: decision map ---------- */
+.rlab-lab .rlab-mapwrap {
+  min-width: 0;
+  margin: 0;
+}
+.rlab-lab .rlab-map {
+  display: block;
+  width: 100%;
+  max-width: 380px;
+  height: auto;
+  cursor: crosshair;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.rlab-lab .rlab-map + .rlab-hint {
+  margin-top: 6px;
+}
+.rlab-lab .rlab-map text {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 7.5px;
+  fill: var(--muted);
+}
+.rlab-lab .rlab-map-grid {
+  stroke: color-mix(in srgb, var(--ink) 8%, transparent);
+  stroke-width: 0.6;
+}
+.rlab-lab .rlab-map-frame {
+  fill: none;
+  stroke: var(--line);
+  stroke-dasharray: 2 2;
+}
+.rlab-lab .rlab-map-region {
+  fill: color-mix(in srgb, var(--ink) 8%, transparent);
+}
+.rlab-lab .rlab-map-hatch {
+  stroke: color-mix(in srgb, var(--ink) 26%, transparent);
+  stroke-width: 0.7;
+}
+.rlab-lab .rlab-map-boundary {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 1.4;
+}
+.rlab-lab .rlab-map .rlab-map-zone {
+  font-size: 8px;
+  letter-spacing: 0.08em;
+  fill: var(--ink);
+}
+.rlab-lab .rlab-map-q rect {
+  fill: var(--page);
+  stroke: var(--ink);
+  stroke-width: 0.9;
+}
+.rlab-lab .rlab-map-q.is-retry rect {
+  fill: var(--ink);
+}
+.rlab-lab .rlab-map .rlab-map-q text {
+  font-size: 6.5px;
+  fill: var(--ink);
+}
+.rlab-lab .rlab-map-guide {
+  stroke: var(--ink);
+  stroke-width: 0.6;
+  stroke-dasharray: 2 2;
+}
+.rlab-lab .rlab-map-ring {
+  fill: var(--page);
+  stroke: var(--ink);
+  stroke-width: 1.4;
+}
+.rlab-lab .rlab-map-core {
+  fill: var(--ink);
+}
+.rlab-lab .rlab-map .rlab-map-tag {
+  font-size: 7px;
+  fill: var(--ink);
+  paint-order: stroke;
+  stroke: var(--page);
+  stroke-width: 3px;
+  stroke-linejoin: round;
+}
+
+/* ---------- Study 02: toy queue ---------- */
+.rlab-lab .rlab-queue {
+  display: grid;
+  gap: 4px;
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.rlab-lab .rlab-q {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr) auto;
+  grid-template-areas:
+    "id label verdict"
+    "id nums nums";
+  align-items: center;
+  gap: 2px 10px;
+  width: 100%;
+  min-height: 44px;
+  padding: 6px 10px;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--ink);
+  text-align: left;
+  transition: border-color 0.2s, background-color 0.2s;
+}
+.rlab-lab .rlab-q:hover {
+  border-color: color-mix(in srgb, var(--ink) 45%, transparent);
+}
+.rlab-lab .rlab-q[aria-pressed="true"] {
+  border-color: var(--ink);
+  background: var(--panel);
+}
+.rlab-lab .rlab-q-id {
+  grid-area: id;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  color: var(--muted);
+}
+.rlab-lab .rlab-q-label {
+  grid-area: label;
+  font-size: 12px;
+  line-height: 1.35;
+}
+.rlab-lab .rlab-q-nums {
+  grid-area: nums;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9.5px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.rlab-lab .rlab-q-verdict {
+  grid-area: verdict;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9.5px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.rlab-lab .rlab-q-verdict i {
+  width: 8px;
+  height: 8px;
+  border: 1px solid var(--ink);
+}
+.rlab-lab .rlab-q-verdict[data-verdict="retry"] i {
+  background: var(--ink);
+}
+.rlab-lab .rlab-q-verdict[data-verdict="return"] {
+  color: var(--muted);
+}
+
+/* ---------- Study 02: totals and trade-off ---------- */
+.rlab-lab .rlab-tablewrap {
+  overflow-x: auto;
+}
+.rlab-lab .rlab-totals {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10.5px;
+  font-variant-numeric: tabular-nums;
+  color: var(--muted);
+}
+.rlab-lab .rlab-totals caption {
+  padding-bottom: 8px;
+  caption-side: top;
+  text-align: left;
+  font-size: 9px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.rlab-lab .rlab-totals th,
+.rlab-lab .rlab-totals td {
+  padding: 7px 4px;
+  border-bottom: 1px solid var(--line);
+  text-align: right;
+  white-space: nowrap;
+}
+.rlab-lab .rlab-totals th:first-child {
+  padding-left: 0;
+  text-align: left;
+  white-space: normal;
+}
+.rlab-lab .rlab-totals thead th {
+  font-size: 9px;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.rlab-lab .rlab-totals tbody th {
+  font-weight: 400;
+}
+.rlab-lab .rlab-totals tr[data-policy="rule"] {
+  color: var(--ink);
+}
+.rlab-lab .rlab-totals tr[data-policy="rule"] th {
+  font-weight: 500;
+}
+.rlab-lab .rlab-totals + .rlab-hint,
+.rlab-lab .rlab-tablewrap + .rlab-hint {
+  margin-top: 8px;
+}
+.rlab-lab .rlab-trade {
+  display: grid;
+  gap: 6px;
+  margin-top: 14px;
+}
+.rlab-lab .rlab-trade-key {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.rlab-lab .rlab-trade-swatch {
+  display: inline-block;
+  width: 12px;
+  height: 6px;
+  margin-right: 4px;
+  vertical-align: 1px;
+}
+.rlab-lab .rlab-trade-row {
+  display: grid;
+  grid-template-columns: 86px minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9.5px;
+  color: var(--muted);
+}
+.rlab-lab .rlab-trade-row[data-policy="rule"] {
+  color: var(--ink);
+}
+.rlab-lab .rlab-trade-bars {
+  display: grid;
+  gap: 3px;
+}
+.rlab-lab .rlab-trade-bar {
+  display: block;
+  height: 6px;
+  background: color-mix(in srgb, var(--ink) 6%, transparent);
+}
+.rlab-lab .rlab-trade-bar > i {
+  display: block;
+  height: 100%;
+  transform-origin: left;
+  transition: transform 0.45s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.rlab-lab .rlab-trade-swatch.is-gain,
+.rlab-lab .rlab-trade-bar.is-gain > i {
+  background: var(--ink);
+}
+.rlab-lab .rlab-trade-swatch.is-spend,
+.rlab-lab .rlab-trade-bar.is-spend > i {
+  border: 1px solid var(--ink);
+  background: repeating-linear-gradient(135deg, var(--ink) 0 1px, transparent 1px 3px);
+}
+
+/* ---------- Wider explainers ---------- */
+@container rlab (min-width: 520px) {
+  .rlab-lab .rlab-kicker {
+    padding-inline: 20px;
+  }
+  .rlab-lab .rlab-head {
+    padding: 18px 20px 0;
+  }
+  .rlab-lab .rlab-body {
+    padding: 18px 20px;
+  }
+  .rlab-lab .rlab-honesty {
+    padding-inline: 20px;
+  }
+  .rlab-lab .rlab-controls {
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    gap: 16px;
+  }
+  .rlab-lab .rlab-scrub {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .rlab-lab .rlab-checks {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 16px;
+  }
+  .rlab-lab .rlab-q {
+    grid-template-columns: 28px minmax(0, 1fr) auto 76px;
+    grid-template-areas: "id label nums verdict";
+  }
+}
+@container rlab (min-width: 680px) {
+  .rlab-lab .rlab-retry-top {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: start;
+  }
+  .rlab-lab .rlab-retry-top > .rlab-mapwrap {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+  }
+  .rlab-lab .rlab-retry-top > .rlab-retry-result {
+    grid-column: 1;
+  }
+}
+@container rlab (min-width: 900px) {
+  .rlab-lab .rlab-memory-main {
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    align-items: start;
+    gap: 20px;
+  }
+  .rlab-lab .rlab-retry-top {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 0.95fr);
+  }
+  .rlab-lab .rlab-retry-top > .rlab-mapwrap {
+    grid-column: 3;
+    grid-row: 1;
+  }
+  .rlab-lab .rlab-retry-top > .rlab-retry-result {
+    grid-column: 2;
+  }
+  .rlab-lab .rlab-retry-queue {
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+    gap: 24px;
+    align-items: start;
+  }
+  .rlab-lab .rlab-verdict strong {
+    font-size: 46px;
+  }
+}
+
+/* ---------- Motion off: reduced-motion preference or the page-wide pause ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .rlab-lab *,
+  .rlab-lab *::before,
+  .rlab-lab *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+.rlab-lab[data-still] *,
+.rlab-lab[data-still] *::before,
+.rlab-lab[data-still] *::after {
+  animation: none !important;
+  transition: none !important;
+}
+
+/* ---------- The tab bar that holds both explainers (ResearchLabs.tsx) ---------- */
+.research-labs {
+  margin-top: 56px;
+  padding-top: 26px;
+  border-top: 1px solid var(--ink);
+}
+.research-labs-head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 16px 30px;
+}
+.research-labs-head > .mono {
+  font-size: 10px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.research-labs [role="tablist"] {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.research-labs [role="tab"] {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 8px 14px;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--muted);
+  font-size: 14px;
+  transition: border-color 0.2s, color 0.2s, background 0.2s;
+}
+.research-labs [role="tab"] .mono {
+  font-size: 9px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.research-labs [role="tab"]:hover {
+  border-color: var(--ink);
+  color: var(--ink);
+}
+.research-labs [role="tab"][aria-selected="true"] {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--page);
+}
+.research-labs [role="tabpanel"] {
+  margin-top: 6px;
+}

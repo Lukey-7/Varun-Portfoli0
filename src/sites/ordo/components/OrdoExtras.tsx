@@ -221,7 +221,7 @@ export function OrdoResearch() {
       </div>
       <ResearchStudies />
       <Link to="/research" className="section-link">
-        Read the full proposal <ArrowUpRight size={14} aria-hidden="true" />
+        Read the proposal and try both ideas <ArrowUpRight size={14} aria-hidden="true" />
       </Link>
     </section>
   );

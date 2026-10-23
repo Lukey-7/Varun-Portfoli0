@@ -1,0 +1,447 @@
+/* StudyForge demo: a question, three retrieval steps, a cited answer and
+   the sample notes it quotes. Every selector starts with .sf-demo. */
+.sf-demo .sf-layout {
+  container: sf-demo / inline-size;
+  display: grid;
+  gap: 22px;
+}
+.sf-demo .sf-ask {
+  display: grid;
+  gap: 12px;
+}
+/* The label sits beside the field when there is room and above it when not. */
+.sf-demo .sf-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 14px;
+}
+.sf-demo .sf-inline-label {
+  flex: none;
+  margin: 0;
+}
+.sf-demo .sf-form-row {
+  display: flex;
+  flex: 1 1 300px;
+  gap: 8px;
+  min-width: 0;
+}
+.sf-demo .sf-form-row .demo-input {
+  flex: 1;
+  min-width: 0;
+}
+.sf-demo .sf-presets {
+  align-items: center;
+}
+.sf-demo .sf-presets .sf-inline-label {
+  margin-right: 8px;
+}
+.sf-demo .sf-presets .demo-chip {
+  max-width: 100%;
+}
+.sf-demo .sf-grid {
+  display: grid;
+  gap: 22px;
+  min-width: 0;
+}
+.sf-demo .sf-main {
+  display: grid;
+  align-content: start;
+  gap: 18px;
+  min-width: 0;
+}
+
+/* ---------- Retrieval steps ---------- */
+.sf-demo .sf-retrieval-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 8px 16px;
+  margin-bottom: 10px;
+}
+.sf-demo .sf-retrieval-head > .demo-label {
+  margin: 0 0 6px;
+}
+.sf-demo .sf-modes {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+}
+.sf-demo .sf-modes .demo-label {
+  margin: 0;
+}
+.sf-demo .sf-stages {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border: 1px solid var(--line);
+}
+.sf-demo .sf-stage {
+  min-width: 0;
+  padding: 10px 10px 12px;
+}
+.sf-demo .sf-stage + .sf-stage {
+  border-left: 1px solid var(--line);
+}
+.sf-demo .sf-stage[data-state="on"] {
+  background: color-mix(in srgb, var(--ink) 5%, transparent);
+  box-shadow: inset 0 2px 0 var(--ink);
+}
+.sf-demo .sf-stage-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 2px 8px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.sf-demo .sf-stage-name b {
+  margin-right: 2px;
+  font-weight: 400;
+  color: var(--muted);
+}
+.sf-demo .sf-stage-name .sf-stage-method {
+  display: inline-block;
+  text-transform: none;
+  letter-spacing: 0;
+}
+.sf-demo .sf-stage-status {
+  font-size: 9px;
+  white-space: nowrap;
+  color: var(--muted);
+}
+.sf-demo .sf-stage[data-state="on"] .sf-stage-status {
+  padding: 0 4px;
+  background: var(--ink);
+  color: var(--page);
+}
+.sf-demo .sf-stage-method {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9px;
+  color: var(--subtle);
+}
+.sf-demo .sf-hits {
+  display: grid;
+  gap: 5px;
+  margin: 10px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.sf-demo .sf-hit {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 6px;
+  padding-bottom: 4px;
+  font-size: 12px;
+  line-height: 1.4;
+}
+.sf-demo .sf-hit-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--muted);
+}
+.sf-demo .sf-hit-score {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+}
+/* Bar length is the score relative to the best in the same step. */
+.sf-demo .sf-hit-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  background: color-mix(in srgb, var(--ink) 32%, transparent);
+}
+.sf-demo .sf-stage-empty {
+  margin-top: 10px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.sf-demo .sf-stage-foot {
+  padding: 7px 10px;
+  border: 1px solid var(--line);
+  border-top: 0;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  line-height: 1.55;
+  color: var(--muted);
+}
+/* The passage labelled as the answer: filled, so it reads without colour. */
+.sf-demo .demo-tag.is-labelled {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--page);
+}
+.sf-demo .sf-labelled {
+  margin-top: 10px;
+  font-size: 12px;
+  line-height: 1.65;
+  color: var(--muted);
+}
+
+/* ---------- Answer ---------- */
+.sf-demo .sf-answer {
+  padding: 14px 16px 16px;
+  border: 1px solid var(--line);
+}
+.sf-demo .sf-answer-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px 12px;
+  margin-bottom: 8px;
+}
+.sf-demo .sf-answer-head .demo-label {
+  margin: 0;
+}
+.sf-demo .sf-cards-toggle {
+  min-height: 40px;
+  padding: 0 12px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  font-weight: 400;
+}
+.sf-demo .sf-answer-text {
+  font-size: 15px;
+  line-height: 1.75;
+}
+.sf-demo .sf-answer-text .is-active {
+  background: color-mix(in srgb, var(--ink) 10%, transparent);
+}
+.sf-demo .sf-cite {
+  position: relative;
+  display: inline-block;
+  padding: 0 5px;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--muted);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  line-height: 1.6;
+  vertical-align: 1px;
+}
+/* A larger invisible hit area, so the citation is easy to tap. */
+.sf-demo .sf-cite::after {
+  content: "";
+  position: absolute;
+  inset: -12px -6px;
+}
+.sf-demo .sf-cite:hover,
+.sf-demo .sf-cite:focus-visible {
+  border-color: var(--ink);
+  background: color-mix(in srgb, var(--ink) 8%, transparent);
+  color: var(--ink);
+}
+.sf-demo .sf-cite:focus-visible {
+  outline-offset: 2px;
+}
+/* Pinned: filled, so the state reads without colour. */
+.sf-demo .sf-cite[aria-pressed="true"] {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--page);
+}
+.sf-demo .sf-none > p:first-child {
+  font-size: 15px;
+  line-height: 1.6;
+}
+.sf-demo .sf-none-why {
+  margin-top: 4px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+
+/* ---------- Flashcards ---------- */
+.sf-demo .sf-cards {
+  display: grid;
+  gap: 8px;
+  width: 100%;
+  margin: 14px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.sf-demo .sf-card {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  padding: 10px 12px 12px;
+  border: 1px dashed var(--line);
+  font-size: 13px;
+  line-height: 1.55;
+}
+.sf-demo .sf-card-label {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.sf-demo .sf-blank {
+  display: inline-block;
+  min-width: 4.5em;
+  border-bottom: 1px solid var(--ink);
+  color: transparent;
+  line-height: 1.1;
+}
+.sf-demo .sf-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.sf-demo .sf-card summary {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  list-style: none;
+  cursor: pointer;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+}
+.sf-demo .sf-card summary::-webkit-details-marker {
+  display: none;
+}
+.sf-demo .sf-card summary:hover {
+  border-color: var(--ink);
+}
+.sf-demo .sf-card summary:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.sf-demo .sf-card details[open] .sf-show,
+.sf-demo .sf-card details:not([open]) .sf-hide {
+  display: none;
+}
+.sf-demo .sf-card-answer {
+  margin-top: 8px;
+  font-weight: 500;
+}
+
+/* ---------- Notes ---------- */
+.sf-demo .sf-notes {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.sf-demo .sf-notes > .demo-label {
+  margin: 0 0 8px;
+}
+.sf-demo .sf-notes-list {
+  max-height: 340px;
+  margin: 0;
+  padding: 0 10px 0 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border-top: 1px solid var(--line);
+  list-style: none;
+}
+.sf-demo .sf-notes-list:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.sf-demo .sf-notes-list > li {
+  padding: 10px 0 12px;
+  border-bottom: 1px solid var(--line);
+}
+.sf-demo .sf-note-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 5px;
+}
+.sf-demo .sf-note-title {
+  flex: 1;
+  min-width: 0;
+  font-size: 12px;
+  font-weight: 500;
+}
+.sf-demo .sf-note-flags {
+  display: flex;
+  gap: 4px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.sf-demo .sf-note-flags span {
+  padding: 0 4px;
+  border: 1px solid var(--ink);
+}
+.sf-demo .sf-notes-list p {
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+.sf-demo .sf-notes-list strong {
+  font-weight: 600;
+  color: var(--ink);
+}
+/* Sentences the answer quotes are underlined; the one in focus is marked. */
+.sf-demo .sf-notes-list .is-quoted {
+  color: var(--ink);
+  text-decoration: underline dotted;
+  text-decoration-color: color-mix(in srgb, var(--ink) 55%, transparent);
+  text-underline-offset: 3px;
+}
+.sf-demo .sf-notes-list mark {
+  background: color-mix(in srgb, var(--ink) 14%, transparent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--ink) 14%, transparent);
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* Narrow: keep the three steps side by side, drop the passage titles. */
+@container sf-demo (max-width: 559px) {
+  .sf-demo .sf-stage {
+    padding: 8px 7px 10px;
+  }
+  .sf-demo .sf-stage-head {
+    flex-direction: column;
+  }
+  .sf-demo .sf-hit {
+    grid-template-columns: auto auto;
+    justify-content: space-between;
+  }
+  .sf-demo .sf-hit-title {
+    display: none;
+  }
+}
+@container sf-demo (min-width: 620px) {
+  .sf-demo .sf-cards {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+/* Wide: the notes sit beside the answer and scroll inside their own column. */
+@container sf-demo (min-width: 820px) {
+  .sf-demo .sf-grid {
+    grid-template-columns: minmax(0, 1fr) minmax(260px, 300px);
+  }
+  .sf-demo .sf-notes {
+    position: relative;
+    min-height: 420px;
+  }
+  .sf-demo .sf-notes-list {
+    position: absolute;
+    top: 26px;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    max-height: none;
+  }
+}

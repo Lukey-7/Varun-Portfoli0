@@ -1,0 +1,1238 @@
+/* ---------- Process: four gated stages drawn as a loop ----------
+   This file loads before base.css and ordo.css, so any rule that competes
+   with ".portfolio p", ".portfolio button" or ".portfolio h2" is scoped under
+   .proc-section to win on specificity rather than on order. */
+
+.ordo-flow.proc-section {
+  background: var(--panel);
+  padding-block: 96px 104px;
+}
+.proc-section .proc-h2 {
+  font-size: clamp(32px, 3.5vw, 48px);
+}
+.proc-section .proc-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 60px;
+}
+.proc-section .proc-intro {
+  max-width: 340px;
+  font-size: 13px;
+  line-height: 1.75;
+  color: var(--muted);
+}
+.proc-section .proc-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 380px) minmax(0, 1fr);
+  gap: 48px;
+  align-items: start;
+  margin-top: 64px;
+}
+/* The map stays in view while the longer panel scrolls past it. */
+.proc-section .proc-side {
+  position: sticky;
+  top: 96px;
+  display: grid;
+  gap: 26px;
+}
+
+/* ---------- Loop map: the tablist is the loop ----------
+   Configure  →  Build
+      ↑ B        ↓ ↑ A
+   Deploy     ←  Evaluate */
+.proc-section .proc-map {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 44px minmax(0, 1fr);
+  grid-template-rows: auto 72px auto;
+  grid-template-areas:
+    "configure cb build"
+    "dc hub be"
+    "deploy ed evaluate";
+}
+.proc-section .proc-tab.is-configure {
+  grid-area: configure;
+}
+.proc-section .proc-tab.is-build {
+  grid-area: build;
+}
+.proc-section .proc-tab.is-evaluate {
+  grid-area: evaluate;
+}
+.proc-section .proc-tab.is-deploy {
+  grid-area: deploy;
+}
+.proc-section .is-cb {
+  grid-area: cb;
+}
+.proc-section .is-be {
+  grid-area: be;
+}
+.proc-section .is-ed {
+  grid-area: ed;
+}
+.proc-section .is-dc {
+  grid-area: dc;
+}
+.proc-section .proc-hub {
+  grid-area: hub;
+}
+
+.proc-section .proc-tab {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  min-height: 128px;
+  padding: 14px 14px 18px;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--muted);
+  text-align: left;
+  transition:
+    border-color 0.25s,
+    background-color 0.25s,
+    color 0.25s;
+}
+.proc-section .proc-tab:hover {
+  color: var(--ink);
+  border-color: color-mix(in srgb, var(--ink) 40%, transparent);
+}
+.proc-section .proc-tab[aria-selected="true"] {
+  color: var(--ink);
+  background: var(--page);
+  border-color: var(--ink);
+}
+.proc-section .proc-map .proc-tab:focus-visible {
+  outline-offset: 3px;
+}
+.proc-tab-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.proc-tab[data-status="running"] .proc-tab-status,
+.proc-tab[data-status="passed"] .proc-tab-status {
+  color: var(--ink);
+}
+.proc-tab-name {
+  margin-top: auto;
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 1.05;
+  letter-spacing: -0.045em;
+}
+.proc-tab-out {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  color: var(--subtle);
+}
+/* Progress rail: full for passed stages, filling for the one on show. */
+.proc-tab-rail {
+  position: absolute;
+  left: -1px;
+  right: -1px;
+  bottom: -1px;
+  height: 2px;
+  overflow: hidden;
+}
+.proc-tab-rail > span {
+  display: block;
+  height: 100%;
+  background: var(--ink);
+  transform-origin: left;
+  transition: transform 0.12s linear;
+}
+
+/* Connectors: forward edges are solid, loop-backs dashed. They darken and
+   carry a packet once the stage before them has passed its gate. */
+.proc-section .proc-link {
+  position: relative;
+  display: block;
+  color: color-mix(in srgb, var(--ink) 34%, transparent);
+  transition: color 0.3s;
+}
+.proc-section .proc-link[data-on="true"] {
+  color: var(--ink);
+}
+.proc-section .proc-link.is-across {
+  align-self: center;
+  height: 9px;
+  margin-inline: 7px;
+}
+.proc-link.is-across::before {
+  content: "";
+  position: absolute;
+  top: 4px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: currentColor;
+}
+.proc-link.is-across::after {
+  content: "";
+  position: absolute;
+  top: 1px;
+  right: 1px;
+  width: 6px;
+  height: 6px;
+  border-top: 1px solid currentColor;
+  border-right: 1px solid currentColor;
+  transform: rotate(45deg);
+}
+.proc-link.is-across.is-reverse::after {
+  right: auto;
+  left: 1px;
+  transform: rotate(-135deg);
+}
+.proc-section .proc-rail {
+  display: flex;
+  justify-content: center;
+  gap: 34px;
+  padding-block: 8px;
+}
+.proc-section .proc-link.is-down,
+.proc-section .proc-link.is-up {
+  width: 9px;
+}
+.proc-link.is-down::before,
+.proc-link.is-up::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 4px;
+  width: 1px;
+  background: currentColor;
+}
+.proc-link.is-back::before {
+  background: repeating-linear-gradient(to bottom, currentColor 0 3px, transparent 3px 6px);
+}
+.proc-link.is-down::after,
+.proc-link.is-up::after {
+  content: "";
+  position: absolute;
+  left: 1px;
+  width: 6px;
+  height: 6px;
+  transform: rotate(45deg);
+}
+.proc-link.is-down::after {
+  bottom: 1px;
+  border-right: 1px solid currentColor;
+  border-bottom: 1px solid currentColor;
+}
+.proc-link.is-up::after {
+  top: 1px;
+  border-left: 1px solid currentColor;
+  border-top: 1px solid currentColor;
+}
+.proc-section .proc-link > b {
+  position: absolute;
+  top: 50%;
+  left: 15px;
+  display: grid;
+  place-items: center;
+  width: 17px;
+  height: 17px;
+  translate: 0 -50%;
+  border: 1px dashed currentColor;
+  background: var(--panel);
+  color: var(--ink);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9px;
+  font-weight: 500;
+}
+.proc-link > i {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.proc-link[data-on="true"] > i {
+  opacity: 1;
+}
+.proc-link > i::before {
+  content: "";
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  background: var(--ink);
+}
+.proc-link.is-across > i::before {
+  top: 2px;
+  animation: proc-run-x 0.9s linear infinite;
+}
+.proc-link.is-across.is-reverse > i::before {
+  animation-name: proc-run-x-back;
+}
+.proc-link.is-down > i::before {
+  left: 2px;
+  animation: proc-run-y 0.9s linear infinite;
+}
+.proc-link.is-up > i::before {
+  left: 2px;
+  animation: proc-run-y-back 0.9s linear infinite;
+}
+@keyframes proc-run-x {
+  from {
+    left: -5px;
+  }
+  to {
+    left: 100%;
+  }
+}
+@keyframes proc-run-x-back {
+  from {
+    left: 100%;
+  }
+  to {
+    left: -5px;
+  }
+}
+@keyframes proc-run-y {
+  from {
+    top: -5px;
+  }
+  to {
+    top: 100%;
+  }
+}
+@keyframes proc-run-y-back {
+  from {
+    top: 100%;
+  }
+  to {
+    top: -5px;
+  }
+}
+/* The hub turns clockwise, the way the loop runs, while the tour plays. */
+.proc-section .proc-hub {
+  display: grid;
+  place-items: center;
+}
+.proc-hub > i {
+  position: relative;
+  width: 30px;
+  height: 30px;
+  border: 1px dashed color-mix(in srgb, var(--ink) 45%, transparent);
+  border-radius: 50%;
+  animation: proc-turn 12s linear infinite;
+}
+.proc-hub > i::after {
+  content: "";
+  position: absolute;
+  top: -3px;
+  left: 50%;
+  width: 5px;
+  height: 5px;
+  translate: -50% 0;
+  background: var(--ink);
+}
+.proc-section.is-manual .proc-hub > i {
+  animation-play-state: paused;
+}
+@keyframes proc-turn {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ---------- Legend and tour status ---------- */
+.proc-section .proc-legend {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding: 18px 0 0;
+  list-style: none;
+  border-top: 1px solid var(--line);
+}
+.proc-legend li {
+  display: grid;
+  grid-template-columns: 18px minmax(0, 1fr);
+  gap: 12px;
+  align-items: start;
+}
+.proc-legend b {
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  margin-top: 1px;
+  border: 1px dashed var(--ink);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9px;
+  font-weight: 500;
+}
+.proc-section .proc-legend p {
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+.proc-legend strong {
+  color: var(--ink);
+  font-weight: 500;
+}
+.proc-section .proc-tour {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 10px;
+  min-height: 40px;
+}
+.proc-tour-mark {
+  flex: none;
+  width: 7px;
+  height: 7px;
+  border: 1px solid var(--ink);
+  background: var(--ink);
+}
+.proc-tour-mark[data-state="running"] {
+  animation: proc-blink 1.6s step-end infinite;
+}
+.proc-tour-mark[data-state="waiting"] {
+  background: transparent;
+}
+.proc-tour-mark[data-state="stopped"] {
+  border-color: var(--muted);
+  background: var(--muted);
+}
+.proc-section .proc-tour p {
+  flex: 1;
+  min-width: 170px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+.proc-section .proc-resume {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 0 14px;
+  border: 1px solid var(--line);
+  background: var(--page);
+  color: var(--ink);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.proc-section .proc-resume:hover {
+  border-color: var(--ink);
+}
+@keyframes proc-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+/* ---------- Panel ---------- */
+.proc-section .proc-panel {
+  container: proc-panel / inline-size;
+  min-width: 0;
+  border: 1px solid var(--line);
+  background: var(--page);
+}
+.proc-section .proc-bar {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  min-height: 46px;
+  padding-left: 18px;
+  border-bottom: 1px solid var(--line);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.proc-bar strong {
+  color: var(--ink);
+  font-weight: 500;
+}
+.proc-bar i {
+  font-style: normal;
+}
+.proc-bar-state {
+  margin-left: auto;
+  padding-right: 18px;
+}
+.proc-bar-state[data-done="true"] {
+  color: var(--ink);
+}
+.proc-section .proc-replay {
+  align-self: stretch;
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 46px;
+  margin-left: -18px;
+  border: 0;
+  border-left: 1px solid var(--line);
+  background: transparent;
+  color: var(--muted);
+  transition:
+    color 0.2s,
+    background-color 0.2s;
+}
+.proc-section .proc-replay:hover {
+  color: var(--ink);
+  background: var(--panel);
+}
+.proc-section .proc-bar .proc-replay:focus-visible {
+  outline-offset: -4px;
+}
+.proc-section .proc-body {
+  display: grid;
+  gap: 26px;
+  padding: 30px 30px 32px;
+}
+.proc-section .proc-title {
+  max-width: 640px;
+  min-height: 2.24em;
+  font-size: clamp(24px, 2.2vw, 30px);
+  font-weight: 500;
+  line-height: 1.12;
+  letter-spacing: -0.045em;
+}
+.proc-section .proc-spec {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  min-height: 148px;
+  margin: 18px 0 0;
+  border-top: 1px solid var(--line);
+}
+.proc-section .proc-spec > div {
+  padding: 14px 20px 0 0;
+}
+.proc-section .proc-spec > div + div {
+  padding-left: 20px;
+  border-left: 1px solid var(--line);
+}
+.proc-section .proc-spec dt {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.proc-section .proc-spec dd {
+  margin: 6px 0 0;
+  font-size: 13px;
+  line-height: 1.65;
+  color: var(--ink);
+}
+.proc-swap {
+  animation: proc-swap 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@keyframes proc-swap {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+/* ---------- Artifact frame: dashed, on a faint drawing grid ---------- */
+.proc-section .proc-art {
+  margin: 0;
+  min-width: 0;
+  border: 1px dashed color-mix(in srgb, var(--ink) 30%, transparent);
+  background-color: var(--page);
+  background-image:
+    linear-gradient(color-mix(in srgb, var(--ink) 4.5%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--ink) 4.5%, transparent) 1px, transparent 1px);
+  background-size: 24px 24px;
+  background-position: -1px -1px;
+}
+.proc-art-bar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 4px 12px;
+  padding: 10px 14px;
+  border-bottom: 1px dashed color-mix(in srgb, var(--ink) 30%, transparent);
+  background: var(--page);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.proc-art-body {
+  display: grid;
+  align-content: center;
+  min-height: 320px;
+  padding: 24px 22px;
+}
+.proc-section .proc-art-caption {
+  display: grid;
+  gap: 4px;
+  padding: 10px 14px 12px;
+  border-top: 1px dashed color-mix(in srgb, var(--ink) 30%, transparent);
+  background: var(--page);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+.proc-section .proc-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Typed text: the full string is laid out invisibly so lines never reflow. */
+.proc-typed {
+  display: inline-grid;
+}
+.proc-typed > span {
+  grid-area: 1 / 1;
+}
+.proc-typed-ghost {
+  visibility: hidden;
+}
+.proc-caret {
+  display: inline-block;
+  width: 6px;
+  height: 1.1em;
+  margin-left: 2px;
+  vertical-align: -0.2em;
+  background: var(--ink);
+  animation: proc-blink 1s step-end infinite;
+}
+
+/* ---------- Configure: contract ---------- */
+.proc-contract {
+  justify-self: center;
+  width: 100%;
+  max-width: 620px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.proc-field {
+  display: grid;
+  grid-template-columns: 104px minmax(0, 1fr) 18px;
+  gap: 4px 14px;
+  align-items: center;
+  padding: 11px 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--ink) 10%, transparent);
+}
+.proc-field-key {
+  font-size: 9px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.proc-field-value {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+  min-height: 22px;
+  min-width: 0;
+  color: var(--ink);
+}
+.proc-field[data-state="pending"] .proc-field-value {
+  box-shadow: inset 0 -1px 0 color-mix(in srgb, var(--ink) 18%, transparent);
+}
+.proc-field-mark {
+  justify-self: end;
+  color: var(--muted);
+}
+.proc-field[data-state="set"] .proc-field-key,
+.proc-field[data-state="writing"] .proc-field-key,
+.proc-field[data-state="set"] .proc-field-mark {
+  color: var(--ink);
+}
+.proc-field[data-state="set"] .proc-field-mark {
+  animation: proc-tick 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes proc-tick {
+  from {
+    transform: scale(1.8);
+  }
+}
+.proc-field-note {
+  grid-column: 2;
+  font-size: 10px;
+  color: var(--muted);
+}
+.proc-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+.proc-chips > span {
+  padding: 1px 7px;
+  border: 1px solid var(--ink);
+  opacity: 0;
+  transform: translateY(3px);
+  transition:
+    opacity 0.25s,
+    transform 0.25s;
+}
+.proc-chips > span.is-on {
+  opacity: 1;
+  transform: none;
+}
+.proc-tools {
+  display: grid;
+  grid-template-columns: repeat(16, 10px);
+  gap: 3px;
+}
+.proc-tools > i {
+  height: 10px;
+  border: 1px solid color-mix(in srgb, var(--ink) 30%, transparent);
+  transition:
+    background-color 0.15s,
+    border-color 0.15s;
+}
+.proc-tools > i.is-on {
+  border-color: var(--ink);
+  background: var(--ink);
+}
+.proc-tools-count {
+  font-size: 10px;
+  color: var(--muted);
+}
+.proc-contract-foot {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 16px;
+  padding: 10px 12px;
+  border: 1px dashed color-mix(in srgb, var(--ink) 35%, transparent);
+  font-size: 10px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.proc-contract-foot i {
+  font-style: normal;
+}
+.proc-contract-foot[data-ready="true"] {
+  border: 1px solid var(--ink);
+  background: var(--ink);
+  color: var(--page);
+  animation: proc-stamp 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes proc-stamp {
+  from {
+    opacity: 0.3;
+    transform: scale(1.03);
+  }
+}
+
+/* ---------- Build: retrieval graph ---------- */
+.proc-pipeline {
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+  width: 100%;
+}
+.proc-graph {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+.proc-pipeline.is-wide .proc-graph {
+  max-width: 760px;
+}
+.proc-pipeline.is-tall .proc-graph {
+  max-width: 360px;
+}
+.proc-graph text {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 11px;
+  text-anchor: middle;
+  fill: var(--ink);
+}
+.proc-edge-ghost {
+  fill: none;
+  stroke: color-mix(in srgb, var(--ink) 22%, transparent);
+  stroke-width: 1;
+  stroke-dasharray: 2 3;
+}
+.proc-edge {
+  fill: none;
+  stroke: color-mix(in srgb, var(--ink) 55%, transparent);
+  stroke-width: 1;
+  stroke-dasharray: 1;
+  animation: proc-draw 0.5s ease-out both;
+  transition: stroke 0.3s;
+}
+.proc-graph.is-flowing .is-route .proc-edge {
+  stroke: var(--ink);
+}
+@keyframes proc-draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+.proc-arrowhead {
+  fill: var(--ink);
+}
+.proc-graph-box {
+  fill: color-mix(in srgb, var(--ink) 3%, transparent);
+  stroke: color-mix(in srgb, var(--ink) 25%, transparent);
+  stroke-width: 1;
+  stroke-dasharray: 4 3;
+  transition: stroke 0.3s;
+}
+.proc-graph-box.is-on {
+  stroke: color-mix(in srgb, var(--ink) 60%, transparent);
+}
+.proc-graph .proc-graph-boxlabel {
+  font-size: 9px;
+  letter-spacing: 0.04em;
+  fill: var(--muted);
+}
+.proc-node rect {
+  fill: var(--page);
+  stroke: color-mix(in srgb, var(--ink) 40%, transparent);
+  stroke-width: 1;
+  stroke-dasharray: 3 3;
+  transition:
+    fill 0.3s,
+    stroke 0.3s;
+}
+.proc-graph .proc-node text {
+  fill: color-mix(in srgb, var(--ink) 42%, transparent);
+  transition: fill 0.3s;
+}
+.proc-node.is-on {
+  animation: proc-node-in 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes proc-node-in {
+  from {
+    opacity: 0.25;
+  }
+}
+.proc-node.is-on rect {
+  stroke: var(--ink);
+  stroke-dasharray: none;
+}
+.proc-graph .proc-node.is-on text {
+  fill: var(--ink);
+}
+/* The query and the answer are the two ends: drawn in ink. */
+.proc-node.is-input.is-on rect,
+.proc-node.is-output.is-on rect {
+  fill: var(--ink);
+}
+.proc-graph .proc-node.is-input.is-on text,
+.proc-graph .proc-node.is-output.is-on text {
+  fill: var(--page);
+}
+/* A query arriving flips the answer and its citations for a moment. */
+.proc-node.is-output.is-hit rect {
+  fill: var(--page);
+}
+.proc-graph .proc-node.is-output.is-hit text {
+  fill: var(--ink);
+}
+.proc-cite {
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.proc-cite.is-on {
+  opacity: 1;
+}
+.proc-cite rect {
+  fill: var(--page);
+  stroke: var(--ink);
+  stroke-width: 1;
+  transition: fill 0.2s;
+}
+.proc-graph .proc-cite text {
+  font-size: 9px;
+}
+.proc-node.is-output.is-hit ~ .proc-cite rect {
+  fill: var(--ink);
+}
+.proc-graph .proc-node.is-output.is-hit ~ .proc-cite text {
+  fill: var(--page);
+}
+.proc-packet {
+  fill: var(--ink);
+  stroke: var(--page);
+  stroke-width: 2;
+  paint-order: stroke;
+}
+.proc-section .proc-graph-status {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  text-align: center;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.proc-graph-status[data-done="true"] {
+  color: var(--ink);
+}
+
+/* ---------- Evaluate: scorecard ---------- */
+.proc-score {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 32px;
+  align-items: center;
+  width: 100%;
+}
+.proc-score-board {
+  display: grid;
+  gap: 12px;
+}
+.proc-section .proc-score-phase {
+  min-height: 1.6em;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+.proc-cells {
+  display: grid;
+  grid-template-columns: repeat(11, minmax(0, 1fr));
+  gap: 4px;
+  max-width: 400px;
+}
+.proc-cell {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1;
+  border: 1px dashed color-mix(in srgb, var(--ink) 28%, transparent);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 11px;
+  font-style: normal;
+  line-height: 1;
+  color: var(--ink);
+  transition:
+    background-color 0.2s,
+    border-color 0.2s;
+}
+.proc-cell.is-hit,
+.proc-cell.is-fixed {
+  border: 1px solid var(--ink);
+  background: var(--ink);
+}
+.proc-cell.is-miss {
+  border: 1px solid var(--ink);
+}
+.proc-cell.is-sent {
+  border: 1px dashed var(--ink);
+}
+/* Fixed cells keep a hole: they were misses until the hybrid run. */
+.proc-cell.is-fixed::after {
+  content: "";
+  width: 32%;
+  height: 32%;
+  background: var(--page);
+}
+.proc-cell.is-cursor {
+  outline: 1px solid var(--ink);
+  outline-offset: 2px;
+}
+.proc-cells.is-sending .proc-cell.is-sent {
+  animation: proc-send 0.9s ease-in-out infinite;
+}
+@keyframes proc-send {
+  50% {
+    transform: translateY(-3px);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--ink) 18%, transparent);
+  }
+}
+.proc-section .proc-cell-key {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9px;
+  color: var(--muted);
+}
+.proc-cell-key > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.proc-cell-key .proc-cell {
+  width: 11px;
+  font-size: 8px;
+}
+.proc-score-table {
+  display: grid;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 11px;
+}
+.proc-score-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  align-items: baseline;
+  padding: 10px 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--ink) 12%, transparent);
+  color: var(--ink);
+}
+.proc-score-row.is-head {
+  padding-top: 0;
+  font-size: 9px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.proc-score-row > span:not(:first-child) {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.proc-score-row small {
+  display: block;
+  font-size: 9px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.proc-section .proc-score-gate {
+  margin-top: 14px;
+  padding: 9px 12px;
+  border: 1px dashed color-mix(in srgb, var(--ink) 35%, transparent);
+  font-size: 10px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.proc-score-gate[data-pass="true"] {
+  border: 1px solid var(--ink);
+  background: var(--ink);
+  color: var(--page);
+}
+
+/* ---------- Deploy: CI log ---------- */
+.proc-ci {
+  display: grid;
+  gap: 14px;
+  justify-self: center;
+  width: 100%;
+  max-width: 560px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 11px;
+}
+.proc-section .proc-ci-log {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.proc-ci-log li {
+  display: grid;
+  grid-template-columns: 18px minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: baseline;
+  padding: 8px 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--ink) 10%, transparent);
+  color: var(--ink);
+  transition: opacity 0.3s;
+}
+.proc-ci-log li[data-state="queued"] {
+  opacity: 0.45;
+}
+.proc-ci-result {
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+.proc-ci-log li[data-state="done"] .proc-ci-result {
+  color: var(--ink);
+}
+.proc-ci-progress {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  font-size: 9px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.proc-ci-bar {
+  display: block;
+  height: 6px;
+  border: 1px solid var(--ink);
+  overflow: hidden;
+}
+.proc-ci-bar > span {
+  display: block;
+  height: 100%;
+  background: var(--ink);
+  transform-origin: left;
+  transition: transform 0.12s linear;
+}
+.proc-section .proc-ci-live {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 10px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.proc-ci-live[data-on="true"] {
+  color: var(--ink);
+}
+.proc-live-dot {
+  flex: none;
+  width: 7px;
+  height: 7px;
+  border: 1px solid currentColor;
+}
+.proc-ci-live[data-on="true"] .proc-live-dot {
+  background: var(--ink);
+  animation: proc-blink 1.6s step-end infinite;
+}
+
+/* ---------- Narrow panels (tablet side column, phones) ---------- */
+@container proc-panel (max-width: 700px) {
+  .proc-score {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 22px;
+  }
+}
+@container proc-panel (max-width: 620px) {
+  .proc-section .proc-body {
+    gap: 20px;
+    padding: 22px 16px 24px;
+  }
+  .proc-section .proc-spec {
+    grid-template-columns: minmax(0, 1fr);
+    min-height: 0;
+  }
+  .proc-section .proc-spec > div {
+    padding: 12px 0;
+  }
+  .proc-section .proc-spec > div + div {
+    padding-left: 0;
+    border-left: 0;
+    border-top: 1px solid var(--line);
+  }
+  .proc-section .proc-bar {
+    gap: 12px;
+    padding-left: 14px;
+  }
+  .proc-bar-project {
+    display: none;
+  }
+  .proc-art-body {
+    min-height: 340px;
+    padding: 18px 14px;
+  }
+  .proc-field {
+    grid-template-columns: 76px minmax(0, 1fr) 14px;
+    gap: 4px 10px;
+  }
+  .proc-tools {
+    grid-template-columns: repeat(8, 10px);
+  }
+}
+
+/* A slimmer map leaves the artifact room for the wide graph. */
+@media (max-width: 1280px) {
+  .proc-section .proc-grid {
+    grid-template-columns: minmax(0, 340px) minmax(0, 1fr);
+    gap: 40px;
+  }
+}
+@media (max-width: 1100px) {
+  .proc-section .proc-head {
+    gap: 32px;
+  }
+  .proc-section .proc-grid {
+    grid-template-columns: minmax(0, 300px) minmax(0, 1fr);
+    gap: 28px;
+  }
+  .proc-section .proc-tab {
+    min-height: 112px;
+  }
+  .proc-tab-name {
+    font-size: 20px;
+  }
+}
+@media (max-width: 767px) {
+  .ordo-flow.proc-section {
+    padding-block: 56px 64px;
+  }
+  .proc-section .proc-h2 {
+    font-size: 32px;
+  }
+  .proc-section .proc-head {
+    display: grid;
+    gap: 20px;
+  }
+  .proc-section .proc-intro {
+    max-width: 460px;
+  }
+  .proc-section .proc-grid {
+    grid-template-columns: minmax(0, 1fr);
+    margin-top: 36px;
+  }
+  .proc-section .proc-side {
+    position: static;
+    gap: 20px;
+  }
+  .proc-section .proc-map {
+    grid-template-columns: minmax(0, 1fr) 34px minmax(0, 1fr);
+    grid-template-rows: auto 60px auto;
+  }
+  .proc-section .proc-tab {
+    gap: 6px;
+    min-height: 98px;
+    padding: 12px 12px 14px;
+  }
+  .proc-tab-top {
+    font-size: 8px;
+  }
+  .proc-tab-name {
+    font-size: 19px;
+  }
+  .proc-section .proc-link.is-across {
+    margin-inline: 5px;
+  }
+}
+
+/* ---------- Motion states ----------
+   Off screen: the loops wait. Paused page-wide or reduced motion: entrance
+   animations are dropped so nothing is left at its hidden first frame. */
+.proc-section.is-offscreen .proc-hub > i,
+.proc-section.is-offscreen .proc-link > i::before,
+.proc-section.is-offscreen .proc-caret,
+.proc-section.is-offscreen .proc-tour-mark,
+.proc-section.is-offscreen .proc-cell,
+.proc-section.is-offscreen .proc-live-dot {
+  animation-play-state: paused;
+}
+.proc-section.is-still .proc-swap,
+.proc-section.is-still .proc-node,
+.proc-section.is-still .proc-edge,
+.proc-section.is-still .proc-field-mark,
+.proc-section.is-still .proc-contract-foot {
+  animation: none;
+}

@@ -332,6 +332,7 @@ export const memoryStrategies = [
     name: "Adaptive memory",
     sends: [6, 7, 8, 9, 10, 11],
     records: [
+      "Task: lesson summary on photosynthesis · active · from #1",
       "Audience: school students · active · from #3",
       "Tone: friendly · active · replaces formal (#1)",
       "Quiz at the end · active · from #5",

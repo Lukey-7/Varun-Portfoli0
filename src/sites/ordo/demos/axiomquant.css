@@ -1,0 +1,598 @@
+/* AxiomQuant demo: an equity curve on random prices, three sliders and a
+   41-pair parameter sweep. Layout follows the demo's own width (container
+   queries), because it sits in a dialog as often as in a page column. */
+.aq-demo .aq-layout {
+  container-type: inline-size;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 18px;
+}
+/* The shared Reset button is 34px tall; give it a 40px touch target here. */
+.aq-demo .demo-reset {
+  min-height: 40px;
+}
+.aq-demo .aq-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---------- Market row and the plain statement of the lesson ---------- */
+.aq-demo .aq-market {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 16px;
+}
+.aq-demo .aq-market-label {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  line-height: 1.6;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.aq-demo .aq-market-label strong {
+  font-weight: 500;
+  color: var(--ink);
+}
+.aq-demo .aq-market-text {
+  display: grid;
+  flex: 1 1 300px;
+  gap: 2px;
+  min-width: 0;
+  max-width: 600px;
+}
+.aq-demo .aq-market .demo-btn {
+  font-size: 12px;
+}
+.aq-demo .aq-luck {
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+/* ---------- Equity chart ---------- */
+.aq-demo .aq-top {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 20px;
+}
+.aq-demo .aq-chart,
+.aq-demo .aq-plot {
+  min-width: 0;
+  margin: 0;
+}
+.aq-demo .aq-equity {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+.aq-demo .aq-oos {
+  fill: color-mix(in srgb, var(--ink) 5%, transparent);
+}
+.aq-demo .aq-gridline {
+  stroke: var(--line);
+  stroke-width: 1;
+}
+.aq-demo .aq-baseline {
+  stroke: var(--muted);
+  stroke-width: 1;
+  stroke-dasharray: 2 3;
+}
+.aq-demo .aq-split {
+  stroke: var(--ink);
+  stroke-width: 1;
+  stroke-dasharray: 3 3;
+}
+.aq-demo .aq-tick {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9px;
+  fill: var(--muted);
+}
+/* Region labels sit in HTML above the plot; the right one carries the split line up. */
+.aq-demo .aq-regions {
+  display: grid;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9px;
+  line-height: 1.4;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.aq-demo .aq-regions > span {
+  padding: 0 8px 6px 2px;
+}
+.aq-demo .aq-regions > span:last-child {
+  padding: 0 0 6px 6px;
+  border-left: 1px dashed var(--ink);
+}
+.aq-demo .aq-line {
+  fill: none;
+  stroke-linejoin: round;
+}
+.aq-demo .aq-line.is-net {
+  stroke: var(--ink);
+  stroke-width: 1.6;
+}
+.aq-demo .aq-line.is-gross {
+  stroke: var(--muted);
+  stroke-width: 1.1;
+  stroke-dasharray: 5 3;
+}
+.aq-demo .aq-line.is-hold {
+  stroke: var(--subtle);
+  stroke-width: 1.4;
+  stroke-dasharray: 0.1 3.2;
+  stroke-linecap: round;
+}
+.aq-demo .aq-longs rect,
+.aq-demo .aq-key-long {
+  fill: color-mix(in srgb, var(--ink) 55%, transparent);
+  background: color-mix(in srgb, var(--ink) 55%, transparent);
+}
+.aq-demo .aq-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.aq-demo .aq-legend li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.aq-demo .aq-legend strong {
+  font-weight: 500;
+  color: var(--ink);
+}
+.aq-demo .aq-legend svg {
+  width: 20px;
+  height: 6px;
+  overflow: visible;
+}
+.aq-demo .aq-key-long {
+  display: inline-block;
+  width: 12px;
+  height: 5px;
+}
+
+/* ---------- Sliders ---------- */
+.aq-demo .aq-controls {
+  display: grid;
+  gap: 4px;
+  align-content: start;
+}
+.aq-demo .aq-field-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+.aq-demo .aq-field label {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.aq-demo .aq-field output {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+/* A 40px-tall hit area around a 1px-style track and a square thumb. */
+.aq-demo .aq-range {
+  --fill: 50%;
+  display: block;
+  width: 100%;
+  height: 40px;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  -webkit-appearance: none;
+  appearance: none;
+  cursor: pointer;
+}
+.aq-demo .aq-range::-webkit-slider-runnable-track {
+  height: 2px;
+  background: linear-gradient(to right, var(--ink) var(--fill), var(--line) var(--fill));
+}
+.aq-demo .aq-range::-moz-range-track {
+  height: 2px;
+  background: linear-gradient(to right, var(--ink) var(--fill), var(--line) var(--fill));
+}
+.aq-demo .aq-range::-webkit-slider-thumb {
+  width: 14px;
+  height: 14px;
+  margin-top: -6px;
+  border: 0;
+  border-radius: 0;
+  background: var(--ink);
+  -webkit-appearance: none;
+  appearance: none;
+}
+.aq-demo .aq-range::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border: 0;
+  border-radius: 0;
+  background: var(--ink);
+}
+.aq-demo .aq-rule {
+  margin-top: 6px;
+  font-size: 12px;
+  line-height: 1.55;
+  color: var(--muted);
+}
+
+/* ---------- Readouts ---------- */
+.aq-demo .aq-stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 0;
+  border-block: 1px solid var(--line);
+}
+.aq-demo .aq-stats > div {
+  min-width: 0;
+  padding: 12px 10px 12px 0;
+}
+.aq-demo .aq-stats > div:nth-child(even) {
+  padding-left: 12px;
+  border-left: 1px solid var(--line);
+}
+.aq-demo .aq-stats > div:nth-child(n + 3) {
+  border-top: 1px solid var(--line);
+}
+.aq-demo .aq-stats > div:last-child:nth-child(odd) {
+  grid-column: 1 / -1;
+}
+.aq-demo .aq-stats dt {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.aq-demo .aq-stats dd {
+  margin: 6px 0 0;
+  font-size: 22px;
+  letter-spacing: -0.04em;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+.aq-demo .aq-stats small {
+  display: block;
+  margin-top: 4px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9px;
+  letter-spacing: 0.02em;
+  color: var(--muted);
+}
+
+/* ---------- Sweep ---------- */
+.aq-demo .aq-sweep {
+  display: grid;
+  gap: 12px;
+  padding-top: 16px;
+  border-top: 1px dashed var(--line);
+}
+.aq-demo .aq-sweep > h4 {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  font-weight: 400;
+  line-height: 1.6;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.aq-demo .aq-sweep-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas: "actions" "table" "verdict";
+  gap: 18px;
+}
+.aq-demo .aq-sweep-actions {
+  grid-area: actions;
+  display: grid;
+  justify-items: start;
+  align-content: start;
+  gap: 10px;
+}
+.aq-demo .aq-heat-wrap {
+  grid-area: table;
+  min-width: 0;
+}
+.aq-demo .aq-verdict {
+  grid-area: verdict;
+  display: grid;
+  align-content: start;
+  gap: 16px;
+  min-width: 0;
+}
+.aq-demo .aq-copy {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+.aq-demo .aq-sweep-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+}
+.aq-demo .demo-btn[aria-disabled="true"] {
+  opacity: 0.55;
+  cursor: progress;
+}
+.aq-demo .aq-progress {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+.aq-demo .aq-stale {
+  padding-left: 10px;
+  border-left: 2px solid var(--ink);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  line-height: 1.6;
+}
+
+/* Heatmap: a real table, so every value has a row and a column header. */
+.aq-demo .aq-heat {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: separate;
+  border-spacing: 2px;
+  font-family: "IBM Plex Mono", monospace;
+}
+.aq-demo .aq-heat caption {
+  caption-side: top;
+  padding: 0 2px 6px;
+  text-align: left;
+  font-size: 9px;
+  line-height: 1.5;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.aq-demo .aq-heat .aq-col-head {
+  width: 38px;
+}
+.aq-demo .aq-heat th {
+  height: 16px;
+  padding: 0 2px;
+  font-size: 9px;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  text-align: center;
+  color: var(--muted);
+}
+.aq-demo .aq-heat th[scope="colgroup"],
+.aq-demo .aq-heat th[scope="col"]:first-child {
+  text-transform: uppercase;
+}
+.aq-demo .aq-heat th[scope="col"]:first-child,
+.aq-demo .aq-heat th[scope="row"] {
+  padding-right: 6px;
+  text-align: right;
+}
+.aq-demo .aq-cell {
+  height: 24px;
+  padding: 0;
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  white-space: nowrap;
+  color: var(--ink);
+  background: color-mix(in srgb, var(--ink) 4%, var(--page));
+}
+.aq-demo .aq-cell.is-pending,
+.aq-demo .aq-cell.is-na {
+  color: var(--muted);
+}
+.aq-demo .aq-cell.is-na {
+  background: none;
+}
+/* Six shades: hatched below -0.25, outlined to 0, then darker fills.
+   Text flips to the page colour where the fill is dark enough to need it. */
+.aq-demo .aq-l0 {
+  background: repeating-linear-gradient(
+    -45deg,
+    color-mix(in srgb, var(--ink) 22%, var(--page)) 0 1px,
+    var(--page) 1px 5px
+  );
+}
+.aq-demo .aq-l1 {
+  background: var(--page);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+.aq-demo .aq-l2 {
+  background: color-mix(in srgb, var(--ink) 20%, var(--page));
+}
+.aq-demo .aq-l3 {
+  background: color-mix(in srgb, var(--ink) 36%, var(--page));
+}
+.aq-demo .aq-l4 {
+  background: color-mix(in srgb, var(--ink) 66%, var(--page));
+  color: var(--page);
+}
+.aq-demo .aq-l5 {
+  background: color-mix(in srgb, var(--ink) 88%, var(--page));
+  color: var(--page);
+}
+/* A ring with a page-coloured gap stays visible on light and dark cells. */
+.aq-demo .aq-cell.is-best {
+  position: relative;
+  z-index: 1;
+  font-weight: 500;
+  box-shadow: 0 0 0 2px var(--page), 0 0 0 4px var(--ink);
+}
+.aq-demo .aq-cell.aq-l1.is-best {
+  box-shadow: inset 0 0 0 1px var(--line), 0 0 0 2px var(--page), 0 0 0 4px var(--ink);
+}
+.aq-demo .aq-cell.is-head {
+  outline: 1px dashed var(--ink);
+  outline-offset: 1px;
+}
+.aq-demo.is-animated .aq-cell {
+  transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+}
+.aq-demo .aq-scale {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  row-gap: 4px;
+  max-width: 240px;
+  margin-top: 12px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9px;
+  color: var(--muted);
+}
+.aq-demo .aq-scale i {
+  grid-row: 1;
+  height: 10px;
+}
+.aq-demo .aq-scale span {
+  grid-row: 2;
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* The pick: in-sample against out-of-sample Sharpe. */
+.aq-demo .aq-pick {
+  padding: 14px;
+  border: 1px solid var(--ink);
+}
+.aq-demo.is-animated .aq-pick {
+  animation: aq-reveal 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes aq-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+.aq-demo .aq-pick-title,
+.aq-demo .aq-tally-title {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9px;
+  line-height: 1.6;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.aq-demo .aq-tally-title {
+  color: var(--muted);
+}
+.aq-demo .aq-pick-pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  margin-top: 12px;
+}
+.aq-demo .aq-pick-pair > div + div {
+  padding-left: 14px;
+  border-left: 1px solid var(--line);
+}
+.aq-demo .aq-pick-pair span {
+  display: block;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.aq-demo .aq-pick-pair strong {
+  display: block;
+  margin-top: 4px;
+  font-size: 28px;
+  font-weight: 400;
+  letter-spacing: -0.05em;
+  line-height: 1.05;
+  font-variant-numeric: tabular-nums;
+}
+.aq-demo .aq-pick > p:last-child {
+  margin-top: 12px;
+  font-size: 12px;
+  line-height: 1.55;
+  color: var(--muted);
+}
+
+/* Tally across markets: a sentence and the averages behind it. */
+.aq-demo .aq-tally {
+  display: grid;
+  gap: 6px;
+}
+.aq-demo .aq-tally-line {
+  font-size: 14px;
+  line-height: 1.5;
+}
+.aq-demo .aq-tally-line strong {
+  font-weight: 500;
+}
+.aq-demo .aq-tally-note {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+
+/* ---------- Narrow and wide demos ---------- */
+@container (max-width: 459px) {
+  .aq-demo .aq-years {
+    display: none;
+  }
+}
+@container (min-width: 560px) {
+  .aq-demo .aq-stats {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+  .aq-demo .aq-stats > div:nth-child(n) {
+    padding: 12px 10px 12px 14px;
+    border-top: 0;
+    border-left: 1px solid var(--line);
+  }
+  .aq-demo .aq-stats > div:first-child {
+    padding-left: 0;
+    border-left: 0;
+  }
+  .aq-demo .aq-stats > div:last-child:nth-child(odd) {
+    grid-column: auto;
+  }
+}
+@container (min-width: 700px) {
+  .aq-demo .aq-top {
+    grid-template-columns: minmax(0, 1fr) 248px;
+    gap: 24px;
+  }
+  /* The table spans both rows; the 1fr row soaks up its extra height so the
+     verdict stays close under the button. */
+  .aq-demo .aq-sweep-grid {
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    grid-template-rows: auto 1fr;
+    grid-template-areas: "table actions" "table verdict";
+    align-items: start;
+    gap: 16px 28px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aq-demo *,
+  .aq-demo *::before,
+  .aq-demo *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
