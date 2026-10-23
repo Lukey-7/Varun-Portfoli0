@@ -1,0 +1,123 @@
+/* ---------- Hero: the knot of light ---------- */
+.hero-field {
+  --field-colour: var(--accent);
+  --field-hot: var(--ink);
+  --field-mode: dark;
+  --bracket: color-mix(in srgb, var(--accent) 65%, transparent);
+  position: relative;
+  width: 100%;
+  height: 100%;
+  cursor: crosshair;
+  touch-action: pan-y;
+  user-select: none;
+  /* HUD corner brackets: two thin bars per corner. */
+  background:
+    linear-gradient(var(--bracket), var(--bracket)) top left / 18px 1px no-repeat,
+    linear-gradient(var(--bracket), var(--bracket)) top left / 1px 18px no-repeat,
+    linear-gradient(var(--bracket), var(--bracket)) top right / 18px 1px no-repeat,
+    linear-gradient(var(--bracket), var(--bracket)) top right / 1px 18px no-repeat,
+    linear-gradient(var(--bracket), var(--bracket)) bottom left / 18px 1px no-repeat,
+    linear-gradient(var(--bracket), var(--bracket)) bottom left / 1px 18px no-repeat,
+    linear-gradient(var(--bracket), var(--bracket)) bottom right / 18px 1px no-repeat,
+    linear-gradient(var(--bracket), var(--bracket)) bottom right / 1px 18px no-repeat;
+}
+.cyan-edition[data-theme="light"] .hero-field {
+  --field-mode: light;
+}
+.hero-field:active {
+  cursor: grabbing;
+}
+.hero-field-gl,
+.hero-field-overlay {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.hero-field-overlay {
+  pointer-events: none;
+}
+
+/* Without WebGL2: the knot as a moving vector outline. */
+.hero-field-fallback {
+  display: none;
+  position: absolute;
+  inset: 12%;
+  width: 76%;
+  height: 76%;
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 0.012;
+  stroke-dasharray: 0.05 0.035;
+  animation: field-dash 9s linear infinite;
+}
+.hero-field-gl[data-gl="off"] ~ .hero-field-fallback {
+  display: block;
+}
+@keyframes field-dash {
+  to {
+    stroke-dashoffset: -1.7;
+  }
+}
+
+.hero-field-hud,
+.hero-field-controls {
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  z-index: 2;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  font-size: 9px;
+  letter-spacing: 0.06em;
+  color: var(--subtle);
+  white-space: nowrap;
+}
+.hero-field-hud {
+  top: 12px;
+  pointer-events: none;
+}
+.hero-field-controls {
+  bottom: 12px;
+}
+.hero-field-controls > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  pointer-events: none;
+}
+.hero-field-toggle {
+  flex: none;
+  white-space: nowrap;
+  min-height: 36px;
+  padding: 0 14px;
+  border: 1px solid var(--bracket);
+  background: color-mix(in srgb, var(--page) 70%, transparent);
+  color: var(--accent);
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  backdrop-filter: blur(6px);
+  transition: background 0.2s, color 0.2s;
+}
+.hero-field-toggle:hover,
+.hero-field-toggle[aria-pressed="true"] {
+  background: var(--accent);
+  color: var(--page);
+}
+
+@media (max-width: 767px) {
+  .hero-field-controls > span {
+    display: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-field-fallback {
+    animation: none;
+  }
+}
+.hero-field-rate {
+  color: var(--phosphor, #f0b04a);
+  font-variant-numeric: tabular-nums;
+}

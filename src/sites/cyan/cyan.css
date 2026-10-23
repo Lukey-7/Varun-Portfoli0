@@ -2270,3 +2270,237 @@ html[data-portfolio-theme] {
   outline: none;
   box-shadow: none;
 }
+
+/* ---------- One switch pauses every animation (WCAG 2.2.2) ---------- */
+html[data-motion="paused"] .cyan-edition *,
+html[data-motion="paused"] .cyan-edition *::before,
+html[data-motion="paused"] .cyan-edition *::after {
+  animation-play-state: paused !important;
+}
+.cyan-edition .motion-toggle:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ================= Instrument at night: tokens and texture =================
+   Light appears only where there is signal. Cyan is live signal; phosphor
+   amber is reserved for measurements and readouts. */
+.cyan-edition {
+  --phosphor: #f0b04a;
+  --grid-minor: color-mix(in srgb, var(--ink) 2.4%, transparent);
+  --grid-major: color-mix(in srgb, var(--ink) 4.5%, transparent);
+  --grid-probe: color-mix(in srgb, var(--accent) 22%, transparent);
+  --cx: -999px;
+  --cy: -999px;
+  position: relative;
+  isolation: isolate;
+}
+.cyan-edition[data-theme="light"] {
+  /* Darker than the dark theme's amber so 9px readouts keep 4.5:1 on panels. */
+  --phosphor: #8f5208;
+  --grid-minor: color-mix(in srgb, var(--ink) 4%, transparent);
+  --grid-major: color-mix(in srgb, var(--ink) 7%, transparent);
+  --grid-probe: color-mix(in srgb, var(--accent) 26%, transparent);
+}
+/* The graticule: minor divisions every 24px, major every 120px. A second copy,
+   masked to a circle around the pointer, brightens where the visitor probes. */
+.cyan-edition::before,
+.cyan-edition::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+.cyan-edition::before {
+  background-image:
+    linear-gradient(var(--grid-major) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-major) 1px, transparent 1px),
+    linear-gradient(var(--grid-minor) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-minor) 1px, transparent 1px);
+  background-size: 120px 120px, 120px 120px, 24px 24px, 24px 24px;
+  /* Fade the grid out towards the edges so it reads as a screen, not wallpaper. */
+  mask-image: radial-gradient(ellipse 90% 80% at 50% 40%, #000 30%, transparent 100%);
+}
+.cyan-edition::after {
+  background-image:
+    linear-gradient(var(--grid-probe) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-probe) 1px, transparent 1px);
+  background-size: 24px 24px;
+  mask-image: radial-gradient(220px circle at var(--cx) var(--cy), #000, transparent 75%);
+}
+/* Fine grain over everything, static, so dark gradients don't band. */
+.cyan-edition > main::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.9 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+.cyan-edition[data-theme="light"] > main::before {
+  opacity: 0.035;
+  filter: invert(1);
+}
+.cyan-edition > main,
+.cyan-edition > footer {
+  position: relative;
+  z-index: 1;
+}
+@media (hover: none) {
+  .cyan-edition::after {
+    display: none;
+  }
+}
+
+/* Header: room for the pause control without wrapping. */
+.cyan-edition .header-contact,
+.cyan-edition .palette-trigger {
+  white-space: nowrap;
+}
+@media (max-width: 1180px) {
+  .cyan-edition .desktop-links {
+    gap: 26px;
+  }
+}
+@media (min-width: 768px) and (max-width: 980px) {
+  .cyan-edition .palette-trigger .mono {
+    display: none;
+  }
+}
+
+/* ---------- Project cards: hovering is a probe ---------- */
+.cyan-edition .project-illustration {
+  --bracket: color-mix(in srgb, var(--accent) 70%, transparent);
+}
+.cyan-edition .project-illustration::before {
+  content: "";
+  position: absolute;
+  inset: 10px;
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0;
+  transform: scale(1.03);
+  transition: opacity 240ms, transform 240ms cubic-bezier(0.16, 1, 0.3, 1);
+  background:
+    linear-gradient(var(--bracket), var(--bracket)) top left / 16px 1px no-repeat,
+    linear-gradient(var(--bracket), var(--bracket)) top left / 1px 16px no-repeat,
+    linear-gradient(var(--bracket), var(--bracket)) top right / 16px 1px no-repeat,
+    linear-gradient(var(--bracket), var(--bracket)) top right / 1px 16px no-repeat,
+    linear-gradient(var(--bracket), var(--bracket)) bottom left / 16px 1px no-repeat,
+    linear-gradient(var(--bracket), var(--bracket)) bottom left / 1px 16px no-repeat,
+    linear-gradient(var(--bracket), var(--bracket)) bottom right / 16px 1px no-repeat,
+    linear-gradient(var(--bracket), var(--bracket)) bottom right / 1px 16px no-repeat;
+}
+.cyan-edition .project-open:hover .project-illustration::before,
+.cyan-edition .project-open:focus-visible .project-illustration::before {
+  opacity: 1;
+  transform: none;
+}
+.probe-scan {
+  position: absolute;
+  inset: 0 0 auto;
+  z-index: 1;
+  height: 32%;
+  pointer-events: none;
+  opacity: 0;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    color-mix(in srgb, var(--accent) 12%, transparent) 82%,
+    color-mix(in srgb, var(--accent) 55%, transparent) 100%
+  );
+  transform: translateY(-110%);
+}
+.cyan-edition .project-open:hover .probe-scan,
+.cyan-edition .project-open:focus-visible .probe-scan {
+  animation: probe-sweep 900ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+@keyframes probe-sweep {
+  0% {
+    opacity: 1;
+    transform: translateY(-110%);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(360%);
+  }
+}
+.probe-readout {
+  position: absolute;
+  left: 16px;
+  right: 72px;
+  bottom: 18px;
+  z-index: 2;
+  overflow: hidden;
+  padding: 7px 10px;
+  border: 1px solid var(--line);
+  background: color-mix(in srgb, var(--page) 82%, transparent);
+  backdrop-filter: blur(6px);
+  color: var(--muted);
+  font-size: 10px;
+  letter-spacing: 0.05em;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 240ms, transform 240ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.probe-readout > span {
+  color: var(--accent);
+}
+.probe-readout b {
+  color: var(--phosphor);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+.cyan-edition .project-open:hover .probe-readout,
+.cyan-edition .project-open:focus-visible .probe-readout {
+  opacity: 1;
+  transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .cyan-edition .project-open:hover .probe-scan,
+  .cyan-edition .project-open:focus-visible .probe-scan {
+    animation: none;
+  }
+}
+
+/* The intro band's live Mumbai clock: a readout, so it is amber. */
+.band-clock {
+  margin-left: 10px;
+  color: var(--phosphor);
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.05em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Contact: an open channel. The dithered field sits behind the copy. */
+.cyan-edition .contact-section {
+  position: relative;
+  padding-block: 110px 90px;
+}
+.cyan-edition .contact-section > :not(.dither-field) {
+  position: relative;
+  z-index: 1;
+}
+
+/* The pipeline needs the full width on phones. */
+@media (max-width: 767px) {
+  .cyan-edition .workflow-panel {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* The activity trace between the intro band and the work. */
+.cyan-edition .scope-slot {
+  margin-block: 54px 10px;
+}
+@media (max-width: 767px) {
+  .cyan-edition .scope-slot {
+    margin-block: 36px 0;
+  }
+}

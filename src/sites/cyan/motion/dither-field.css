@@ -1,0 +1,23 @@
+/* ---------- Bayer-dithered signal field ---------- */
+.dither-field {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  color: var(--accent);
+  pointer-events: none;
+  opacity: 0.85;
+}
+.cyan-edition[data-theme="light"] .dither-field {
+  opacity: 0.6;
+}
+.dither-field canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  /* One canvas pixel per 6px cell, scaled up without smoothing. */
+  image-rendering: pixelated;
+}
+.dither-field canvas[data-gl="off"] {
+  display: none;
+}

@@ -1,0 +1,377 @@
+/* ---------- Signal map: the circuit board ----------
+   Copper stays dim until it carries signal. A selection lights in the accent,
+   the readout is the only phosphor amber, and glows belong to the dark theme:
+   the light theme is ink on paper. */
+.pcb-board {
+  --pcb-ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --pcb-bg: color-mix(in srgb, var(--panel) 72%, var(--page));
+  --pcb-copper: color-mix(in srgb, var(--line) 68%, var(--muted));
+  --pcb-silk: var(--subtle);
+  --pcb-hot: color-mix(in srgb, var(--accent) 40%, #ffffff);
+  --pcb-readout: var(--phosphor, #f0b04a);
+  --pcb-glow: drop-shadow(0 0 3px color-mix(in srgb, var(--accent) 75%, transparent));
+  --pcb-halo: 0 0 18px color-mix(in srgb, var(--accent) 22%, transparent);
+  --pcb-readout-glow: 0 0 10px color-mix(in srgb, var(--pcb-readout) 40%, transparent);
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background-color: var(--pcb-bg);
+  /* A faint placement grid, as in a layout tool. */
+  background-image: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--ink) 10%, transparent) 0.7px,
+    transparent 1.3px
+  );
+  background-size: 12px 12px;
+  background-position: 6px 6px;
+}
+.cyan-edition[data-theme="light"] .pcb-board {
+  --pcb-bg: var(--page);
+  --pcb-hot: var(--ink);
+  --pcb-readout: var(--phosphor, #a8620a);
+  --pcb-glow: none;
+  --pcb-halo: none;
+  --pcb-readout-glow: none;
+}
+.pcb-stage {
+  position: relative;
+  width: 100%;
+}
+.pcb-copper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: block;
+  overflow: visible;
+  pointer-events: none;
+}
+
+/* Copper */
+.pcb-hole {
+  fill: var(--page);
+  stroke: var(--line);
+  stroke-width: 1;
+}
+.pcb-trace,
+.pcb-lit,
+.pcb-pulse {
+  fill: none;
+  stroke-linejoin: round;
+}
+.pcb-trace,
+.pcb-lit {
+  /* With pathLength="1" these are fractions of each trace: one dash, one gap. */
+  stroke-dasharray: 1 1;
+  stroke-dashoffset: 0;
+}
+.pcb-trace {
+  stroke: var(--pcb-copper);
+  stroke-width: 1.5;
+  transition: opacity 240ms var(--pcb-ease);
+}
+.pcb-lit {
+  stroke: var(--accent);
+  stroke-width: 2;
+  opacity: 0;
+  transition: opacity 240ms var(--pcb-ease);
+}
+.pcb-lit.is-lit {
+  opacity: 1;
+  filter: var(--pcb-glow);
+}
+.pcb-via {
+  fill: var(--pcb-bg);
+  stroke: var(--pcb-copper);
+  stroke-width: 1.2;
+  transition:
+    stroke 240ms var(--pcb-ease),
+    opacity 240ms var(--pcb-ease);
+}
+.pcb-via.is-lit {
+  stroke: var(--accent);
+}
+.pcb-pad {
+  fill: var(--pcb-copper);
+  transition:
+    fill 240ms var(--pcb-ease),
+    opacity 240ms var(--pcb-ease);
+}
+.pcb-pad.is-lit {
+  fill: var(--accent);
+  filter: var(--pcb-glow);
+}
+.pcb-board.has-focus .pcb-trace:not(.is-lit),
+.pcb-board.has-focus .pcb-via:not(.is-lit) {
+  opacity: 0.3;
+}
+.pcb-board.has-focus .pcb-pad:not(.is-lit) {
+  opacity: 0.4;
+}
+
+/* One bright dash runs the length of each lit trace: out from a project,
+   in towards a tool. */
+.pcb-pulse {
+  stroke: var(--pcb-hot);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-dasharray: 0.12 2;
+  stroke-dashoffset: 0.16;
+  filter: var(--pcb-glow);
+  animation: pcb-pulse-out 600ms var(--pcb-ease) both;
+}
+.pcb-board[data-flow="in"] .pcb-pulse {
+  animation-name: pcb-pulse-in;
+}
+@keyframes pcb-pulse-out {
+  from {
+    stroke-dashoffset: 0.16;
+  }
+  to {
+    stroke-dashoffset: -1.04;
+  }
+}
+@keyframes pcb-pulse-in {
+  from {
+    stroke-dashoffset: -1.04;
+  }
+  to {
+    stroke-dashoffset: 0.16;
+  }
+}
+
+/* Draw-on, once, at scroll-in. "backwards" holds the start state through each
+   delay and then hands back to the drawn base state, so hover dimming is never
+   overridden by a finished animation. */
+.pcb-board[data-reveal="waiting"] .pcb-trace,
+.pcb-board[data-reveal="waiting"] .pcb-lit {
+  stroke-dashoffset: 1;
+}
+.pcb-board[data-reveal="waiting"] .pcb-copper .pcb-via {
+  opacity: 0;
+}
+.pcb-board[data-reveal="waiting"] .pcb-pulse {
+  display: none;
+}
+.pcb-board[data-reveal="playing"] .pcb-trace,
+.pcb-board[data-reveal="playing"] .pcb-lit {
+  animation: pcb-draw 700ms var(--pcb-ease) calc(var(--i, 0) * 30ms) backwards;
+}
+.pcb-board[data-reveal="playing"] .pcb-via {
+  animation: pcb-via 120ms linear var(--d, 0ms) backwards;
+}
+@keyframes pcb-draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes pcb-via {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.pcb-board[data-still] .pcb-trace,
+.pcb-board[data-still] .pcb-lit,
+.pcb-board[data-still] .pcb-via {
+  animation: none;
+}
+.pcb-board[data-still] .pcb-pulse {
+  display: none;
+}
+
+/* Silkscreen and readout */
+.pcb-label,
+.pcb-readout {
+  position: absolute;
+  margin: 0;
+  font-family: "IBM Plex Mono", monospace;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  pointer-events: none;
+}
+.pcb-label {
+  font-size: 9px;
+  line-height: 12px;
+  color: var(--pcb-silk);
+}
+.pcb-readout {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.pcb-readout[data-align="center"] {
+  align-items: center;
+  text-align: center;
+}
+.pcb-readout-value,
+.pcb-readout-detail {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.pcb-readout-value {
+  font-size: 11px;
+  line-height: 16px;
+  color: var(--pcb-readout);
+  text-shadow: var(--pcb-readout-glow);
+}
+.pcb-readout-detail {
+  min-height: 14px;
+  font-size: 10px;
+  line-height: 14px;
+  color: var(--pcb-silk);
+}
+
+/* Parts */
+.pcb-parts {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.pcb-chip {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 4px;
+  margin: 0;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  background: var(--page);
+  color: var(--ink);
+  text-align: left;
+  white-space: nowrap;
+  transition:
+    opacity 240ms var(--pcb-ease),
+    color 240ms var(--pcb-ease),
+    border-color 240ms var(--pcb-ease),
+    background-color 240ms var(--pcb-ease),
+    box-shadow 240ms var(--pcb-ease);
+}
+.pcb-name {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: color 240ms var(--pcb-ease);
+}
+.pcb-ic {
+  padding: 0 12px;
+}
+.pcb-ic .pcb-name {
+  font-size: 19px;
+  font-weight: 500;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+}
+.pcb-ref {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9px;
+  line-height: 1;
+  letter-spacing: 0.06em;
+  color: var(--pcb-silk);
+}
+/* The pin-one mark printed on every chip. */
+.pcb-ref::before {
+  content: "";
+  width: 5px;
+  height: 5px;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+}
+.pcb-part {
+  padding: 0 10px;
+}
+.pcb-part .pcb-name {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10.5px;
+  line-height: 1;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.pcb-chip.is-lit {
+  border-color: var(--accent);
+  box-shadow: var(--pcb-halo);
+}
+.pcb-chip.is-lit .pcb-name,
+.pcb-chip.is-lit .pcb-ref {
+  color: var(--accent);
+}
+.pcb-chip.is-active {
+  background-color: color-mix(in srgb, var(--accent) 9%, var(--page));
+}
+.pcb-board.has-focus .pcb-chip:not(.is-lit) {
+  opacity: 0.45;
+}
+/* Parts sit close together, so the focus ring hugs them. */
+.pcb-board .pcb-parts .pcb-chip:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Phones: the same board, narrower parts and finer copper. */
+.pcb-board[data-size="compact"] .pcb-ic {
+  padding: 0 8px 0 9px;
+  gap: 3px;
+}
+.pcb-board[data-size="compact"] .pcb-ic .pcb-name {
+  font-size: 14px;
+}
+.pcb-board[data-size="compact"] .pcb-ref {
+  font-size: 8px;
+  gap: 4px;
+}
+.pcb-board[data-size="compact"] .pcb-ref::before {
+  width: 4px;
+  height: 4px;
+}
+.pcb-board[data-size="compact"] .pcb-part {
+  padding: 0 7px;
+}
+.pcb-board[data-size="compact"] .pcb-part .pcb-name {
+  font-size: 9.5px;
+  letter-spacing: 0.04em;
+}
+.pcb-board[data-size="compact"] .pcb-trace {
+  stroke-width: 1.1;
+}
+.pcb-board[data-size="compact"] .pcb-lit {
+  stroke-width: 1.6;
+}
+.pcb-board[data-size="compact"] .pcb-pulse {
+  stroke-width: 2;
+}
+.pcb-board[data-size="compact"] .pcb-via {
+  stroke-width: 0.9;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* Instant states: no fades, no draw-on, no pulse. */
+  .pcb-board,
+  .pcb-board * {
+    transition: none !important;
+    animation: none !important;
+  }
+  .pcb-board[data-reveal="waiting"] .pcb-trace,
+  .pcb-board[data-reveal="waiting"] .pcb-lit {
+    stroke-dashoffset: 0;
+  }
+  .pcb-board[data-reveal="waiting"] .pcb-copper .pcb-via {
+    opacity: 1;
+  }
+  .pcb-pulse {
+    display: none;
+  }
+}

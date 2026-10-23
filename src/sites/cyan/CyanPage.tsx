@@ -11,6 +11,8 @@ import {
   Linkedin,
   Menu,
   Moon,
+  Pause,
+  Play,
   Sun,
   X,
   Code2,
@@ -28,14 +30,18 @@ import {
 } from "@/data/portfolio";
 import { resetPointer, trackPointer } from "@/lib/pointer";
 import { ORDO_URL } from "@/lib/sites";
+import { setMotionPaused, useMotionPaused } from "@/lib/motion-pause";
 import ProjectVisual from "@/components/portfolio/ProjectVisual";
 import ProjectDetail from "@/components/portfolio/ProjectDetail";
-import {
-  CommandPalette,
-  CyanEvidence,
-  CyanResearch,
-  CyanSignalMap,
-} from "./components/CyanSections";
+import { CommandPalette, CyanResearch } from "./components/CyanSections";
+import { PcbSignalMap } from "./motion/PcbSignalMap";
+import { CyanResultsInstrument } from "./motion/EvalMeters";
+import HeroField from "./motion/HeroField";
+import { DecodeText } from "./motion/DecodeText";
+import { LocalClock } from "./motion/LocalClock";
+import { DitherField } from "./motion/DitherField";
+import { PipelineFlow } from "./motion/PipelineFlow";
+import { ScopeDivider } from "./motion/ScopeDivider";
 import "./cyan.css";
 
 const workflow = [
@@ -72,7 +78,9 @@ export default function CyanPage() {
   const [copied, setCopied] = useState(false);
   const [copyError, setCopyError] = useState(false);
   const copyTimer = useRef<ReturnType<typeof setTimeout>>();
+  const rootRef = useRef<HTMLDivElement>(null);
   const reducedMotion = useReducedMotion();
+  const motionPaused = useMotionPaused();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -85,6 +93,37 @@ export default function CyanPage() {
       clearTimeout(copyTimer.current);
     };
   }, [theme]);
+
+  // The page's graticule brightens around the pointer (see cyan.css).
+  useEffect(() => {
+    const root = rootRef.current;
+    if (!root) return;
+    let frame = 0,
+      x = -999,
+      y = -999;
+    const apply = () => {
+      frame = 0;
+      root.style.setProperty("--cx", `${x}px`);
+      root.style.setProperty("--cy", `${y}px`);
+    };
+    const move = (event: PointerEvent) => {
+      if (event.pointerType !== "mouse") return;
+      x = event.clientX;
+      y = event.clientY;
+      if (!frame) frame = requestAnimationFrame(apply);
+    };
+    const leave = () => {
+      x = y = -999;
+      if (!frame) frame = requestAnimationFrame(apply);
+    };
+    window.addEventListener("pointermove", move, { passive: true });
+    document.documentElement.addEventListener("pointerleave", leave);
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener("pointermove", move);
+      document.documentElement.removeEventListener("pointerleave", leave);
+    };
+  }, []);
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -114,7 +153,7 @@ export default function CyanPage() {
   };
 
   return (
-    <div className="portfolio cyan-edition" data-theme={theme}>
+    <div ref={rootRef} className="portfolio cyan-edition" data-theme={theme}>
       <a className="skip-link" href="#main">
         Skip to content
       </a>
@@ -147,6 +186,15 @@ export default function CyanPage() {
                     : navigate(target),
               }}
             />
+            <button
+              className="icon-button motion-toggle"
+              aria-label={motionPaused ? "Play all animations" : "Pause all animations"}
+              title={motionPaused ? "Play all animations" : "Pause all animations"}
+              disabled={reducedMotion ?? false}
+              onClick={() => setMotionPaused(!motionPaused)}
+            >
+              {motionPaused || reducedMotion ? <Play size={16} /> : <Pause size={16} />}
+            </button>
             <button
               className="icon-button theme-toggle"
               aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
@@ -197,7 +245,7 @@ export default function CyanPage() {
             transition={{ duration: 0.7 }}
           >
             <p className="hero-eyebrow mono">
-              Varun Darji / AI engineer / prospective researcher
+              <DecodeText text="Varun Darji / AI engineer / prospective researcher" duration={650} />
             </p>
             <h1>
               Useful AI.
@@ -231,18 +279,7 @@ export default function CyanPage() {
             transition={{ duration: 1 }}
           >
             <div className="art-halo" />
-            <img
-              className="hero-sculpture"
-              src="/images/mesh-knot.webp"
-              width="960"
-              height="960"
-              alt="Interwoven metallic mesh sculpture with cyan edges"
-              loading="eager"
-            />
-            <div className="art-caption mono">
-              <span>Structure. Connection. Precision.</span>
-              <ArrowUpRight size={16} />
-            </div>
+            <HeroField />
           </motion.div>
         </section>
         <div className="intro-band section-wrap">
@@ -256,8 +293,14 @@ export default function CyanPage() {
           </p>
           <p>
             <span className="band-label">Based in</span>
-            <strong>Mumbai, India</strong>
+            <strong>
+              Mumbai, India <LocalClock className="band-clock mono" />
+            </strong>
           </p>
+        </div>
+
+        <div className="section-wrap scope-slot">
+          <ScopeDivider />
         </div>
 
         <section id="work" className="work-section section-wrap">
@@ -286,6 +329,11 @@ export default function CyanPage() {
                 >
                   <div className="project-illustration">
                     <ProjectVisual kind={project.visual} />
+                    {/* Hovering a card is a probe: a sweep, then one real fact. */}
+                    <span className="probe-scan" aria-hidden="true" />
+                    <span className="probe-readout mono" aria-hidden="true">
+                      <span>[PROBE]</span> <b>{project.facts[0][0]}</b> {project.facts[0][1]}
+                    </span>
                     <span className="project-open-arrow" aria-hidden="true">
                       <ArrowUpRight size={22} />
                     </span>
@@ -311,7 +359,7 @@ export default function CyanPage() {
           </div>
         </section>
 
-        <CyanEvidence />
+        <CyanResultsInstrument />
 
         <section className="other-section section-wrap">
           <h2>Also built.</h2>
@@ -351,7 +399,7 @@ export default function CyanPage() {
           </div>
         </section>
 
-        <CyanSignalMap />
+        <PcbSignalMap />
 
         <section className="approach-section">
           <div className="section-wrap approach-inner">
@@ -399,19 +447,7 @@ export default function CyanPage() {
               aria-labelledby={`step-${step}`}
               tabIndex={0}
             >
-              <div
-                className="pipeline-diagram"
-                aria-label={workflow[step].chips.join(" then ")}
-              >
-                {workflow[step].chips.map((chip, index) => (
-                  <div className="pipeline-stage" key={chip}>
-                    <span className={index === 2 ? "active-stage" : ""}>
-                      {chip}
-                    </span>
-                    {index < 3 && <ArrowDown size={20} />}
-                  </div>
-                ))}
-              </div>
+              <PipelineFlow chips={workflow[step].chips} step={step} />
               <div className="workflow-text" aria-live="polite">
                 <h3>{workflow[step].note}</h3>
                 <p>{workflow[step].description}</p>
@@ -541,6 +577,7 @@ export default function CyanPage() {
         </section>
 
         <section id="contact" className="contact-section section-wrap">
+          <DitherField side="right" />
           <div className="contact-top">
             <h2>
               Have something

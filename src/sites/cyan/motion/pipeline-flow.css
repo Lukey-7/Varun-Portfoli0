@@ -1,0 +1,431 @@
+/* ---------- Approach: the pipeline as an instrument ----------
+   One shared cycle (--flow-cycle, set by PipelineFlow) drives every packet,
+   LED and the active halo. Each element's negative delay (--flow-at) places
+   its moment in that cycle, so a stage's LED lights as a packet reaches it.
+   The traces run in line with the LEDs for the same reason.
+   Transforms and opacity only; light appears where the signal is. */
+
+.flow-root {
+  --flow-signal: var(--accent, #53dace);
+  --flow-amber: var(--phosphor, #f0b04a);
+  --flow-glow: 0 0 6px color-mix(in srgb, var(--flow-signal) 75%, transparent);
+  --flow-halo: 0 0 18px -3px color-mix(in srgb, var(--flow-signal) 55%, transparent);
+  --flow-amber-glow: 0 0 6px color-mix(in srgb, var(--flow-amber) 45%, transparent);
+  --flow-ease: cubic-bezier(0.16, 1, 0.3, 1);
+  container: flow / inline-size;
+  position: relative;
+  width: 100%;
+  min-width: 0;
+  font-family: "IBM Plex Mono", monospace;
+  font-variant-numeric: tabular-nums;
+  color: var(--muted);
+}
+/* Ink on paper: no glow in the light theme, and an amber dark enough to read on it. */
+.flow-root:where(.cyan-edition[data-theme="light"] *) {
+  --flow-amber: var(--phosphor, #8f5208);
+  --flow-glow: none;
+  --flow-halo: none;
+  --flow-amber-glow: none;
+}
+.flow-root *,
+.flow-root *::before,
+.flow-root *::after {
+  box-sizing: border-box;
+}
+
+.flow-tag {
+  display: block;
+  width: fit-content;
+  max-width: 100%;
+  margin: 0 0 10px auto;
+  font-size: 9px;
+  line-height: 1;
+  letter-spacing: 0.06em;
+  color: var(--subtle);
+  overflow-wrap: anywhere;
+}
+/* The geometry below is in whole pixels from a module's outer edge: the LED
+   centre sits at --flow-pad-x + 3.5px across and --flow-pad-top + 6.5px down,
+   and the wire, ports and packet heads are centred on the same lines. */
+.flow-chain {
+  --flow-gap: 26px;
+  --flow-pad-x: 10px;
+  --flow-pad-top: 8px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---------- Modules ---------- */
+.flow-module {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+  padding: var(--flow-pad-top) var(--flow-pad-x) calc(var(--flow-pad-top) + 1px);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: var(--panel);
+}
+.flow-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  font-size: 9px;
+  line-height: 11px;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+  color: var(--subtle);
+}
+.flow-role {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.flow-led {
+  flex: none;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--flow-signal);
+  box-shadow: var(--flow-glow);
+  opacity: 0.35;
+  animation: flow-led var(--flow-cycle, 8400ms) linear var(--flow-at, 0ms) infinite;
+}
+.flow-label {
+  min-width: 0;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.35;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink);
+  overflow-wrap: anywhere;
+  transition: opacity 240ms var(--flow-ease);
+}
+
+/* The highlighted stage: lit steadily, an amber readout, and a halo that swells
+   as each batch arrives and then settles. */
+.flow-module[data-active] {
+  border-color: color-mix(in srgb, var(--flow-signal) 55%, var(--line));
+  background: color-mix(in srgb, var(--flow-signal) 7%, var(--panel));
+}
+.flow-module[data-active] .flow-role {
+  color: var(--flow-amber);
+  text-shadow: var(--flow-amber-glow);
+}
+.flow-module[data-active] .flow-led {
+  opacity: 1;
+  animation: none;
+}
+.flow-module[data-active]::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border: 1px solid var(--flow-signal);
+  border-radius: inherit;
+  box-shadow: var(--flow-halo);
+  opacity: 0.3;
+  pointer-events: none;
+  animation: flow-halo var(--flow-cycle, 8400ms) linear var(--flow-at, 0ms) infinite;
+}
+
+/* ---------- Traces and packets ---------- */
+.flow-trace {
+  position: relative;
+  flex: 0 0 var(--flow-gap);
+  overflow: hidden;
+}
+.flow-wire,
+.flow-route {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: calc(var(--flow-pad-x) + 3px);
+  width: 1px;
+}
+.flow-wire {
+  background: var(--line);
+}
+/* Ports where the trace meets a module. */
+.flow-trace::before,
+.flow-trace::after {
+  content: "";
+  position: absolute;
+  left: var(--flow-pad-x);
+  width: 7px;
+  height: 2px;
+  background: var(--line);
+}
+.flow-trace::before {
+  top: 0;
+}
+.flow-trace::after {
+  bottom: 0;
+}
+.flow-packets {
+  position: absolute;
+  inset: 0;
+  transition: opacity 120ms linear;
+}
+/* A packet is a 3px head behind a 9px tail. Its box is the trace plus the
+   packet's own 12px, so moving it by 100% carries the packet out of one module
+   and into the next; the trace clips it at both ends. Without an animation it
+   rests half-way along, which is the parked still frame. */
+.flow-packet {
+  position: absolute;
+  top: -12px;
+  left: calc(var(--flow-pad-x) + 2px);
+  width: 3px;
+  height: calc(100% + 12px);
+  transform: translateY(50%);
+  animation: flow-hop-y var(--flow-cycle, 8400ms) linear var(--flow-at, 0ms) infinite;
+}
+.flow-packet::before,
+.flow-packet::after {
+  content: "";
+  position: absolute;
+}
+.flow-packet::before {
+  top: 0;
+  left: 1px;
+  width: 1px;
+  height: 9px;
+  background: linear-gradient(to bottom, transparent, var(--flow-signal));
+}
+.flow-packet::after {
+  top: 9px;
+  left: 0;
+  width: 3px;
+  height: 3px;
+  background: var(--flow-signal);
+  box-shadow: var(--flow-glow);
+}
+.flow-route {
+  background: var(--flow-signal);
+  box-shadow: var(--flow-glow);
+  transform-origin: top;
+  animation: flow-route-y 320ms var(--flow-ease) var(--flow-at, 0ms) both;
+}
+
+/* ---------- When it runs ---------- */
+/* Off screen or in a hidden tab, everything holds its place in the cycle. */
+.flow-root:not([data-live]) .flow-packet,
+.flow-root:not([data-live]) .flow-led,
+.flow-root:not([data-live]) .flow-module::after {
+  animation-play-state: paused;
+}
+
+/* A tab change. Out: the signal drops and the labels scramble. In: the route
+   is traced again, the labels decode and each stage wakes in turn. The cycle
+   then starts again from the first stage. */
+.flow-root[data-phase] .flow-packets {
+  opacity: 0;
+}
+.flow-root[data-phase="in"] .flow-packet,
+.flow-root[data-phase] .flow-led,
+.flow-root[data-phase] .flow-module::after {
+  animation: none;
+}
+.flow-root[data-phase="out"] .flow-label {
+  opacity: 0.45;
+}
+.flow-root[data-phase="out"] .flow-led,
+.flow-root[data-phase="out"] .flow-module::after {
+  opacity: 0.12;
+  transition: opacity 120ms linear;
+}
+.flow-root[data-phase="in"] .flow-led {
+  opacity: 0.35;
+  transition: opacity 240ms var(--flow-ease) var(--flow-wake, 0ms);
+}
+.flow-root[data-phase="in"] .flow-module[data-active] .flow-led {
+  opacity: 1;
+  transition: opacity 240ms var(--flow-ease) var(--flow-wake, 0ms);
+}
+/* Where the halo's cycle picks up again once the transition ends. */
+.flow-root[data-phase="in"] .flow-module[data-active]::after {
+  opacity: 0.42;
+  transition: opacity 240ms var(--flow-ease) var(--flow-wake, 0ms);
+}
+
+/* Reduced motion or the site-wide pause: a composed still frame, one packet
+   parked on each trace and every stage lit. */
+.flow-root[data-still] .flow-packet,
+.flow-root[data-still] .flow-led,
+.flow-root[data-still] .flow-module::after {
+  animation: none;
+}
+.flow-root[data-still] .flow-led {
+  opacity: 0.6;
+}
+.flow-root[data-still] .flow-module[data-active] .flow-led {
+  opacity: 1;
+}
+.flow-root[data-still] .flow-module[data-active]::after {
+  opacity: 0.7;
+}
+
+/* ---------- Container sizes ---------- */
+/* Narrow columns, such as the panel at phone width. */
+@container flow (max-width: 180px) {
+  .flow-chain {
+    --flow-gap: 20px;
+    --flow-pad-x: 8px;
+    --flow-pad-top: 7px;
+  }
+  .flow-label {
+    font-size: 10px;
+    letter-spacing: 0.04em;
+  }
+}
+/* Wide containers read left to right, the traces in line with the LED row. */
+@container flow (min-width: 600px) {
+  .flow-chain {
+    --flow-gap: 30px;
+    flex-direction: row;
+  }
+  .flow-module {
+    flex: 1 1 0;
+  }
+  .flow-wire,
+  .flow-route {
+    top: calc(var(--flow-pad-top) + 6px);
+    bottom: auto;
+    left: 0;
+    right: 0;
+    width: auto;
+    height: 1px;
+  }
+  .flow-trace::before,
+  .flow-trace::after {
+    top: calc(var(--flow-pad-top) + 3px);
+    width: 2px;
+    height: 7px;
+  }
+  .flow-trace::before {
+    left: 0;
+  }
+  .flow-trace::after {
+    bottom: auto;
+    left: auto;
+    right: 0;
+  }
+  .flow-packet {
+    top: calc(var(--flow-pad-top) + 5px);
+    left: -12px;
+    width: calc(100% + 12px);
+    height: 3px;
+    transform: translateX(50%);
+    animation-name: flow-hop-x;
+  }
+  .flow-packet::before {
+    top: 1px;
+    left: 0;
+    width: 9px;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--flow-signal));
+  }
+  .flow-packet::after {
+    top: 0;
+    left: 9px;
+  }
+  .flow-route {
+    transform-origin: left;
+    animation-name: flow-route-x;
+  }
+}
+
+/* ---------- Keyframes (fractions of --flow-cycle unless noted) ---------- */
+/* A hop takes 15% of the cycle (HOP_MS in PipelineFlow), eased in and out. */
+@keyframes flow-hop-y {
+  0% {
+    transform: translateY(0);
+    animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1);
+  }
+  15%,
+  100% {
+    transform: translateY(100%);
+  }
+}
+@keyframes flow-hop-x {
+  0% {
+    transform: translateX(0);
+    animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1);
+  }
+  15%,
+  100% {
+    transform: translateX(100%);
+  }
+}
+/* A stage's LED: on as the batch arrives, held while it works, then idle. */
+@keyframes flow-led {
+  0% {
+    opacity: 0.35;
+  }
+  2%,
+  14% {
+    opacity: 1;
+  }
+  22%,
+  100% {
+    opacity: 0.35;
+  }
+}
+@keyframes flow-halo {
+  0% {
+    opacity: 0.3;
+  }
+  5% {
+    opacity: 1;
+  }
+  30% {
+    opacity: 0.55;
+  }
+  100% {
+    opacity: 0.3;
+  }
+}
+/* The route trace on a tab change: 320ms per trace. */
+@keyframes flow-route-y {
+  0% {
+    transform: scaleY(0);
+    opacity: 1;
+  }
+  55% {
+    transform: scaleY(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scaleY(1);
+    opacity: 0;
+  }
+}
+@keyframes flow-route-x {
+  0% {
+    transform: scaleX(0);
+    opacity: 1;
+  }
+  55% {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scaleX(1);
+    opacity: 0;
+  }
+}
+
+/* Belt and braces: PipelineFlow parks itself in script, and this holds if it can't. */
+@media (prefers-reduced-motion: reduce) {
+  .flow-packet,
+  .flow-led,
+  .flow-route,
+  .flow-module::after {
+    animation: none;
+  }
+  .flow-label,
+  .flow-packets {
+    transition: none;
+  }
+}

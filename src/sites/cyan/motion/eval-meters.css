@@ -1,0 +1,570 @@
+/* ---------- Results: evaluation meters ----------
+   Cyan is the measured value, amber is only the change, ink is the exact
+   reading. The markup is always the final frame; while a meter plays, the
+   script overrides --eval-g (segment brightness) and --eval-peak (tick). */
+.eval-section {
+  --eval-amber: var(--phosphor, #f0b04a);
+  --eval-mono: "IBM Plex Mono", monospace;
+  --eval-ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --eval-cols: 210px minmax(0, 1fr) 150px;
+  --eval-gap: 36px;
+  --eval-pad: 12px;
+  --eval-bracket: color-mix(in srgb, var(--subtle) 55%, transparent);
+  padding-block: 70px 40px;
+}
+.cyan-edition[data-theme="light"] .eval-section {
+  --eval-amber: var(--phosphor, #a8620a);
+}
+.eval-section h2 > span:not(.heading-period) {
+  color: var(--accent);
+}
+
+/* The instrument: HUD corner brackets around the meters. */
+.eval-panel {
+  padding: 16px 0 14px;
+  background:
+    linear-gradient(var(--eval-bracket), var(--eval-bracket)) top left / 14px 1px no-repeat,
+    linear-gradient(var(--eval-bracket), var(--eval-bracket)) top left / 1px 14px no-repeat,
+    linear-gradient(var(--eval-bracket), var(--eval-bracket)) top right / 14px 1px no-repeat,
+    linear-gradient(var(--eval-bracket), var(--eval-bracket)) top right / 1px 14px no-repeat,
+    linear-gradient(var(--eval-bracket), var(--eval-bracket)) bottom left / 14px 1px no-repeat,
+    linear-gradient(var(--eval-bracket), var(--eval-bracket)) bottom left / 1px 14px no-repeat,
+    linear-gradient(var(--eval-bracket), var(--eval-bracket)) bottom right / 14px 1px no-repeat,
+    linear-gradient(var(--eval-bracket), var(--eval-bracket)) bottom right / 1px 14px no-repeat;
+}
+
+.eval-hud,
+.eval-ruler,
+.eval-hint,
+.eval-counts-head {
+  font-family: var(--eval-mono);
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--subtle);
+  font-variant-numeric: tabular-nums;
+}
+.eval-hud {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px 24px;
+  margin: 0;
+  padding: 0 var(--eval-pad) 14px;
+  font-size: 10px;
+  line-height: 1.6;
+}
+.eval-tag {
+  color: var(--muted);
+}
+.eval-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 18px;
+}
+.eval-legend > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+.eval-key {
+  display: inline-block;
+  flex: none;
+  width: 8px;
+  height: 10px;
+}
+.eval-key.is-measured {
+  border-radius: 1px;
+  background: var(--accent);
+  box-shadow: 0 0 6px color-mix(in srgb, var(--accent) 50%, transparent);
+}
+.eval-key.is-baseline {
+  width: 1px;
+  height: 12px;
+  background: var(--muted);
+}
+.eval-key.is-change {
+  width: 12px;
+  height: 5px;
+  border: solid var(--eval-amber);
+  border-width: 0 2px 2px;
+}
+
+/* The scale shares the rows' columns so its ticks sit over the meters. */
+.eval-ruler {
+  display: grid;
+  grid-template-columns: var(--eval-cols);
+  column-gap: var(--eval-gap);
+  align-items: end;
+  padding: 0 var(--eval-pad) 6px;
+  font-size: 9px;
+  line-height: 1.4;
+}
+.eval-ruler-end {
+  text-align: right;
+}
+.eval-scale {
+  position: relative;
+  height: 22px;
+}
+.eval-scale i {
+  position: absolute;
+  bottom: 0;
+  left: calc(var(--at) * 100%);
+  width: 1px;
+  height: 4px;
+  background: var(--line);
+}
+.eval-scale i.is-major {
+  height: 7px;
+  background: var(--subtle);
+}
+.eval-scale span {
+  position: absolute;
+  bottom: 9px;
+  left: calc(var(--at) * 100%);
+  transform: translateX(-50%);
+}
+.eval-scale span:first-of-type {
+  transform: none;
+}
+.eval-scale span:last-of-type {
+  transform: translateX(-100%);
+}
+
+.eval-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--line);
+}
+.eval-row {
+  position: relative;
+  display: grid;
+  grid-template-columns: var(--eval-cols);
+  grid-template-areas:
+    "name meter read"
+    "name foot read";
+  column-gap: var(--eval-gap);
+  row-gap: 4px;
+  align-items: start;
+  padding: 24px var(--eval-pad) 26px;
+  border-bottom: 1px solid var(--line);
+  transition: background-color 240ms var(--eval-ease);
+}
+/* Channel-select bar: the row whose details are showing. */
+.eval-row::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 16px;
+  bottom: 16px;
+  width: 2px;
+  background: var(--accent);
+  opacity: 0;
+  transition: opacity 120ms ease-out;
+}
+.eval-row[data-open="true"] {
+  background: color-mix(in srgb, var(--accent) 5%, transparent);
+}
+.eval-row[data-open="true"]::before {
+  opacity: 1;
+}
+/* Beats the site-wide ring offset, which would spill into the next row. */
+.eval-section .eval-list .eval-row:focus-visible {
+  outline-offset: -2px;
+}
+
+.eval-name {
+  grid-area: name;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.eval-name strong {
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 1.25;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+}
+.eval-metric,
+.eval-scope {
+  font-family: var(--eval-mono);
+  font-size: 11px;
+  line-height: 1.6;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
+}
+.eval-metric {
+  font-weight: 500;
+  color: var(--muted);
+}
+
+/* ---------- The meter ---------- */
+.eval-meter {
+  grid-area: meter;
+  min-width: 0;
+  padding: 7px 0 10px;
+}
+.eval-band {
+  position: relative;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  column-gap: 3px;
+  height: 16px;
+}
+.eval-seg {
+  position: relative;
+  border-radius: 1px;
+  background: var(--line);
+}
+/* Below the baseline, an unlit segment keeps a faint memory of the old level. */
+.eval-seg.is-ghost {
+  background: color-mix(in srgb, var(--accent) 24%, var(--page));
+}
+.eval-seg::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--accent);
+  box-shadow: 0 0 7px color-mix(in srgb, var(--accent) 45%, transparent);
+  opacity: var(--eval-g, 0);
+}
+.eval-seg.is-on::after {
+  opacity: var(--eval-g, 1);
+}
+.eval-ghost,
+.eval-peak,
+.eval-rail {
+  position: absolute;
+  pointer-events: none;
+}
+/* The page-coloured halo cuts the marker out of lit segments. */
+.eval-ghost {
+  z-index: 1;
+  top: -6px;
+  bottom: -6px;
+  left: calc(var(--before) * 100%);
+  width: 1px;
+  background: var(--muted);
+  box-shadow: 0 0 0 1px var(--page);
+}
+.eval-peak {
+  z-index: 2;
+  top: -4px;
+  bottom: -4px;
+  left: calc(var(--eval-peak, var(--after)) * 100%);
+  width: 2px;
+  margin-left: -1px;
+  background: var(--ink);
+  box-shadow:
+    0 0 0 1px var(--page),
+    0 0 8px 1px color-mix(in srgb, var(--ink) 35%, transparent);
+}
+/* A dimension bracket under the band, from the baseline to the value. */
+.eval-rail {
+  top: calc(100% + 3px);
+  left: calc(var(--before) * 100%);
+  width: calc((var(--after) - var(--before)) * 100%);
+  height: 5px;
+  border: solid var(--eval-amber);
+  border-width: 0 2px 2px;
+}
+
+/* ---------- Readout ---------- */
+.eval-read {
+  grid-area: read;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  text-align: right;
+  font-family: var(--eval-mono);
+  font-variant-numeric: tabular-nums;
+}
+.eval-delta {
+  font-size: 22px;
+  font-weight: 500;
+  line-height: 1.1;
+  color: var(--eval-amber);
+  text-shadow: 0 0 14px color-mix(in srgb, var(--eval-amber) 35%, transparent);
+}
+.eval-values {
+  font-size: 12px;
+  line-height: 1.5;
+  letter-spacing: 0.04em;
+  color: var(--subtle);
+  white-space: nowrap;
+}
+.eval-values b {
+  font-weight: 500;
+  color: var(--ink);
+}
+
+/* Phases, set by the script: armed waits at zero, playing hides the latched
+   readout, latched fades the change in once the peak tick lands. */
+.eval-row[data-meter="armed"] .eval-peak {
+  opacity: 0;
+}
+.eval-row[data-meter="armed"] :is(.eval-rail, .eval-delta),
+.eval-row[data-meter="playing"] :is(.eval-rail, .eval-delta) {
+  opacity: 0;
+}
+.eval-row[data-meter="latched"] :is(.eval-rail, .eval-delta) {
+  transition: opacity 240ms ease-out;
+}
+
+/* ---------- Scope and details ---------- */
+.eval-foot {
+  grid-area: foot;
+  position: relative;
+  min-width: 0;
+}
+.eval-scope {
+  margin: 0;
+  color: var(--subtle);
+}
+/* Wide screens: a small readout over the row's own scope line (it repeats
+   the scope), so opening it never moves the rows below. */
+.eval-detail {
+  position: absolute;
+  z-index: 3;
+  top: -3px;
+  left: -12px;
+  width: max-content;
+  max-width: calc(100% + 24px);
+  opacity: 0;
+  transform: translateY(3px);
+  pointer-events: none;
+  transition:
+    opacity 120ms ease-out,
+    transform 240ms var(--eval-ease);
+}
+.eval-row[data-open="true"] .eval-detail {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+.eval-detail dl {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1px 18px;
+  margin: 0;
+  padding: 6px 10px 7px;
+  border: 1px solid var(--line);
+  border-left: 2px solid var(--accent);
+  background: var(--panel);
+  box-shadow: 0 12px 24px -14px rgb(0 0 0 / 0.7);
+  font-family: var(--eval-mono);
+  font-size: 10px;
+  line-height: 1.55;
+  letter-spacing: 0.02em;
+  font-variant-numeric: tabular-nums;
+}
+.eval-detail dl > div {
+  display: flex;
+  gap: 8px;
+  min-width: 0;
+}
+.eval-detail dl > .is-wide {
+  flex-basis: 100%;
+}
+.eval-detail dt {
+  flex: none;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--subtle);
+}
+.eval-detail dd {
+  margin: 0;
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+
+.eval-hint {
+  margin: 12px 0 0;
+  padding: 0 var(--eval-pad);
+  font-size: 10px;
+  font-weight: 400;
+  line-height: 1.6;
+}
+
+/* ---------- Test counts ---------- */
+.eval-counts-wrap {
+  margin-top: 44px;
+}
+.eval-counts-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  margin: 0 0 12px;
+  font-size: 10px;
+  line-height: 1.6;
+}
+.eval-counts {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 20px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.eval-counts li {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+}
+.eval-count-num {
+  font-family: var(--eval-mono);
+  font-size: 30px;
+  font-weight: 500;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+/* Leading zeros are decoration, like an unlit digit. */
+.eval-count-pad {
+  color: var(--line);
+}
+.eval-count-label {
+  font-family: var(--eval-mono);
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.5;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.eval-count-note {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--subtle);
+}
+
+/* ---------- Light theme: ink on paper, no glow ---------- */
+.cyan-edition[data-theme="light"] .eval-seg {
+  background: transparent;
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+.cyan-edition[data-theme="light"] .eval-seg.is-ghost {
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
+  box-shadow: none;
+}
+.cyan-edition[data-theme="light"] .eval-seg::after,
+.cyan-edition[data-theme="light"] .eval-key.is-measured {
+  box-shadow: none;
+}
+.cyan-edition[data-theme="light"] .eval-peak {
+  box-shadow: 0 0 0 1px var(--page);
+}
+.cyan-edition[data-theme="light"] .eval-delta {
+  text-shadow: none;
+}
+/* A tint would take the amber readout below 4.5:1 on paper. */
+.cyan-edition[data-theme="light"] .eval-row[data-open="true"] {
+  background: transparent;
+}
+.cyan-edition[data-theme="light"] .eval-detail dl {
+  background: var(--page);
+  box-shadow: none;
+}
+
+@media (max-width: 1100px) {
+  .eval-section {
+    --eval-cols: 170px minmax(0, 1fr) 130px;
+    --eval-gap: 24px;
+  }
+}
+/* Narrower screens: the details open in place instead of overlaying. */
+@media (max-width: 1023px) {
+  .eval-detail {
+    position: static;
+    display: grid;
+    grid-template-rows: 0fr;
+    width: auto;
+    max-width: none;
+    transform: none;
+    transition:
+      grid-template-rows 240ms var(--eval-ease),
+      opacity 240ms ease-out;
+  }
+  .eval-row[data-open="true"] .eval-detail {
+    grid-template-rows: 1fr;
+  }
+  .eval-detail-clip {
+    min-height: 0;
+    overflow: hidden;
+  }
+  .eval-detail dl {
+    margin-top: 8px;
+    box-shadow: none;
+  }
+}
+@media (max-width: 767px) {
+  .eval-section {
+    --eval-pad: 4px;
+  }
+  .eval-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      "name read"
+      "meter meter"
+      "foot foot";
+    column-gap: 16px;
+    padding-block: 18px 20px;
+  }
+  .eval-ruler {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .eval-ruler > span {
+    display: none;
+  }
+  .eval-band {
+    column-gap: 2px;
+    height: 14px;
+  }
+  .eval-delta {
+    font-size: 19px;
+  }
+  .eval-counts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .eval-count-num {
+    font-size: 24px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .eval-section *,
+  .eval-section *::before,
+  .eval-section *::after {
+    transition: none !important;
+  }
+}
+
+/* Print the reading, whatever state the reveal was in. */
+@media print {
+  .eval-seg::after {
+    opacity: 0 !important;
+  }
+  .eval-seg.is-on::after {
+    opacity: 1 !important;
+  }
+  .eval-peak {
+    left: calc(var(--after) * 100%) !important;
+    opacity: 1 !important;
+  }
+  .eval-rail,
+  .eval-delta {
+    opacity: 1 !important;
+  }
+}

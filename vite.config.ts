@@ -16,7 +16,7 @@ const SITES = {
     title: "Varun Darji | AI Engineer",
     description:
       "Varun Darji, AI engineer in Mumbai. Retrieval systems, agent workflows and applications, with results shown alongside their evaluation scope.",
-    preload: '<link rel="preload" as="image" href="/images/mesh-knot.webp" fetchpriority="high" />',
+    preload: "",
   },
   ordo: {
     port: 4175,
@@ -91,11 +91,7 @@ function ordoSharePages(env: Record<string, string | undefined>): Plugin {
         fs.writeFileSync(path.join(outDir, `${page.path}.html`), html);
       }
       fs.writeFileSync(path.join(outDir, "sitemap.xml"), sitemap(base, new Date().toISOString().slice(0, 10)));
-      fs.writeFileSync(path.join(outDir, "robots.txt"), `User-agent: *
-Allow: /
-
-Sitemap: ${base}/sitemap.xml
-`);
+      fs.writeFileSync(path.join(outDir, "robots.txt"), `User-agent: *\nAllow: /\n\nSitemap: ${base}/sitemap.xml\n`);
     },
   };
 }
@@ -119,6 +115,9 @@ export default defineConfig(({ mode }) => {
       port: meta.previewPort,
       strictPort: true,
     },
+    // Each site keeps its own pre-bundled dependencies, so running both dev
+    // servers at once never invalidates the other site's modules.
+    cacheDir: `node_modules/.vite-${site}`,
     // cmdk is only imported by the lazily loaded palette; pre-bundle it so the
     // first open in dev doesn't trigger a dependency re-optimisation.
     optimizeDeps: { include: ["cmdk"] },
