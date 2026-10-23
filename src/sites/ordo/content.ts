@@ -9,12 +9,17 @@
  * context (the second line renders muted).
  */
 
+/** When the words or facts last changed. Shown in the footer and the hero terminal. */
+const UPDATED = "October 2026";
+
 /** A section label: the bracketed index on the left, a short descriptor on the right. */
 type Label = readonly [string, string];
 /** A two-line heading: the claim, then the context. */
 type Heading = readonly [string, string];
 
 export const content = {
+  updated: UPDATED,
+
   hero: {
     eyebrow: "AI engineer / LetsTute / Mumbai",
     title: ["I build AI that", "shows its sources."] as Heading,
@@ -33,8 +38,7 @@ export const content = {
   heroTerminal: {
     path: "~/varun",
     file: "now.txt",
-    /** Change this whenever the rows below change. */
-    updated: "Oct 2026",
+    updated: UPDATED,
     rows: [
       ["role", "AI engineer, LetsTute"],
       ["work", "ERP extraction, agents"],
@@ -135,6 +139,6 @@ export const content = {
   },
 
   contact: {
-    title: ["Write to me about a project", "here, or about the research."] as Heading,
+    title: ["Write to me about a role,", "a research position or a project."] as Heading,
   },
 } as const;

@@ -57,7 +57,8 @@ export const projectShowcase: Record<string, ProjectShowcase> = {
       },
     ],
     highlights: [
-      "With hybrid retrieval, MMR and LLM reranking, the right passage ranked first for 33 of 33 labelled queries, against 27 with dense search alone (Recall@1 0.82 → 1.00). It is a small set: a check, not a guarantee.",
+      "On 33 labelled questions over three short documents, dense search put the right passage first for 27 and BM25 alone for 30. Hybrid search with MMR stayed at 27; the LLM rerank layer took it to 33 (Recall@1 0.82 → 1.00).",
+      "The questions and their labels were written for the repo and used to compare retrieval layers. That makes the set a development check, not a held-out benchmark.",
       "A support check found 37 of 39 book paragraphs backed by their passages (95%). This is a self-check by the same model family, not an independent review.",
       "16 study tools generated from your own notes, from MCQ quizzes and flashcards to a podcast script.",
       "A new source rewrites only the sections it changes: adding a second source left 6 of 7 sections untouched.",

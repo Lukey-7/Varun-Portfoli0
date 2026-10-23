@@ -14,6 +14,7 @@ import {
   OrdoConsole,
   OrdoResearch,
 } from "./components/OrdoExtras";
+import { content } from "./content";
 import "./base.css";
 import "./ordo.css";
 
@@ -124,7 +125,9 @@ export default function OrdoPage() {
       <DotWordmark />
 
       <footer className="portfolio-footer section-wrap">
-        <span>© {new Date().getFullYear()} Varun Darji</span>
+        <span>
+          © {new Date().getFullYear()} Varun Darji · Updated {content.updated}
+        </span>
         <div>
           <a href="#console">Terminal</a>
           <a href={CYAN_URL}>
