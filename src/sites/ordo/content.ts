@@ -52,6 +52,31 @@ export const content = {
     link: "Open the full terminal",
   },
 
+  /** Multi-page site only: two ways in, straight after the hero. Each link is [text, route]. */
+  paths: {
+    label: ["[ START HERE ]", "TWO WAYS IN"] as Label,
+    items: [
+      {
+        id: "engineering",
+        title: ["Hiring an AI engineer?", "Start with the projects."] as Heading,
+        links: [
+          ["Projects with working demos", "/#work"],
+          ["Client work at LetsTute", "/about#experience"],
+          ["Public GitHub activity", "/#activity"],
+        ] as [string, string][],
+      },
+      {
+        id: "research",
+        title: ["Here for the research?", "Start with the proposal."] as Heading,
+        links: [
+          ["The proposal and its two studies", "/research"],
+          ["Research log", "/research#research-log"],
+          ["Write-ups", "/writing"],
+        ] as [string, string][],
+      },
+    ],
+  },
+
   stack: {
     intro: "What I reach for most days.",
     tools: ["Python", "FastAPI", "LangGraph", "TypeScript", "PostgreSQL", "Docker"],
