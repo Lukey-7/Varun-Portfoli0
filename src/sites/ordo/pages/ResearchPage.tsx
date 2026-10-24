@@ -5,6 +5,7 @@ import type { OrdoContext } from "../OrdoLayout";
 import Sculpture from "../components/Sculpture";
 import { ResearchStudies } from "../components/OrdoExtras";
 import { ResearchLabs } from "../components/ResearchLabs";
+import { ResearchLog } from "../components/ResearchLog";
 import { content } from "../content";
 
 /** The research proposal in full. Hypotheses to test, not results. */
@@ -45,6 +46,8 @@ export default function ResearchPage() {
           </div>
         </div>
       </header>
+
+      <ResearchLog />
 
       <section className="section-wrap research-page-body">
         <ResearchStudies detailed />

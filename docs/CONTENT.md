@@ -13,6 +13,7 @@ Words, facts and numbers each have one home, so a change in one place shows up e
 | Project demos | `src/sites/ordo/demos/<Project>Demo.tsx`, registered in `demos/ProjectDemo.tsx` |
 | Journey log (multi-page site) | `src/sites/ordo/journey.ts`, one entry per line, newest first |
 | Write-ups (multi-page site) | `src/sites/ordo/writing.ts` |
+| Research log on `/research` (multi-page site) | `src/sites/ordo/researchLog.ts`, one entry per line, newest first; its heading and intro are `researchLog` in `src/sites/ordo/content.ts` |
 | Share previews: page titles, descriptions, images | `src/sites/ordo/share.ts`, then `npm run og` |
 | "Last updated" date | `UPDATED` at the top of `src/sites/ordo/content.ts` |
 
@@ -39,6 +40,10 @@ Every time something ships, starts or changes:
 ## Adding a write-up
 
 Add an entry to `posts` in `writing.ts`: a slug, a two-line title, a date, a one-sentence summary and the body as blocks (`p`, `h2`, `list`, `table`, `bars`). Set `project` to a project's slug and its page links to the write-up. It gets its own share preview automatically; run `npm run og` for the image, and add a journey entry.
+
+## Adding to the research log
+
+Add an entry to the top of `researchLog` in `researchLog.ts` (a commented example sits below the list): a date (`"2026-11"`, or just `"2026"`), a kind (`proposal`, `write-up`, `reading` or `experiment`), a title and, if you want them, one sentence of `text` and a link. Use `to` for a page on this site (a write-up, or `#studies`) and `href` for anywhere else. Leave out any field you do not have; nothing is drawn for it. Only log what is done: something read, run or written, with the date it happened. The log lives at `/research#research-log`.
 
 ## Adding a project
 

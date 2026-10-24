@@ -161,6 +161,14 @@ export const content = {
     },
   },
 
+  /** Multi-page site only: the dated log on /research. Entries live in ./researchLog.ts. */
+  researchLog: {
+    label: ["[ RESEARCH / LOG ]", "NEWEST FIRST"] as Label,
+    title: ["What I have read, run and written,", "dated as it happened."] as Heading,
+    intro:
+      "Reading, small experiments and write-ups around the proposal. I add a line when something is done.",
+  },
+
   /** Multi-page site only: /play. */
   playPage: {
     label: ["[ PLAY / LUKEY ARCADE ]", "TWO GAMES / NO BUILD STEP"] as Label,
@@ -171,6 +179,6 @@ export const content = {
   },
 
   contact: {
-    title: ["Write to me about a role,", "a research position or a project."] as Heading,
+    title: ["Write to me about a role,", "research or a project."] as Heading,
   },
 } as const;
