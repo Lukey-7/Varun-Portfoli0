@@ -163,7 +163,7 @@ export const content = {
 
   /** Multi-page site only: the dated log on /research. Entries live in ./researchLog.ts. */
   researchLog: {
-    label: ["[ RESEARCH / LOG ]", "NEWEST FIRST"] as Label,
+    label: ["[ RESEARCH LOG ]", "NEWEST FIRST"] as Label,
     title: ["What I have read, run and written,", "dated as it happened."] as Heading,
     intro:
       "Reading, small experiments and write-ups around the proposal. I add a line when something is done.",

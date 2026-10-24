@@ -1,19 +1,7 @@
-import { Link } from "react-router-dom";
-import { ArrowUpRight } from "lucide-react";
 import { content } from "../content";
 import { formatJourneyDate } from "../journey";
 import { researchLog, researchLogKinds, type ResearchLogEntry } from "../researchLog";
-
-function EntryTitle({ entry }: { entry: ResearchLogEntry }) {
-  if (entry.to) return <Link to={entry.to}>{entry.title}</Link>;
-  if (entry.href)
-    return (
-      <a href={entry.href} target="_blank" rel="noreferrer">
-        {entry.title} <ArrowUpRight size={14} aria-hidden="true" />
-      </a>
-    );
-  return <>{entry.title}</>;
-}
+import { EntryTitle } from "./EntryTitle";
 
 /**
  * The dated research log, newest first, between the hero and the studies on
@@ -25,15 +13,13 @@ export function ResearchLog({ entries = researchLog }: { entries?: ResearchLogEn
   const { label, title, intro } = content.researchLog;
 
   return (
-    <section id="research-log" className="research-log section-wrap" aria-labelledby="research-log-title">
+    <section id="research-log" className="research-log section-wrap" aria-labelledby="research-log-label">
       <div className="ordo-section-label">
-        <span>{label[0]}</span>
+        <span id="research-log-label">{label[0]}</span>
         <span>{label[1]}</span>
       </div>
       <div className="research-log-head">
-        <h2 id="research-log-title">
-          {/* The label reads "[ RESEARCH / LOG ]"; this gives the section a plain name for screen readers. */}
-          <span className="sr-only">Research log. </span>
+        <h2>
           {title[0]}
           <br />
           <span>{title[1]}</span>

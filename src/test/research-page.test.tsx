@@ -42,6 +42,9 @@ describe("research page", () => {
     renderAt("/research");
     const log = screen.getByRole("region", { name: /research log/i });
     expect(log).toHaveAttribute("id", "research-log");
+    // The label shown on the page names the section; there is no screen-reader-only text.
+    expect(within(log).getByText("[ RESEARCH LOG ]")).toBeInTheDocument();
+    expect(log.querySelector(".sr-only")).toBeNull();
 
     const entries = log.querySelectorAll(".research-log-entry");
     expect(entries).toHaveLength(researchLog.length);
