@@ -30,10 +30,11 @@ import {
 } from "@/data/portfolio";
 import { resetPointer, trackPointer } from "@/lib/pointer";
 import { ORDO_URL } from "@/lib/sites";
-import { setMotionPaused, useMotionPaused } from "@/lib/motion-pause";
+import { isMotionPaused, setMotionPaused, useMotionPaused } from "@/lib/motion-pause";
 import ProjectVisual from "@/components/portfolio/ProjectVisual";
 import ProjectDetail from "@/components/portfolio/ProjectDetail";
 import { CommandPalette, CyanResearch } from "./components/CyanSections";
+import { ShortcutsDialog, logConsoleNote, useShortcuts } from "./components/Shortcuts";
 import { PcbSignalMap } from "./motion/PcbSignalMap";
 import { CyanResultsInstrument } from "./motion/EvalMeters";
 import HeroField from "./motion/HeroField";
@@ -79,6 +80,7 @@ export default function CyanPage() {
   const [openJob, setOpenJob] = useState<string | null>("letstute");
   const [copied, setCopied] = useState(false);
   const [copyError, setCopyError] = useState(false);
+  const [helpOpen, setHelpOpen] = useState(false);
   // The "Also built" card being hovered or focused, by project name.
   const [signalled, setSignalled] = useState<string | null>(null);
   // The job being hovered or focused, by id, in the experience timeline or its list.
@@ -131,6 +133,11 @@ export default function CyanPage() {
     };
   }, []);
 
+  // One plain line for anyone who opens the console.
+  useEffect(() => {
+    logConsoleNote();
+  }, []);
+
   useEffect(() => {
     if (!menuOpen) return;
     const onKey = (event: KeyboardEvent) => {
@@ -151,6 +158,19 @@ export default function CyanPage() {
       setCopyError(true);
     }
   };
+  const toggleTheme = () => setTheme((value) => (value === "dark" ? "light" : "dark"));
+  const go = (target: string) =>
+    target.startsWith("#")
+      ? document.querySelector(target)?.scrollIntoView({
+          behavior: reducedMotion ? "auto" : "smooth",
+        })
+      : navigate(target);
+  // The header button is disabled under reduced motion, so the shortcut leaves it alone too.
+  const toggleMotion = () => {
+    if (!reducedMotion) setMotionPaused(!isMotionPaused());
+  };
+  const showShortcuts = () => setHelpOpen(true);
+  useShortcuts({ toggleTheme, toggleMotion, showHelp: showShortcuts, go });
   const signal = (name: string) => setSignalled(name);
   // Leaving one card must not clear the card that has since taken over.
   const release = (name: string) =>
@@ -189,14 +209,10 @@ export default function CyanPage() {
               actions={{
                 openProject: setSelected,
                 copyEmail,
-                toggleTheme: () =>
-                  setTheme((value) => (value === "dark" ? "light" : "dark")),
-                go: (target) =>
-                  target.startsWith("#")
-                    ? document.querySelector(target)?.scrollIntoView({
-                        behavior: reducedMotion ? "auto" : "smooth",
-                      })
-                    : navigate(target),
+                toggleTheme,
+                showShortcuts,
+                toggleMotion,
+                go,
               }}
             />
             <button
@@ -655,6 +671,9 @@ export default function CyanPage() {
       <footer className="portfolio-footer section-wrap">
         <span>© {new Date().getFullYear()} Varun Darji</span>
         <div>
+          <button type="button" className="shortcut-hint mono" onClick={showShortcuts}>
+            Press ? for shortcuts
+          </button>
           <Link to="/vault">Skill map</Link>
           <Link to="/terminal">
             Interactive terminal <Code2 size={14} />
@@ -670,6 +689,7 @@ export default function CyanPage() {
         <a href={ORDO_URL}>Monochrome</a>
       </aside>
       <ProjectDetail project={selected} onClose={() => setSelected(null)} />
+      <ShortcutsDialog open={helpOpen} onClose={() => setHelpOpen(false)} />
     </div>
   );
 }

@@ -7,8 +7,10 @@ import {
   Download,
   FileText,
   Github,
+  Keyboard,
   Linkedin,
   Moon,
+  Pause,
   Search,
   SquareTerminal,
 } from "lucide-react";
@@ -20,6 +22,8 @@ export interface PaletteActions {
   openProject: (project: SelectedWork) => void;
   copyEmail: () => void;
   toggleTheme: () => void;
+  showShortcuts: () => void;
+  toggleMotion: () => void;
   go: (path: string) => void;
 }
 
@@ -123,6 +127,16 @@ export default function PaletteMenu({
             <Command.Item value="toggle light dark theme appearance" onSelect={() => run(actions.toggleTheme)}>
               <Moon size={15} />
               Toggle light / dark
+            </Command.Item>
+            <Command.Item value="pause resume play motion animation" onSelect={() => run(actions.toggleMotion)}>
+              <Pause size={15} />
+              Pause / resume motion
+              <span className="palette-hint mono">.</span>
+            </Command.Item>
+            <Command.Item value="show keyboard shortcuts keys help" onSelect={() => run(actions.showShortcuts)}>
+              <Keyboard size={15} />
+              Show keyboard shortcuts
+              <span className="palette-hint mono">?</span>
             </Command.Item>
             <Command.Item value="switch monochrome ordo edition design" onSelect={() => run(() => window.location.assign(ORDO_URL))}>
               <ArrowUpRight size={15} />
