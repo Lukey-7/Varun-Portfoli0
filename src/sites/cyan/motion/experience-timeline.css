@@ -1,0 +1,221 @@
+/* ---------- Experience as a time axis ----------
+   Each job is a segment on a time axis, drawn to scale, with a tick for every
+   year. Segments are accent colour; the job being probed lights up and the rest
+   dim. The current job's end pulses. The months readout is a real figure worked
+   out from the résumé dates, so it is the only thing in amber. Under reduced
+   motion or the site-wide pause (data-still) the pulse stops and the live end is
+   simply drawn, lit. The list rows below light with their segment. */
+
+.experience-timeline {
+  --tl-ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --tl-glow: drop-shadow(0 0 3px color-mix(in srgb, var(--accent) 70%, transparent));
+  --tl-readout: var(--phosphor, #f0b04a);
+  --tl-readout-glow: 0 0 10px color-mix(in srgb, var(--tl-readout) 40%, transparent);
+  min-width: 0;
+  margin: 0 0 44px;
+}
+/* Ink on paper: no glow in the light theme, and a darker amber that keeps its contrast. */
+.cyan-edition[data-theme="light"] .experience-timeline {
+  --tl-glow: none;
+  --tl-readout: var(--phosphor, #8f5208);
+  --tl-readout-glow: none;
+}
+
+.experience-timeline-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 8px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  line-height: 1.6;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+}
+.experience-timeline-caption {
+  min-width: 0;
+  color: var(--subtle);
+}
+.experience-timeline-readout {
+  flex: none;
+  min-width: 10ch;
+  text-align: right;
+  white-space: nowrap;
+  color: var(--tl-readout);
+  text-shadow: var(--tl-readout-glow);
+}
+/* With nothing probed the readout shows a dim placeholder, drawn here so the element itself stays empty. */
+.experience-timeline-readout:empty::before {
+  content: "-- MONTHS";
+  content: "-- MONTHS" / "";
+  color: var(--subtle);
+  text-shadow: none;
+}
+
+.experience-timeline-plot {
+  position: relative;
+}
+/* The axis is stretched to the width of its box and keeps its height in pixels
+   (preserveAspectRatio="none"), so lines use non-scaling strokes. Text is
+   ordinary HTML below it, which keeps its size at any width. */
+.experience-timeline-svg {
+  display: block;
+  width: 100%;
+  height: 56px;
+}
+.experience-timeline-axis,
+.experience-timeline-tick,
+.experience-timeline-live,
+.experience-timeline-halo {
+  fill: none;
+  vector-effect: non-scaling-stroke;
+}
+.experience-timeline-axis {
+  stroke: color-mix(in srgb, var(--line) 60%, var(--muted));
+  stroke-width: 1px;
+}
+.experience-timeline-tick {
+  stroke: var(--subtle);
+  stroke-width: 1px;
+}
+
+/* Segments */
+.experience-timeline-seg {
+  fill: color-mix(in srgb, var(--accent) 20%, var(--page));
+  stroke: color-mix(in srgb, var(--accent) 65%, transparent);
+  stroke-width: 1px;
+  vector-effect: non-scaling-stroke;
+  transition:
+    fill 220ms var(--tl-ease),
+    stroke 220ms var(--tl-ease),
+    opacity 220ms var(--tl-ease),
+    filter 220ms var(--tl-ease);
+}
+.experience-timeline-seg[data-current] {
+  fill: color-mix(in srgb, var(--accent) 30%, var(--page));
+}
+.experience-timeline-seg[data-active] {
+  fill: var(--accent);
+  stroke: var(--accent);
+  filter: var(--tl-glow);
+}
+.experience-timeline[data-has-active] .experience-timeline-seg:not([data-active]) {
+  opacity: 0.4;
+}
+/* The page's focus ring is an outline, which a stretched SVG would distort, so a
+   focused segment gets a ring-coloured edge instead. Selecting it also lights it. */
+.cyan-edition .experience-timeline .experience-timeline-seg:focus {
+  outline: none;
+}
+.cyan-edition .experience-timeline .experience-timeline-seg:focus-visible {
+  outline: none;
+  stroke: var(--ink);
+  stroke-width: 2px;
+}
+
+/* The live end of the current job: a bar, and a halo that breathes behind it. */
+.experience-timeline-live,
+.experience-timeline-halo {
+  stroke: var(--accent);
+  stroke-linecap: round;
+  pointer-events: none;
+}
+.experience-timeline-live {
+  stroke-width: 3px;
+  filter: var(--tl-glow);
+  animation: experience-timeline-live 2.4s ease-in-out infinite;
+}
+.experience-timeline-halo {
+  stroke-width: 11px;
+  opacity: 0.28;
+  animation: experience-timeline-halo 2.4s ease-in-out infinite;
+}
+@keyframes experience-timeline-live {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+@keyframes experience-timeline-halo {
+  0%,
+  100% {
+    opacity: 0.08;
+  }
+  50% {
+    opacity: 0.38;
+  }
+}
+
+/* Year labels */
+.experience-timeline-years {
+  position: relative;
+  height: 16px;
+  margin-top: 2px;
+  pointer-events: none;
+}
+.experience-timeline-year {
+  position: absolute;
+  top: 0;
+  padding-left: 5px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9px;
+  line-height: 16px;
+  letter-spacing: 0.06em;
+  color: var(--subtle);
+  font-variant-numeric: tabular-nums;
+}
+/* A tick close to the right edge keeps its label inside the box. */
+.experience-timeline-year[data-flip] {
+  padding: 0 5px 0 0;
+  transform: translateX(-100%);
+}
+
+/* The list rows share the highlight: the period and the rule under the row. */
+.experience-item {
+  transition: border-color 220ms var(--tl-ease, ease);
+}
+.experience-period {
+  transition: color 220ms var(--tl-ease, ease);
+}
+.experience-item[data-active] {
+  border-bottom-color: color-mix(in srgb, var(--accent) 55%, var(--line));
+}
+.experience-item[data-active] > button .experience-period {
+  color: var(--accent);
+}
+
+/* Reduced motion or the pause: a complete, still frame. The live end is drawn
+   lit, with its halo at a fixed glow, and nothing fades or moves. */
+.experience-timeline[data-still] .experience-timeline-live,
+.experience-timeline[data-still] .experience-timeline-halo {
+  animation: none;
+}
+.experience-timeline[data-still] .experience-timeline-seg,
+.experience-timeline[data-still] ~ .experience-list .experience-item,
+.experience-timeline[data-still] ~ .experience-list .experience-period {
+  transition: none;
+}
+
+/* Belt and braces: ExperienceTimeline.tsx parks itself in script, and this holds if it can't. */
+@media (prefers-reduced-motion: reduce) {
+  .experience-timeline-live,
+  .experience-timeline-halo {
+    animation: none;
+  }
+  .experience-timeline-seg,
+  .experience-item,
+  .experience-period {
+    transition: none;
+  }
+}
+
+@media (max-width: 767px) {
+  .experience-timeline {
+    margin-bottom: 30px;
+  }
+}

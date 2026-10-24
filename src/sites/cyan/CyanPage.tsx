@@ -43,6 +43,7 @@ import { DitherField } from "./motion/DitherField";
 import { PipelineFlow } from "./motion/PipelineFlow";
 import { ScopeDivider } from "./motion/ScopeDivider";
 import { Lissajous } from "./motion/Lissajous";
+import { ExperienceTimeline } from "./motion/ExperienceTimeline";
 import "./cyan.css";
 
 const workflow = [
@@ -80,6 +81,8 @@ export default function CyanPage() {
   const [copyError, setCopyError] = useState(false);
   // The "Also built" card being hovered or focused, by project name.
   const [signalled, setSignalled] = useState<string | null>(null);
+  // The job being hovered or focused, by id, in the experience timeline or its list.
+  const [active, setActive] = useState<string | null>(null);
   const copyTimer = useRef<ReturnType<typeof setTimeout>>();
   const rootRef = useRef<HTMLDivElement>(null);
   const reducedMotion = useReducedMotion();
@@ -152,6 +155,9 @@ export default function CyanPage() {
   // Leaving one card must not clear the card that has since taken over.
   const release = (name: string) =>
     setSignalled((current) => (current === name ? null : current));
+  // Leaving one job row must not clear the job that has since taken over.
+  const releaseJob = (id: string) =>
+    setActive((current) => (current === id ? null : current));
   const reveal = {
     initial: reducedMotion ? (false as const) : { opacity: 0, y: 20 },
     whileInView: { opacity: 1, y: 0 },
@@ -483,9 +489,18 @@ export default function CyanPage() {
               intern at my university.
             </p>
           </motion.div>
+          <ExperienceTimeline jobs={experience} active={active} onActive={setActive} />
           <div className="experience-list">
             {experience.map((job) => (
-              <article className="experience-item" key={job.id}>
+              <article
+                className="experience-item"
+                key={job.id}
+                data-active={active === job.id ? "" : undefined}
+                onMouseEnter={() => setActive(job.id)}
+                onMouseLeave={() => releaseJob(job.id)}
+                onFocus={() => setActive(job.id)}
+                onBlur={() => releaseJob(job.id)}
+              >
                 <button
                   aria-expanded={openJob === job.id}
                   aria-controls={`job-${job.id}`}
