@@ -2,7 +2,9 @@ import { defineConfig, loadEnv, type Plugin } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import fs from "fs";
 import path from "path";
-import { applyShareHead, sharePages, siteUrl, sitemap } from "./src/sites/ordo/share.ts";
+import { applyShareHead, privateHead, sharePages, siteUrl, sitemap } from "./src/sites/ordo/share.ts";
+import { encryptJson } from "./src/sites/ordo/cv/crypto.ts";
+import { buildCvDocument } from "./src/sites/ordo/cv/cvDocument.ts";
 
 /**
  * Two independent sites share this repository. `--mode cyan` (the default) and
@@ -63,9 +65,32 @@ function spaNotFound(): Plugin {
 }
 
 /**
+ * The private CV at /cv imports `virtual:cv-vault`: the CV encrypted with the
+ * CV_PASSPHRASE environment variable, or null when it is unset (the page then
+ * says it is not set up). The passphrase is read here only and never reaches
+ * client code; the bundle gets the ciphertext.
+ */
+function cvVault(env: Record<string, string | undefined>): Plugin {
+  const id = "virtual:cv-vault";
+  const resolved = `\0${id}`;
+  return {
+    name: "cv-vault",
+    resolveId: (source) => (source === id ? resolved : undefined),
+    load: async (source) => {
+      if (source !== resolved) return undefined;
+      const passphrase = env.CV_PASSPHRASE;
+      if (!passphrase) return "export default null;";
+      return `export default ${JSON.stringify(await encryptJson(buildCvDocument(), passphrase))};`;
+    },
+  };
+}
+
+/**
  * The multi-page site writes one HTML file per page, each with its own title,
  * description and share image, because link previews don't run JavaScript.
  * Also writes sitemap.xml and robots.txt. Images come from `npm run og`.
+ * The private CV gets a head with no share tags and a noindex request instead,
+ * and stays out of the sitemap.
  */
 function ordoSharePages(env: Record<string, string | undefined>): Plugin {
   let outDir = "";
@@ -90,9 +115,14 @@ function ordoSharePages(env: Record<string, string | undefined>): Plugin {
         fs.writeFileSync(path.join(outDir, page.path, "index.html"), html);
         fs.writeFileSync(path.join(outDir, `${page.path}.html`), html);
       }
+      const cv = privateHead(template);
+      fs.mkdirSync(path.join(outDir, "cv"), { recursive: true });
+      fs.writeFileSync(path.join(outDir, "cv", "index.html"), cv);
+      fs.writeFileSync(path.join(outDir, "cv.html"), cv);
       fs.writeFileSync(path.join(outDir, "sitemap.xml"), sitemap(base, new Date().toISOString().slice(0, 10)));
       fs.writeFileSync(path.join(outDir, "robots.txt"), `User-agent: *
 Allow: /
+Disallow: /cv
 
 Sitemap: ${base}/sitemap.xml
 `);
@@ -127,7 +157,12 @@ export default defineConfig(({ mode }) => {
       emptyOutDir: true,
     },
     // spaNotFound runs first so 404.html keeps the generic head.
-    plugins: [react(), siteHtml(site), spaNotFound(), ...(site === "ordo" ? [ordoSharePages(env)] : [])],
+    plugins: [
+      react(),
+      siteHtml(site),
+      spaNotFound(),
+      ...(site === "ordo" ? [cvVault(env), ordoSharePages(env)] : []),
+    ],
     resolve: {
       alias: {
         "@site": path.resolve(__dirname, `./src/sites/${site}`),

@@ -161,6 +161,20 @@ export function applyShareHead(html: string, page: SharePage, base: string) {
     .replace("</head>", `    ${tags}\n  </head>`);
 }
 
+/**
+ * The head for a page that should not be found or previewed (the private CV):
+ * a plain title, no description, keywords, share tags or canonical link, and
+ * a request not to index it.
+ */
+export function privateHead(html: string) {
+  return html
+    .replace(/<title>[\s\S]*?<\/title>/, `<title>Private | ${SITE}</title>`)
+    .replace(/\s*<meta\s+name="(?:description|keywords)"[^>]*>/g, "")
+    .replace(/\s*<meta\s+(?:property="og:[^"]*"|name="twitter:[^"]*")[^>]*>/g, "")
+    .replace(/\s*<link\s+rel="canonical"[^>]*>/g, "")
+    .replace("</head>", `    <meta name="robots" content="noindex, nofollow, noarchive, nosnippet" />\n  </head>`);
+}
+
 export function sitemap(base: string, lastmod: string) {
   const urls = sharePages
     .map((page) => `  <url><loc>${escape(`${base}${page.path}`)}</loc><lastmod>${lastmod}</lastmod></url>`)
