@@ -434,7 +434,7 @@ export default function HeroField() {
         <button type="button" className="hero-field-toggle mono" aria-pressed={scattered} onClick={() => setScattered((value) => !value)}>
           {scattered ? "Re-form the knot" : "Scatter into clusters"}
         </button>
-        <span className="mono">Move to query · drag to spin · click to scatter</span>
+        <span className="mono">Move to search, drag to spin, click to scatter</span>
       </div>
     </div>
   );

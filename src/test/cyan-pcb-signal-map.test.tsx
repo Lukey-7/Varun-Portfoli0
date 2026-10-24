@@ -70,10 +70,10 @@ describe("PcbSignalMap", () => {
   it("renders every project and tool from the data under the original heading", () => {
     const { container } = render(<PcbSignalMap />);
     expect(container.querySelector("section#signal")).toBeInTheDocument();
-    expect(screen.getByRole("heading", { level: 2 })).toHaveTextContent("Signal map.");
+    expect(screen.getByRole("heading", { level: 2 })).toHaveTextContent("What each project runs on.");
     expect(
       screen.getByText(
-        "Every project and the tools it runs on. Hover or focus a project to trace its stack, or a tool to see where it appears.",
+        "Choose a project to trace its stack, or a tool to see every project that uses it.",
       ),
     ).toBeInTheDocument();
 

@@ -296,7 +296,7 @@ export function CyanResearch() {
   return (
     <section id="research" className="cyan-research section-wrap">
       <div className="research-intro">
-        <span className="mono about-label">Prospective researcher</span>
+        <span className="mono about-label">Research proposal</span>
         <h2>
           The cost of remembering<span className="heading-period">.</span>
         </h2>

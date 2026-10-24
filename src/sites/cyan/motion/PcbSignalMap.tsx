@@ -520,11 +520,11 @@ export function PcbSignalMap() {
     <section id="signal" className="cyan-signal section-wrap">
       <div className="section-heading">
         <h2>
-          Signal map<span className="heading-period">.</span>
+          What each project runs on<span className="heading-period">.</span>
         </h2>
         <p>
-          Every project and the tools it runs on. Hover or focus a project to
-          trace its stack, or a tool to see where it appears.
+          Choose a project to trace its stack, or a tool to see every project
+          that uses it.
         </p>
       </div>
       <div

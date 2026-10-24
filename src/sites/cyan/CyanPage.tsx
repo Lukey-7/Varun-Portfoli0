@@ -48,23 +48,23 @@ const workflow = [
   {
     name: "Find the evidence",
     description:
-      "Start with the right passages. Combine semantic and keyword search, then rerank before generation.",
+      "Combine semantic and keyword search, then rerank, so the passage that answers the question comes first.",
     chips: ["Documents", "Dense + BM25", "Rerank", "Context"],
-    note: "Retrieval is a measurable part of the system.",
+    note: "Retrieval is scored on its own, before any text is generated.",
   },
   {
     name: "Check the answer",
     description:
-      "Validate the structure, preserve source quotations, and evaluate changes against explicit test queries.",
+      "Validate the output structure, keep quotes word for word, and test each change on labelled queries.",
     chips: ["Context", "Generate", "Verify quotes", "Citations"],
-    note: "A fluent response still needs evidence.",
+    note: "An answer keeps only the claims its sources support.",
   },
   {
     name: "Ship and learn",
     description:
-      "Connect the API and interface, test the failure paths, and use deployment feedback to guide the next change.",
+      "Connect the API and interface, test what happens when things fail, and let what users hit decide the next change.",
     chips: ["API", "Tests", "Deploy", "Feedback"],
-    note: "The work continues after the first successful demo.",
+    note: "Tests and a container build run on every push.",
   },
 ];
 
@@ -245,17 +245,17 @@ export default function CyanPage() {
             transition={{ duration: 0.7 }}
           >
             <p className="hero-eyebrow mono">
-              <DecodeText text="Varun Darji / AI engineer / prospective researcher" duration={650} />
+              <DecodeText text="Varun Darji / AI engineer at LetsTute / Mumbai" duration={650} />
             </p>
             <h1>
-              Useful AI.
+              Retrieval and agents,
               <br />
-              <span>Built with care.</span>
+              <span>measured before they ship.</span>
             </h1>
             <p className="hero-description">
-              I build retrieval systems, agent workflows and client
-              applications, with attention to evidence, reliability and the
-              people using them.
+              I build document extraction, retrieval and agent workflows for
+              client systems. In my own projects, every retrieval change is
+              scored against a baseline before I keep it.
             </p>
             <div className="hero-actions">
               <a href="#work" className="primary-button">
@@ -309,8 +309,8 @@ export default function CyanPage() {
               Selected work<span className="heading-period">.</span>
             </h2>
             <p>
-              Independent projects in retrieval, mobile applications and
-              systems engineering.
+              Four projects I built on my own. Open one for the problem, what
+              I built and how I checked it.
             </p>
           </motion.div>
           <div className="work-grid">
@@ -405,9 +405,9 @@ export default function CyanPage() {
           <div className="section-wrap approach-inner">
             <motion.div {...reveal} className="approach-copy">
               <h2>
-                Good answers start
+                How I work,
                 <br />
-                <span>with good systems.</span>
+                <span>from evidence to shipping.</span>
               </h2>
               <div
                 className="workflow-tabs"
@@ -461,13 +461,14 @@ export default function CyanPage() {
         <section id="experience" className="experience-section section-wrap">
           <motion.div {...reveal} className="section-heading">
             <h2>
-              Real work.
+              Experience,
               <br />
-              <span>Shared responsibility.</span>
+              <span>newest first.</span>
             </h2>
             <p>
-              I work with teams, build new products and improve existing ones,
-              and take ownership of the parts I deliver.
+              I joined LetsTute as an AI engineer in August 2026. Before that I
+              was a Java backend intern on a fintech platform and a student
+              intern at my university.
             </p>
           </motion.div>
           <div className="experience-list">
@@ -500,9 +501,9 @@ export default function CyanPage() {
                         ))}
                       </div>
                       <p className="confidential-note">
-                        Client systems are private. I can discuss architecture,
-                        my contributions and engineering decisions without
-                        sharing confidential access or data.
+                        Client systems are private. I can talk through the
+                        architecture, my part and the engineering decisions
+                        without sharing confidential access or data.
                       </p>
                     </>
                   ) : (
@@ -532,9 +533,9 @@ export default function CyanPage() {
               APIs, evaluation and the interface someone actually uses.
             </p>
             <p>
-              Outside client work, I build learning tools, explore on-device
-              finance applications, and investigate how to reduce LLM token
-              costs.
+              Outside client work, I build learning tools and an on-device
+              finance app, and I have written a research proposal on cutting
+              the cost of running LLM assistants.
             </p>
             <a
               href={profile.github}
@@ -542,7 +543,7 @@ export default function CyanPage() {
               rel="noreferrer"
               className="text-button"
             >
-              Explore my GitHub <ArrowUpRight size={17} />
+              View my GitHub <ArrowUpRight size={17} />
             </a>
           </motion.div>
           <div className="about-details">
@@ -580,9 +581,9 @@ export default function CyanPage() {
           <DitherField side="right" />
           <div className="contact-top">
             <h2>
-              Have something
+              Write to me about a role,
               <br />
-              <span>worth building?</span>
+              <span>research or a project.</span>
             </h2>
             <a
               className="contact-arrow"
