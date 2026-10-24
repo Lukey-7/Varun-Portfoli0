@@ -6,9 +6,38 @@ import {
   memoryStrategies,
   research,
 } from "@/data/portfolio";
+import { useMotionPaused } from "@/lib/motion-pause";
 import type { PaletteActions } from "./PaletteMenu";
+import { contextCost, savingPercent } from "./tokens";
 
 /* ------------------------------------------------------------ Research */
+
+/**
+ * How much a strategy sends against the full history, as a bar and a reading.
+ * The numbers are characters ÷ 4, so the caption says plainly that it is an
+ * estimate. Under reduced motion or the site-wide pause the bar jumps to its
+ * new width instead of easing (see `data-still` in cyan.css).
+ */
+function ContextGauge({ strategy }: { strategy: (typeof memoryStrategies)[number] }) {
+  const reduced = useReducedMotion();
+  const paused = useMotionPaused();
+  const cost = contextCost(strategy);
+  const share = cost.full > 0 ? Math.min(100, (cost.sent / cost.full) * 100) : 0;
+  return (
+    <div className="context-gauge" data-still={reduced || paused ? "" : undefined}>
+      {/* The reading says the same in words, so the bar stays out of the accessibility tree. */}
+      <div className="context-gauge-bar" aria-hidden="true">
+        <span className="context-gauge-fill" style={{ width: `${Number(share.toFixed(2))}%` }} />
+      </div>
+      <output className="context-gauge-reading mono">
+        {`≈ ${cost.sent} of ${cost.full} tokens · ${savingPercent(cost)}% fewer`}
+      </output>
+      <small className="context-gauge-caption">
+        Rough estimate: characters ÷ 4. Illustration, not a measured result.
+      </small>
+    </div>
+  );
+}
 
 export function CyanResearch() {
   const [strategyId, setStrategyId] = useState("window");
@@ -90,6 +119,7 @@ export function CyanResearch() {
               : `#${strategy.sends[0]}–#${strategy.sends[strategy.sends.length - 1]}`}
           </div>
           <p>{strategy.note}</p>
+          <ContextGauge strategy={strategy} />
           <small>Illustration of the research question. Not a measured result.</small>
         </div>
       </div>

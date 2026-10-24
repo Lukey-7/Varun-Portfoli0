@@ -1836,6 +1836,57 @@ html[data-portfolio-theme] {
   font-size: 11px;
   color: var(--subtle);
 }
+
+/* Context gauge: roughly how many tokens the chosen strategy sends against the
+   whole conversation. It is an estimate, so it takes the accent colour; the
+   amber is kept for measurements. */
+.context-gauge {
+  --gauge-glow: 0 0 10px color-mix(in srgb, var(--accent) 55%, transparent);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 6px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+}
+/* Ink on paper: no glow in the light theme. */
+.context-gauge:where(.cyan-edition[data-theme="light"] *) {
+  --gauge-glow: none;
+}
+.context-gauge-bar {
+  height: 6px;
+  border-radius: 3px;
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+}
+.context-gauge-fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--accent);
+  box-shadow: var(--gauge-glow);
+  transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+/* Two classes, to outrank the 11px that .portfolio .mono sets. */
+.memory-context .context-gauge-reading {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+.context-gauge-caption {
+  line-height: 1.5;
+}
+/* Reduced motion or the page-wide pause: the bar jumps to its width. */
+.context-gauge[data-still] .context-gauge-fill,
+html[data-motion="paused"] .context-gauge-fill {
+  transition: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .context-gauge-fill {
+    transition: none;
+  }
+}
 .retry-strip {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
