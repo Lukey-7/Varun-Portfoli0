@@ -1,0 +1,97 @@
+/* ---------- Signal signatures on the "Also built" cards ----------
+   A dim whole figure at rest. When the card is hovered or focused a bright
+   trace draws itself over it (stroke-dashoffset, driven by Lissajous.tsx) and
+   the ratio and phase fade in. The accent colour, never the amber kept for
+   measurements. Under reduced motion or the site-wide pause (data-still) the
+   trace and the readout simply appear. */
+
+.lissajous {
+  --lissajous-signal: var(--accent, #53dace);
+  --lissajous-glow: drop-shadow(0 0 3px color-mix(in srgb, var(--lissajous-signal) 70%, transparent));
+  --lissajous-ease: cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  margin-top: 14px;
+  color: var(--lissajous-signal);
+  font-family: "IBM Plex Mono", monospace;
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+}
+/* Ink on paper: no glow in the light theme. */
+.lissajous:where(.cyan-edition[data-theme="light"] *) {
+  --lissajous-glow: none;
+}
+
+.lissajous-figure {
+  display: block;
+  flex: none;
+  overflow: visible;
+}
+.lissajous-ghost,
+.lissajous-trace {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.lissajous-ghost {
+  opacity: 0.32;
+  transition: opacity 300ms var(--lissajous-ease);
+}
+.lissajous[data-active] .lissajous-ghost {
+  opacity: 0.16;
+}
+/* One dash the length of the path (pathLength is 1) and a longer gap. The inline
+   stroke-dashoffset is 1 at rest, which leaves only the gap on the path, and 0
+   when active, which shows the whole dash. */
+.lissajous-trace {
+  stroke-dasharray: 1 2;
+  filter: var(--lissajous-glow);
+  transition: stroke-dashoffset 220ms ease-in;
+}
+.lissajous[data-active] .lissajous-trace {
+  transition: stroke-dashoffset 1400ms var(--lissajous-ease);
+}
+
+.lissajous-readout {
+  min-width: 0;
+  font-size: 10px;
+  line-height: 1.2;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+  opacity: 0;
+  transform: translateX(-4px);
+  transition:
+    opacity 200ms var(--lissajous-ease),
+    transform 200ms var(--lissajous-ease);
+}
+.lissajous[data-active] .lissajous-readout {
+  opacity: 1;
+  transform: none;
+  transition-delay: 120ms;
+}
+
+/* Reduced motion or the pause: the full figure at once, no drawing in. */
+.lissajous[data-still] .lissajous-trace,
+.lissajous[data-still] .lissajous-ghost,
+.lissajous[data-still] .lissajous-readout {
+  transition: none;
+}
+.lissajous[data-still] .lissajous-readout {
+  transform: none;
+}
+
+/* Belt and braces: Lissajous.tsx parks itself in script, and this holds if it can't. */
+@media (prefers-reduced-motion: reduce) {
+  .lissajous-trace,
+  .lissajous-ghost,
+  .lissajous-readout {
+    transition: none;
+  }
+  .lissajous-readout {
+    transform: none;
+  }
+}

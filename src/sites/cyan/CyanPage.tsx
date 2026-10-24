@@ -42,6 +42,7 @@ import { LocalClock } from "./motion/LocalClock";
 import { DitherField } from "./motion/DitherField";
 import { PipelineFlow } from "./motion/PipelineFlow";
 import { ScopeDivider } from "./motion/ScopeDivider";
+import { Lissajous } from "./motion/Lissajous";
 import "./cyan.css";
 
 const workflow = [
@@ -77,6 +78,8 @@ export default function CyanPage() {
   const [openJob, setOpenJob] = useState<string | null>("letstute");
   const [copied, setCopied] = useState(false);
   const [copyError, setCopyError] = useState(false);
+  // The "Also built" card being hovered or focused, by project name.
+  const [signalled, setSignalled] = useState<string | null>(null);
   const copyTimer = useRef<ReturnType<typeof setTimeout>>();
   const rootRef = useRef<HTMLDivElement>(null);
   const reducedMotion = useReducedMotion();
@@ -145,6 +148,10 @@ export default function CyanPage() {
       setCopyError(true);
     }
   };
+  const signal = (name: string) => setSignalled(name);
+  // Leaving one card must not clear the card that has since taken over.
+  const release = (name: string) =>
+    setSignalled((current) => (current === name ? null : current));
   const reveal = {
     initial: reducedMotion ? (false as const) : { opacity: 0, y: 20 },
     whileInView: { opacity: 1, y: 0 },
@@ -371,6 +378,10 @@ export default function CyanPage() {
                 target={project.href.startsWith("http") ? "_blank" : undefined}
                 rel="noreferrer"
                 key={project.name}
+                onMouseEnter={() => signal(project.name)}
+                onMouseLeave={() => release(project.name)}
+                onFocus={() => signal(project.name)}
+                onBlur={() => release(project.name)}
               >
                 <div className="other-symbol">
                   {project.kind === "language" ? (
@@ -393,6 +404,7 @@ export default function CyanPage() {
                   </div>
                   <p>{project.description}</p>
                   <span className="mono">{project.tech}</span>
+                  <Lissajous seed={project.name} active={signalled === project.name} />
                 </div>
               </a>
             ))}
