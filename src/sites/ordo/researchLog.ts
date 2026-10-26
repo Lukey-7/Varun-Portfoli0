@@ -41,6 +41,13 @@ export const researchLog: ResearchLogEntry[] = [
     text: "Two studies, adaptive conversation memory and a calibrated retry policy. Neither has been run yet.",
     to: "#studies",
   },
+  {
+    date: "2026-09",
+    kind: "experiment",
+    title: "Measured StudyForge's retrieval",
+    text: "On 33 labelled questions, the LLM rerank layer took Recall@1 from 0.82 to 1.00.",
+    to: "/writing/studyforge-evaluation",
+  },
   // To add an entry, copy this to the top of the list (newest first) and fill it in:
   // {
   //   date: "2026-11",

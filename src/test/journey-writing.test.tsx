@@ -46,6 +46,9 @@ describe("journey", () => {
       "href",
       "/research",
     );
+    // It says the proposal is written, not what is planned for it.
+    expect(screen.getByText(/written up as a proposal\./)).toBeInTheDocument();
+    expect(container.textContent).not.toMatch(/supervis/i);
   });
 });
 

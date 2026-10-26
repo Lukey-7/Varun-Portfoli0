@@ -35,7 +35,24 @@ describe("research page", () => {
     // The shared layout's contact and footer copy is out of scope; check the page itself.
     const page = container.querySelector("article.research-page");
     expect(page).not.toBeNull();
-    expect(page?.textContent).not.toMatch(/research position|open to|looking for|PhD|relocat/i);
+    expect(page?.textContent).not.toMatch(/research position|open to|looking for|PhD|relocat|supervis/i);
+    // The status line names the document and its month, and nothing about what happens next.
+    expect(within(page as HTMLElement).getByText("Research proposal · October 2026")).toBeInTheDocument();
+  });
+
+  it("backs the log's heading with a write-up and an experiment", () => {
+    const kinds = researchLog.map((entry) => entry.kind);
+    expect(kinds).toContain("write-up");
+    expect(kinds).toContain("experiment");
+
+    renderAt("/research");
+    const log = screen.getByRole("region", { name: /research log/i });
+    const experiment = within(log).getByRole("link", { name: "Measured StudyForge's retrieval" });
+    expect(experiment).toHaveAttribute("href", "/writing/studyforge-evaluation");
+    const entry = experiment.closest("li");
+    expect(entry).toHaveTextContent("Experiment");
+    expect(entry).toHaveTextContent("On 33 labelled questions, the LLM rerank layer took Recall@1 from 0.82 to 1.00.");
+    expect(entry?.querySelector("time")).toHaveAttribute("datetime", "2026-09");
   });
 
   it("lists the research log newest first", () => {

@@ -46,7 +46,7 @@ export const journey: JourneyEntry[] = [
     date: "2026-10",
     kind: "research",
     title: "Research proposal on cutting LLM inference cost",
-    text: "Two studies, adaptive conversation memory and a calibrated retry policy, written up for supervisory review.",
+    text: "Two studies, adaptive conversation memory and a calibrated retry policy, written up as a proposal.",
     to: "/research",
   },
   {
