@@ -1051,6 +1051,7 @@ html[data-portfolio-theme] {
   padding-block: 24px 85px;
   border-top: 1px solid var(--line);
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: 20px;

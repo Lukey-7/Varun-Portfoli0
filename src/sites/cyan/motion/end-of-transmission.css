@@ -1,0 +1,85 @@
+/* ---------- End of transmission: the footer's sign-off ----------
+   A mono line types itself out when the footer scrolls into view, a short
+   flat-line trace draws once beside it (stroke-dashoffset, driven by
+   EndOfTransmission.tsx), and the page's real load time follows. The load time
+   is a measurement, so it is the only thing in amber; the rest is muted ink and
+   the accent colour. Under reduced motion or the site-wide pause (data-still)
+   the whole sign-off simply appears. Nothing loops. */
+
+.eot {
+  --eot-signal: var(--accent, #53dace);
+  --eot-glow: drop-shadow(0 0 3px color-mix(in srgb, var(--eot-signal) 70%, transparent));
+  /* Its own row at the foot of the footer. */
+  flex: 1 0 100%;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 14px;
+  min-width: 0;
+  margin: 0;
+  color: var(--muted);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  line-height: 14px;
+  letter-spacing: 0.08em;
+  font-variant-numeric: tabular-nums;
+}
+/* Ink on paper: no glow in the light theme. */
+.eot:where(.cyan-edition[data-theme="light"] *) {
+  --eot-glow: none;
+}
+
+/* Position the hidden screen-reader copy here, so it can't widen the page. */
+.eot-line {
+  position: relative;
+  min-width: 0;
+  white-space: pre;
+}
+/* The text still to come keeps the room it will fill, so nothing moves while it types. */
+.eot-rest {
+  visibility: hidden;
+}
+.eot-measure {
+  color: var(--phosphor);
+}
+
+.eot-svg {
+  display: block;
+  flex: none;
+  max-width: 100%;
+  overflow: visible;
+}
+.eot-trace {
+  fill: none;
+  stroke: var(--eot-signal);
+  stroke-width: 1.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  /* One dash the length of the path (pathLength is 1) and a longer gap. The inline
+     stroke-dashoffset is 1 until the sign-off starts, which leaves only the gap on
+     the path, and 0 afterwards, which shows the whole dash. */
+  stroke-dasharray: 1 2;
+  filter: var(--eot-glow);
+  transition: stroke-dashoffset 1200ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Reduced motion or the pause: the full trace at once, no drawing in. */
+.eot[data-still] .eot-trace {
+  transition: none;
+}
+
+/* Belt and braces: EndOfTransmission.tsx parks itself in script, and this holds if it can't. */
+@media (prefers-reduced-motion: reduce) {
+  .eot-trace {
+    transition: none;
+    stroke-dashoffset: 0 !important;
+  }
+}
+
+/* The footer stacks into a column on phones, so the sign-off takes the room it needs. */
+@media (max-width: 767px) {
+  .eot {
+    flex: 0 0 auto;
+    max-width: 100%;
+  }
+}

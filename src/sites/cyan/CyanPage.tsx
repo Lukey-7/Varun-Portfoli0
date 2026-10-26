@@ -45,6 +45,7 @@ import { PipelineFlow } from "./motion/PipelineFlow";
 import { ScopeDivider } from "./motion/ScopeDivider";
 import { Lissajous } from "./motion/Lissajous";
 import { ExperienceTimeline } from "./motion/ExperienceTimeline";
+import { EndOfTransmission } from "./motion/EndOfTransmission";
 import "./cyan.css";
 
 const workflow = [
@@ -680,6 +681,7 @@ export default function CyanPage() {
           </Link>
           <a href="#main">Back to top ↑</a>
         </div>
+        <EndOfTransmission />
       </footer>
       <aside className="edition-switch" aria-label="Portfolio design edition">
         <span>Design</span>
