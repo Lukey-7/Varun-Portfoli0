@@ -1,6 +1,9 @@
 /* ---------- /cv: the private CV ---------- */
 
-/* The passphrase form. */
+/* The passphrase form. The contact block below draws the rule, so the hero's own would double it. */
+.page-hero.cv-gate {
+  border-bottom: 0;
+}
 .cv-gate .project-lede {
   max-width: 560px;
 }

@@ -2915,9 +2915,9 @@ html[data-motion="paused"] .ordo-edition *::after {
 }
 
 /* ---------- Research page: the dated log ---------- */
+/* The hero above already draws the rule between them. */
 .research-log {
   padding-block: 64px 24px;
-  border-top: 1px solid var(--line);
 }
 .research-log-head {
   display: grid;
