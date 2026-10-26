@@ -342,6 +342,30 @@ describe("EndOfTransmission and the load time", () => {
     expect(vi.getTimerCount()).toBe(0);
   });
 
+  it("reads the figure again if the page finished loading between the first render and the effect", () => {
+    // The first read, while rendering, finds nothing. By the time the effect runs the page is
+    // complete, so no `load` event will ever come and the effect has to read it for itself.
+    vi.spyOn(document, "readyState", "get").mockReturnValue("complete");
+    const listen = vi.spyOn(window, "addEventListener");
+    vi.spyOn(performance, "getEntriesByType")
+      .mockReturnValueOnce([])
+      .mockReturnValue([{ domContentLoadedEventEnd: 412.4 } as unknown as PerformanceEntry]);
+    setMotionPaused(true);
+    const { container } = render(<EndOfTransmission />);
+    expect(typed(container, "measure")).toBe(MEASURE);
+    expect(root(container)).toHaveAttribute("data-state", "done");
+    expect(listen).not.toHaveBeenCalledWith("load", expect.anything(), expect.anything());
+  });
+
+  it("leaves the measurement out, and does not loop, if a complete page still reports nothing", () => {
+    vi.spyOn(document, "readyState", "get").mockReturnValue("complete");
+    const read = vi.spyOn(performance, "getEntriesByType").mockReturnValue([]);
+    setMotionPaused(true);
+    const { container } = render(<EndOfTransmission />);
+    expect(container.querySelector(".eot-measure")).toBeNull();
+    expect(read.mock.calls.length).toBeLessThanOrEqual(3);
+  });
+
   it("does not wait for a load event that has already happened", () => {
     const listen = vi.spyOn(window, "addEventListener");
     stubNavigation(null);

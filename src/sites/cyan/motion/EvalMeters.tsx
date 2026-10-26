@@ -348,6 +348,7 @@ export function CyanResultsInstrument() {
   return (
     <section
       id="results"
+      tabIndex={-1}
       className="eval-section section-wrap"
       aria-labelledby={`${baseId}-heading`}
     >

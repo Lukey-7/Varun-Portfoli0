@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { useState, type ReactNode } from "react";
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { act, cleanup, fireEvent, render, screen, within } from "@testing-library/react";
@@ -322,6 +324,81 @@ describe("ShortcutsDialog", () => {
     expect(onClose).toHaveBeenCalledTimes(3);
   });
 
+  it("tells the page when the browser closes the dialog without a cancel", () => {
+    const onClose = vi.fn();
+    render(<ShortcutsDialog open onClose={onClose} />);
+    const dialog = screen.getByRole("dialog");
+    // Not every way of closing a modal <dialog> fires `cancel` first; `close` always follows.
+    dialog.removeAttribute("open");
+    fireEvent(dialog, new Event("close"));
+    expect(onClose).toHaveBeenCalledTimes(1);
+  });
+
+  it("calls onClose once, not twice, when the page closes it itself", () => {
+    const onClose = vi.fn();
+    const Host = () => {
+      const [open, setOpen] = useState(true);
+      return (
+        <ShortcutsDialog
+          open={open}
+          onClose={() => {
+            onClose();
+            setOpen(false);
+          }}
+        />
+      );
+    };
+    render(<Host />);
+    // The close button, Escape and the backdrop each end with the dialog's own close event.
+    fireEvent.click(screen.getByRole("button", { name: "Close keyboard shortcuts" }));
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(onClose).toHaveBeenCalledTimes(1);
+  });
+
+  it("calls onClose once for Escape, even though the dialog then closes", () => {
+    const onClose = vi.fn();
+    const Host = () => {
+      const [open, setOpen] = useState(true);
+      return (
+        <ShortcutsDialog
+          open={open}
+          onClose={() => {
+            onClose();
+            setOpen(false);
+          }}
+        />
+      );
+    };
+    render(<Host />);
+    fireEvent(screen.getByRole("dialog"), new Event("cancel", { cancelable: true }));
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(onClose).toHaveBeenCalledTimes(1);
+  });
+
+  it("puts the state back to closed when the browser closes it, and still returns focus", () => {
+    const Host = () => {
+      const [open, setOpen] = useState(false);
+      return (
+        <>
+          <button onClick={() => setOpen(true)}>opener</button>
+          <ShortcutsDialog open={open} onClose={() => setOpen(false)} />
+        </>
+      );
+    };
+    render(<Host />);
+    const opener = screen.getByRole("button", { name: "opener" });
+    opener.focus();
+    fireEvent.click(opener);
+    const dialog = screen.getByRole("dialog");
+    dialog.removeAttribute("open");
+    fireEvent(dialog, new Event("close"));
+    expect(screen.queryByRole("button", { name: "Close keyboard shortcuts" })).not.toBeInTheDocument();
+    expect(opener).toHaveFocus();
+    // And it opens again afterwards, so the state really is closed.
+    fireEvent.click(opener);
+    expect(screen.getByRole("dialog", { name: "Keyboard shortcuts" })).toBeInTheDocument();
+  });
+
   it("moves focus in on open and gives it back to the opener on close", () => {
     const Host = () => {
       const [open, setOpen] = useState(false);
@@ -423,6 +500,43 @@ describe("shortcuts on the cyan page", () => {
     expect(scrollIntoView).toHaveBeenCalledWith({ behavior: "auto" });
   });
 
+  it.each([
+    ["w", "work"],
+    ["r", "research"],
+    ["e", "experience"],
+    ["c", "contact"],
+  ])("moves keyboard focus into #%s, so the next Tab carries on from there", (letter, id) => {
+    const focus = vi.spyOn(HTMLElement.prototype, "focus");
+    renderPage();
+    // The visitor was on a header button when they pressed the keys.
+    const toggle = screen.getByRole("button", { name: /Switch to light mode/ });
+    toggle.focus();
+    expect(document.activeElement).toBe(toggle);
+    focus.mockClear();
+
+    press("g");
+    press(letter);
+
+    const section = document.getElementById(id)!;
+    expect(section.tagName).toBe("SECTION");
+    expect(document.activeElement).toBe(section);
+    // Focus must not scroll again; the smooth scroll is already under way.
+    const call = focus.mock.contexts.indexOf(section);
+    expect(call).toBeGreaterThanOrEqual(0);
+    expect(focus.mock.calls[call]).toEqual([{ preventScroll: true }]);
+    expect(scrollIntoView.mock.invocationCallOrder[0]).toBeLessThan(focus.mock.invocationCallOrder[call]);
+  });
+
+  it("gives every section the palette can jump to a way to take focus without joining the Tab order", () => {
+    renderPage();
+    for (const id of ["work", "results", "signal", "research", "experience", "about", "contact"]) {
+      const section = document.getElementById(id);
+      expect(section, `#${id}`).not.toBeNull();
+      expect(section!.tagName).toBe("SECTION");
+      expect(section, `#${id}`).toHaveAttribute("tabindex", "-1");
+    }
+  });
+
   it("shows the hint in the footer", () => {
     renderPage();
     const footer = document.querySelector(".portfolio-footer") as HTMLElement;
@@ -430,7 +544,28 @@ describe("shortcuts on the cyan page", () => {
   });
 });
 
+describe("cyan.css and the jump targets", () => {
+  const css = readFileSync(resolve(__dirname, "../sites/cyan/cyan.css"), "utf8").replace(/\/\*[\s\S]*?\*\//g, "");
+  const rules = css.split("}").map((rule) => rule.trim());
+
+  it("shows no ring on a section that took focus from a jump", () => {
+    const rule = rules.find((item) => /section\[tabindex="-1"\]/.test(item));
+    expect(rule, "a rule for section[tabindex=-1]").toBeDefined();
+    expect(rule).toMatch(/:focus\b/);
+    expect(rule).toMatch(/outline:\s*none/);
+  });
+
+  it("keeps the keyboard focus ring for everything else", () => {
+    const ring = rules.find((item) => /\[tabindex\]\):focus-visible\s*\{/.test(item));
+    expect(ring, "the shared :focus-visible rule").toBeDefined();
+    expect(ring).toMatch(/outline:\s*2px solid var\(--accent\)/);
+  });
+});
+
 describe("shortcuts and the command palette", () => {
+  // The palette's list scrolls its own highlighted item (`block: "nearest"`); only the page's jumps pass a `behavior`.
+  const pageJumps = () => scrollIntoView.mock.calls.filter(([options]) => options && "behavior" in options);
+
   it("ignores keys typed into the palette's search box", async () => {
     renderPage();
     fireEvent.click(screen.getByRole("button", { name: "Open command palette" }));
@@ -455,6 +590,56 @@ describe("shortcuts and the command palette", () => {
     });
     fireEvent.click(within(palette).getByRole("option", { name: /Show keyboard shortcuts/ }));
     expect(screen.getByRole("dialog", { name: "Keyboard shortcuts" })).toBeInTheDocument();
+  });
+
+  it("moves keyboard focus into the section for a Go to item, as g does", async () => {
+    renderPage();
+    fireEvent.click(screen.getByRole("button", { name: "Open command palette" }));
+    const palette = screen.getByRole("dialog", { name: "Command palette" });
+    await within(palette).findByRole("combobox", {}, { timeout: 5000 });
+    fireEvent.click(within(palette).getByRole("option", { name: "Contact" }));
+    expect(pageJumps()).toHaveLength(1);
+    expect(document.activeElement).toBe(document.getElementById("contact"));
+  });
+
+  it("leaves a route item alone: it navigates and neither scrolls nor focuses a section", async () => {
+    renderPage();
+    fireEvent.click(screen.getByRole("button", { name: "Open command palette" }));
+    const palette = screen.getByRole("dialog", { name: "Command palette" });
+    await within(palette).findByRole("combobox", {}, { timeout: 5000 });
+    fireEvent.click(within(palette).getByRole("option", { name: /Open the interactive terminal/ }));
+    expect(pageJumps()).toHaveLength(0);
+    expect(document.activeElement?.tagName).not.toBe("SECTION");
+  });
+
+  it("does not open over the shortcuts sheet with / or Ctrl K, and leaves the sheet up", () => {
+    renderPage();
+    press("?", { shiftKey: true });
+    const help = screen.getByRole("dialog", { name: "Keyboard shortcuts" });
+    const palette = document.querySelector<HTMLDialogElement>("dialog.palette-dialog")!;
+    expect(press("/")).toBe(true);
+    press("k", { ctrlKey: true });
+    press("K", { metaKey: true });
+    expect(palette).not.toHaveAttribute("open");
+    expect(help).toHaveAttribute("open");
+  });
+
+  it("still opens with / and Ctrl K once the sheet is closed, and Ctrl K closes it again", async () => {
+    renderPage();
+    press("?", { shiftKey: true });
+    fireEvent(screen.getByRole("dialog", { name: "Keyboard shortcuts" }), new Event("cancel", { cancelable: true }));
+    const palette = document.querySelector<HTMLDialogElement>("dialog.palette-dialog")!;
+
+    press("k", { ctrlKey: true });
+    expect(palette).toHaveAttribute("open");
+    await within(palette).findByRole("combobox", {}, { timeout: 5000 });
+    // The palette is the open dialog, so its own key still closes it.
+    press("k", { ctrlKey: true });
+    expect(palette).not.toHaveAttribute("open");
+
+    expect(press("/")).toBe(false);
+    expect(palette).toHaveAttribute("open");
+    await within(palette).findByRole("combobox", {}, { timeout: 5000 });
   });
 
   it("pauses and resumes motion from the palette", async () => {

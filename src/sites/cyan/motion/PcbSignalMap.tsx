@@ -517,7 +517,7 @@ export function PcbSignalMap() {
   });
 
   return (
-    <section id="signal" className="cyan-signal section-wrap">
+    <section id="signal" tabIndex={-1} className="cyan-signal section-wrap">
       <div className="section-heading">
         <h2>
           What each project runs on<span className="heading-period">.</span>

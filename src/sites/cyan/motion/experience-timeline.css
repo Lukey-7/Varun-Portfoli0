@@ -64,6 +64,8 @@
   display: block;
   width: 100%;
   height: 56px;
+  /* The live-end halo is wider than the axis it sits on; an svg clips to its own box unless told not to. */
+  overflow: visible;
 }
 .experience-timeline-axis,
 .experience-timeline-tick,

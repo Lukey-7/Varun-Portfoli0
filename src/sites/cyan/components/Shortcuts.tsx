@@ -7,6 +7,7 @@ import "./shortcuts.css";
  * the command palette, which listens for them itself; they are listed here only
  * so the sheet is complete. Labels are unique: the sheet and its test key on them.
  */
+// eslint-disable-next-line react-refresh/only-export-components -- the key list is shared with the page's tests
 export const SHORTCUTS: readonly { keys: string; label: string }[] = [
   { keys: "/", label: "Open the command palette" },
   { keys: "Ctrl K", label: "Open or close it from anywhere (⌘ K on a Mac)" },
@@ -46,6 +47,7 @@ export interface ShortcutActions {
  * visitor is typing, while a dialog is open or with Ctrl, Cmd or Alt held, so
  * the browser's own shortcuts and every form field keep working.
  */
+// eslint-disable-next-line react-refresh/only-export-components -- the hook lives beside the help sheet it documents
 export function useShortcuts(actions: ShortcutActions): void {
   // The listener is added once; it always calls the actions from the latest render.
   const latest = useRef(actions);
@@ -114,10 +116,14 @@ export function ShortcutsDialog({ open, onClose }: { open: boolean; onClose: () 
   const closeRef = useRef<HTMLButtonElement>(null);
   const opener = useRef<HTMLElement | null>(null);
   const wasOpen = useRef(false);
+  // What the page last asked for. A dialog that closes while this is still `true` was closed by the
+  // browser and not by the page, so the page has not heard of it yet.
+  const asked = useRef(open);
 
   useEffect(() => {
     const dialog = ref.current;
     if (!dialog) return;
+    asked.current = open;
     if (open) {
       wasOpen.current = true;
       if (!dialog.open) {
@@ -142,6 +148,12 @@ export function ShortcutsDialog({ open, onClose }: { open: boolean; onClose: () 
       className="shortcuts-dialog"
       aria-label="Keyboard shortcuts"
       onCancel={onClose}
+      // Escape normally cancels first, but a browser can close a modal without it. Either way `close`
+      // follows, so the page hears of it here. When the page itself closed the dialog (or Escape was
+      // already reported through `cancel`) `asked` is false by now and nothing is reported twice.
+      onClose={() => {
+        if (asked.current) onClose();
+      }}
       onClick={(event) => {
         if (event.target === event.currentTarget) onClose();
       }}
@@ -189,6 +201,7 @@ const CONSOLE_NOTE =
 let noted = false;
 
 /** One plain line in the browser console, the first time the page mounts. */
+// eslint-disable-next-line react-refresh/only-export-components -- a plain helper, exported so the page and its tests can call it
 export function logConsoleNote(): void {
   if (noted) return;
   noted = true;

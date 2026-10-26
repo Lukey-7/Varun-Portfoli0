@@ -160,12 +160,16 @@ export default function CyanPage() {
     }
   };
   const toggleTheme = () => setTheme((value) => (value === "dark" ? "light" : "dark"));
-  const go = (target: string) =>
-    target.startsWith("#")
-      ? document.querySelector(target)?.scrollIntoView({
-          behavior: reducedMotion ? "auto" : "smooth",
-        })
-      : navigate(target);
+  // Shared by the g shortcuts and the palette's "Go to" items. Scrolling alone leaves the keyboard
+  // where it was, so the next Tab would fly back to the header; the section takes focus as well.
+  const go = (target: string) => {
+    if (!target.startsWith("#")) return navigate(target);
+    const section = document.querySelector<HTMLElement>(target);
+    if (!section) return;
+    section.scrollIntoView({ behavior: reducedMotion ? "auto" : "smooth" });
+    // The scroll is already under way; focusing must not start another.
+    section.focus({ preventScroll: true });
+  };
   // The header button is disabled under reduced motion, so the shortcut leaves it alone too.
   const toggleMotion = () => {
     if (!reducedMotion) setMotionPaused(!isMotionPaused());
@@ -333,7 +337,7 @@ export default function CyanPage() {
           <ScopeDivider />
         </div>
 
-        <section id="work" className="work-section section-wrap">
+        <section id="work" tabIndex={-1} className="work-section section-wrap">
           <motion.div {...reveal} className="section-heading">
             <h2>
               Selected work<span className="heading-period">.</span>
@@ -493,7 +497,7 @@ export default function CyanPage() {
 
         <CyanResearch />
 
-        <section id="experience" className="experience-section section-wrap">
+        <section id="experience" tabIndex={-1} className="experience-section section-wrap">
           <motion.div {...reveal} className="section-heading">
             <h2>
               Experience,
@@ -563,7 +567,7 @@ export default function CyanPage() {
           </div>
         </section>
 
-        <section id="about" className="about-section section-wrap">
+        <section id="about" tabIndex={-1} className="about-section section-wrap">
           <motion.div {...reveal} className="about-statement">
             <span className="mono about-label">A little about me</span>
             <h2>
@@ -621,7 +625,7 @@ export default function CyanPage() {
           </div>
         </section>
 
-        <section id="contact" className="contact-section section-wrap">
+        <section id="contact" tabIndex={-1} className="contact-section section-wrap">
           <DitherField side="right" />
           <div className="contact-top">
             <h2>

@@ -45,7 +45,7 @@ export function CyanResearch() {
   const reduced = useReducedMotion();
   const retry = research.studies[1];
   return (
-    <section id="research" className="cyan-research section-wrap">
+    <section id="research" tabIndex={-1} className="cyan-research section-wrap">
       <div className="research-intro">
         <span className="mono about-label">Research proposal</span>
         <h2>
@@ -159,10 +159,13 @@ export function CommandPalette({ actions }: { actions: PaletteActions }) {
     const onKey = (event: KeyboardEvent) => {
       const target = event.target as HTMLElement | null;
       const typing = Boolean(target?.closest("input, textarea, [contenteditable=true]"));
+      // Another modal (the shortcuts sheet, a case study) is up: opening over it would stack two.
+      // The palette's own dialog does not count, so Ctrl K can still close it.
+      const covered = Array.from(document.querySelectorAll("dialog[open]")).some((dialog) => dialog !== ref.current);
       if ((event.key === "k" || event.key === "K") && (event.metaKey || event.ctrlKey)) {
         event.preventDefault();
-        setOpen((value) => !value);
-      } else if (event.key === "/" && !typing && !open) {
+        if (!covered) setOpen((value) => !value);
+      } else if (event.key === "/" && !typing && !open && !covered) {
         event.preventDefault();
         setOpen(true);
       }

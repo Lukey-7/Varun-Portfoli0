@@ -79,9 +79,14 @@ export function EndOfTransmission() {
   const complete = count >= total;
 
   // The page is usually still parsing when this first renders, so DOMContentLoaded has not finished
-  // and there is no figure yet. Ask again once it has.
+  // and there is no figure yet. Ask again once it has. If the page finished loading between that
+  // first render and this effect, no `load` event is coming, so read the figure now instead.
   useEffect(() => {
-    if (ms !== null || document.readyState === "complete") return;
+    if (ms !== null) return;
+    if (document.readyState === "complete") {
+      setMs(pageReadyMs());
+      return;
+    }
     const read = () => setMs(pageReadyMs());
     window.addEventListener("load", read, { once: true });
     return () => window.removeEventListener("load", read);

@@ -59,6 +59,12 @@ html[data-portfolio-theme] {
   outline: 2px solid var(--accent);
   outline-offset: 5px;
 }
+/* The g shortcuts and the palette's "Go to" items move focus onto the section they scroll to, so the
+   next Tab carries on from there. A whole section is a place, not a control: it takes no ring, while
+   the links and buttons inside it keep theirs. This is more specific than the rule above. */
+.portfolio section[tabindex="-1"]:is(:focus, :focus-visible) {
+  outline: none;
+}
 .portfolio ::selection {
   background: var(--accent);
   color: var(--button-ink);
