@@ -14,6 +14,8 @@ export default defineConfig({
   },
   resolve: {
     alias: {
+      // Tests run as a build without CV_PASSPHRASE; they make their own vaults.
+      "virtual:cv-vault": path.resolve(__dirname, "./src/test/fixtures/cv-vault.ts"),
       "@site": path.resolve(__dirname, "./src/sites/cyan"),
       "@": path.resolve(__dirname, "./src"),
     },

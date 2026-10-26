@@ -164,7 +164,7 @@ function RetryDiagram() {
  */
 export function ResearchStudies({ detailed = false }: { detailed?: boolean }) {
   return (
-    <div className={`research-grid${detailed ? "" : " is-brief"}`}>
+    <div id={detailed ? "studies" : undefined} className={`research-grid${detailed ? "" : " is-brief"}`}>
       {research.studies.map((study, index) => (
         <article className="research-card" key={study.id}>
           <div className="capability-top">

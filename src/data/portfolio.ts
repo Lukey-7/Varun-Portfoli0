@@ -206,10 +206,10 @@ export const aiCapabilities = [
 
 export type AiCapability = (typeof aiCapabilities)[number];
 
-/** Research proposal submitted for supervisory review. Hypotheses, not results. */
+/** The research proposal. Hypotheses, not results. */
 export const research = {
   title: "Reducing inference cost in large language model assistants",
-  status: "Research proposal for supervisory review · October 2026",
+  status: "Research proposal · October 2026",
   note: "Both studies are hypotheses to be tested. Neither assumes a more elaborate policy will beat a well-tuned simple baseline.",
   costNote:
     "Cost means the total spend to complete a task successfully, including memory construction, retrieval, verification and generation.",

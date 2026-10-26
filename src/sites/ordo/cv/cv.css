@@ -1,0 +1,266 @@
+/* ---------- /cv: the private CV ---------- */
+
+/* The passphrase form. The contact block below draws the rule, so the hero's own would double it. */
+.page-hero.cv-gate {
+  border-bottom: 0;
+}
+.cv-gate .project-lede {
+  max-width: 560px;
+}
+.cv-unlock {
+  display: grid;
+  gap: 10px;
+  max-width: 560px;
+  margin-top: 34px;
+}
+.cv-unlock label {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.cv-unlock-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.cv-unlock input {
+  flex: 1 1 220px;
+  min-width: 0;
+  min-height: 49px;
+  padding: 0 14px;
+  border: 1px solid var(--ink);
+  border-radius: 4px;
+  background: var(--page);
+  color: var(--ink);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 15px;
+}
+.cv-unlock .primary-button {
+  gap: 12px;
+}
+.cv-problem {
+  padding-left: 12px;
+  border-left: 2px solid var(--ink);
+  font-size: 14px;
+}
+
+/* The unlocked CV. */
+.cv-sheet {
+  padding-block: 40px 90px;
+}
+.cv-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px 24px;
+  padding-bottom: 22px;
+  border-bottom: 1px solid var(--line);
+  color: var(--muted);
+}
+.cv-document {
+  max-width: 920px;
+  margin-top: 44px;
+}
+.cv-sheet .cv-head h1 {
+  font-size: clamp(34px, 4vw, 52px);
+  line-height: 1.08;
+}
+.cv-sheet .cv-head h1:focus {
+  outline: none;
+}
+.cv-role {
+  margin-top: 10px !important;
+  font-size: 17px;
+  color: var(--muted);
+}
+.cv-contact {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 24px;
+  margin: 20px 0 34px;
+  padding: 0;
+  list-style: none;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 12px;
+}
+.cv-contact a {
+  overflow-wrap: anywhere;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.cv-section {
+  display: grid;
+  grid-template-columns: 190px minmax(0, 1fr);
+  gap: 24px;
+  padding-block: 26px;
+  border-top: 1px solid var(--line);
+}
+.cv-sheet .cv-section h2 {
+  padding-top: 3px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 1.6;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.cv-section p,
+.cv-section li {
+  font-size: 15px;
+  line-height: 1.65;
+}
+.cv-items {
+  display: grid;
+  gap: 22px;
+}
+.cv-item-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 2px 18px;
+}
+.cv-sheet .cv-item h3 {
+  font-size: 17px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.35;
+}
+.cv-item-head .mono {
+  color: var(--muted);
+  white-space: nowrap;
+}
+.cv-item ul,
+.cv-projects {
+  display: grid;
+  gap: 6px;
+  margin: 10px 0 0;
+  padding-left: 18px;
+  list-style: square;
+}
+.cv-item li::marker,
+.cv-projects li::marker {
+  color: var(--muted);
+}
+.cv-item > p {
+  margin-top: 4px !important;
+  color: var(--muted);
+}
+.cv-projects {
+  margin: 0;
+}
+.cv-projects strong {
+  font-weight: 600;
+}
+
+@media (max-width: 767px) {
+  .cv-sheet {
+    padding-block: 28px 60px;
+  }
+  .cv-document {
+    margin-top: 30px;
+  }
+  .cv-section {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+  }
+}
+
+/* Printing, or saving as PDF: the CV alone, black on white, on A4. Scoped to
+   pages showing an unlocked CV, since this stylesheet stays loaded after a visit. */
+@media print {
+  @page {
+    size: A4;
+    margin: 12mm 15mm;
+  }
+  /* The body's dark background would otherwise fill the page canvas when
+     background graphics are switched on. */
+  body:has(.cv-sheet) {
+    background: #fff;
+  }
+  .portfolio.ordo-edition:has(.cv-sheet) {
+    --page: #fff;
+    --ink: #000;
+    --muted: #333;
+    --subtle: #333;
+    --line: #bbb;
+    min-height: 0;
+    overflow: visible;
+    background: #fff;
+    color: #000;
+    font-size: 10pt;
+  }
+  .portfolio:has(.cv-sheet) .skip-link,
+  .portfolio:has(.cv-sheet) .portfolio-header,
+  .portfolio:has(.cv-sheet) .contact-section,
+  .portfolio:has(.cv-sheet) .dot-wordmark,
+  .portfolio:has(.cv-sheet) .portfolio-footer,
+  .portfolio:has(.cv-sheet) .edition-switch,
+  .cv-toolbar {
+    display: none !important;
+  }
+  /* An A4 page is narrower than the mobile breakpoint, so these beat the mobile rules too. */
+  .portfolio .cv-sheet {
+    width: auto;
+    margin: 0;
+    padding: 0;
+  }
+  .cv-document {
+    max-width: none;
+    margin: 0;
+  }
+  .cv-sheet .cv-head h1 {
+    font-size: 20pt;
+    letter-spacing: -0.03em;
+  }
+  .cv-role {
+    margin-top: 2mm !important;
+    font-size: 11pt;
+  }
+  .cv-contact {
+    margin: 2.5mm 0 4mm;
+    font-size: 9pt;
+  }
+  .cv-contact a {
+    text-decoration: none;
+  }
+  .portfolio .cv-section {
+    grid-template-columns: 34mm minmax(0, 1fr);
+    gap: 5mm;
+    padding-block: 3mm;
+  }
+  .cv-sheet .cv-section h2 {
+    padding-top: 0.6mm;
+    font-size: 7.5pt;
+  }
+  .cv-section p,
+  .cv-section li {
+    font-size: 9.2pt;
+    line-height: 1.42;
+  }
+  .cv-items {
+    gap: 2.5mm;
+  }
+  .cv-sheet .cv-item h3 {
+    font-size: 10.5pt;
+  }
+  .cv-item-head .mono {
+    font-size: 8pt;
+  }
+  .cv-item ul,
+  .cv-projects {
+    gap: 0.8mm;
+    margin-top: 1.5mm;
+  }
+  .cv-projects {
+    margin-top: 0;
+  }
+  .cv-head,
+  .cv-item {
+    break-inside: avoid;
+  }
+}

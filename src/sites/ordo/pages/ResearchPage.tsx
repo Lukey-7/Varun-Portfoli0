@@ -1,11 +1,11 @@
 import { useEffect } from "react";
 import { useOutletContext } from "react-router-dom";
-import { ArrowDown } from "lucide-react";
 import { research } from "@/data/portfolio";
 import type { OrdoContext } from "../OrdoLayout";
 import Sculpture from "../components/Sculpture";
 import { ResearchStudies } from "../components/OrdoExtras";
 import { ResearchLabs } from "../components/ResearchLabs";
+import { ResearchLog } from "../components/ResearchLog";
 import { content } from "../content";
 
 /** The research proposal in full. Hypotheses to test, not results. */
@@ -32,12 +32,13 @@ export default function ResearchPage() {
             </h1>
             <p className="project-lede">{content.researchPage.intro}</p>
             <span className="research-status">{research.status}</span>
-            <div className="research-looking">
-              <strong>{content.researchPage.lookingFor.title}</strong>
-              <p>{content.researchPage.lookingFor.text}</p>
-              <a href="#contact" className="section-link">
-                {content.researchPage.lookingFor.link} <ArrowDown size={14} aria-hidden="true" />
-              </a>
+            <div className="research-interests">
+              <strong>{content.researchPage.interests.title}</strong>
+              <ul>
+                {content.researchPage.interests.items.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
             </div>
           </div>
           <div className="page-hero-art">
@@ -45,6 +46,8 @@ export default function ResearchPage() {
           </div>
         </div>
       </header>
+
+      <ResearchLog />
 
       <section className="section-wrap research-page-body">
         <ResearchStudies detailed />

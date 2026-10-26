@@ -16,7 +16,7 @@ Run `npm ci` first. `npm run dev` starts the cyan site; `npm run build` builds b
 **Monochrome** (`src/sites/ordo`): a multi-page site following the ORDO reference film.
 - `/` is the landing page: interactive hero shape, AI capability grid, project grid, GitHub activity, the process loop, the particle system, research teaser, console and the latest journey entries.
 - `/work/<project>` has screenshots, the idea, a working in-browser demo, then the details.
-- `/research` holds the proposal, interactive versions of both studies, and what I am looking for.
+- `/research` holds the proposal, interactive versions of both studies, and my research interests.
 - `/journey` is a dated log, `/writing` holds write-ups, `/about` covers experience, education and toolbox, and `/play` runs the arcade.
 - Unknown paths show its own 404.
 

@@ -52,6 +52,31 @@ export const content = {
     link: "Open the full terminal",
   },
 
+  /** Multi-page site only: two ways in, straight after the hero. Each link is [text, route]. */
+  paths: {
+    label: ["[ START HERE ]", "TWO WAYS IN"] as Label,
+    items: [
+      {
+        id: "engineering",
+        title: ["Hiring an AI engineer?", "Start with the projects."] as Heading,
+        links: [
+          ["Projects with working demos", "/#work"],
+          ["Client work at LetsTute", "/about#experience"],
+          ["Public GitHub activity", "/#activity"],
+        ] as [string, string][],
+      },
+      {
+        id: "research",
+        title: ["Here for the research?", "Start with the proposal."] as Heading,
+        links: [
+          ["The proposal and its two studies", "/research"],
+          ["Research log", "/research#research-log"],
+          ["Write-ups", "/writing"],
+        ] as [string, string][],
+      },
+    ],
+  },
+
   stack: {
     intro: "What I reach for most days.",
     tools: ["Python", "FastAPI", "LangGraph", "TypeScript", "PostgreSQL", "Docker"],
@@ -151,11 +176,22 @@ export const content = {
     category: "Research proposal",
     intro:
       "My proposal, reducing inference cost in large language model assistants, sets out two studies on the cost of LLM assistants. Each is a hypothesis to test against simpler baselines, and neither has been run yet. Each study below has a small interactive version of its idea.",
-    lookingFor: {
-      title: "What I am looking for",
-      text: "A research position where I can run these two studies, with a group working on efficient inference, memory or evaluation for LLM systems. I am also open to AI engineering roles where retrieval and evaluation are central to the work.",
-      link: "Write to me",
+    interests: {
+      title: "Research interests",
+      items: [
+        "Efficient inference: what an LLM assistant can stop sending or recomputing without answering worse.",
+        "Memory: keeping a user's changing requirements without resending the whole conversation.",
+        "Evaluation: scoring retrieval and answers against simple baselines before trusting a change.",
+      ],
     },
+  },
+
+  /** Multi-page site only: the dated log on /research. Entries live in ./researchLog.ts. */
+  researchLog: {
+    label: ["[ RESEARCH LOG ]", "NEWEST FIRST"] as Label,
+    title: ["What I have read, run and written,", "dated as it happened."] as Heading,
+    intro:
+      "Reading, small experiments and write-ups around the proposal. I add a line when something is done.",
   },
 
   /** Multi-page site only: /play. */
@@ -168,6 +204,6 @@ export const content = {
   },
 
   contact: {
-    title: ["Write to me about a role,", "a research position or a project."] as Heading,
+    title: ["Write to me about a role,", "research or a project."] as Heading,
   },
 } as const;

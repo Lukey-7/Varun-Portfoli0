@@ -1,3 +1,4 @@
+import { lazy, Suspense } from "react";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import OrdoLayout from "./OrdoLayout";
 import HomePage from "./pages/HomePage";
@@ -8,6 +9,9 @@ import PlayPage from "./pages/PlayPage";
 import NotFoundPage from "./pages/NotFoundPage";
 import JourneyPage from "./pages/JourneyPage";
 import WritingPage from "./pages/WritingPage";
+
+// The private CV is its own chunk: no other page downloads even its ciphertext.
+const CvPage = lazy(() => import("./cv/CvPage"));
 
 /** The monochrome site's pages, all inside one shared layout. */
 export function OrdoRoutes() {
@@ -22,6 +26,14 @@ export function OrdoRoutes() {
         <Route path="/journey" element={<JourneyPage />} />
         <Route path="/writing" element={<WritingPage />} />
         <Route path="/writing/:slug" element={<WritingPage />} />
+        <Route
+          path="/cv"
+          element={
+            <Suspense fallback={<section className="page-hero section-wrap" aria-busy="true" />}>
+              <CvPage />
+            </Suspense>
+          }
+        />
         <Route path="/ordo" element={<Navigate to="/" replace />} />
         <Route path="*" element={<NotFoundPage />} />
       </Route>

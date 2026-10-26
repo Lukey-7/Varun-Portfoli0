@@ -2,22 +2,12 @@ import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowUpRight } from "lucide-react";
 import { motion, useReducedMotion } from "framer-motion";
+import { EntryTitle } from "../components/EntryTitle";
 import { content } from "../content";
 import { formatJourneyDate, journey, journeyKinds, type JourneyEntry, type JourneyKind } from "../journey";
 import "./journey.css";
 
 const kindLabel = (kind: JourneyKind) => journeyKinds.find((item) => item.id === kind)?.label ?? kind;
-
-function EntryTitle({ entry }: { entry: JourneyEntry }) {
-  if (entry.to) return <Link to={entry.to}>{entry.title}</Link>;
-  if (entry.href)
-    return (
-      <a href={entry.href} target="_blank" rel="noreferrer">
-        {entry.title} <ArrowUpRight size={14} aria-hidden="true" />
-      </a>
-    );
-  return <>{entry.title}</>;
-}
 
 /** The dated log: newest first, grouped by year, filterable by kind. */
 export default function JourneyPage() {

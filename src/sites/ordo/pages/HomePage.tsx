@@ -4,6 +4,7 @@ import { ArrowUpRight } from "lucide-react";
 import type { OrdoContext } from "../OrdoLayout";
 import { content } from "../content";
 import { OrdoHero } from "../components/OrdoBlocks";
+import { OrdoPaths } from "../components/OrdoPaths";
 import { OrdoActivity } from "../components/OrdoActivity";
 import { OrdoShowcase, OrdoWork } from "../components/OrdoSections";
 import { OrdoProcess } from "../components/OrdoProcess";
@@ -21,6 +22,7 @@ export default function HomePage() {
   return (
     <>
       <OrdoHero theme={theme} />
+      <OrdoPaths />
       {/* Client roles live on the About page, so those cards go there. */}
       <OrdoCapabilities onMissingTarget={(id) => navigate(`/about#spot-${id}`)} />
       <OrdoWork />
