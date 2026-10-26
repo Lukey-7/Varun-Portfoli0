@@ -1,6 +1,6 @@
 // @vitest-environment node
 import { describe, expect, it } from "vitest";
-import { decryptJson, encryptJson } from "@/sites/ordo/cv/crypto";
+import { decryptJson, encryptJson, normalisePassphrase } from "@/sites/ordo/cv/crypto";
 import { buildCvDocument } from "@/sites/ordo/cv/cvDocument";
 import { experience, profile } from "@/data/profile";
 
@@ -45,6 +45,24 @@ describe("cv encryption", () => {
     const vault = await encryptJson({ name: "Default" }, "correct horse");
     expect(vault.v).toBe(1);
     expect(vault.iter).toBe(600000);
+  });
+});
+
+describe("passphrase normalisation", () => {
+  it("drops surrounding whitespace and line breaks, and nothing inside", () => {
+    expect(normalisePassphrase("  correct horse \n")).toBe("correct horse");
+    expect(normalisePassphrase("\tcorrect  horse\r\n")).toBe("correct  horse");
+    expect(normalisePassphrase(" \n\t ")).toBe("");
+  });
+
+  it("puts accented letters in one form, so either keyboard derives the same key", async () => {
+    const composed = "café horse";
+    const decomposed = "café horse";
+    expect(composed).not.toBe(decomposed);
+    expect(normalisePassphrase(decomposed)).toBe(composed);
+
+    const vault = await encryptJson({ ok: true }, normalisePassphrase(composed), ITER);
+    expect(await decryptJson(vault, normalisePassphrase(decomposed))).toEqual({ ok: true });
   });
 });
 

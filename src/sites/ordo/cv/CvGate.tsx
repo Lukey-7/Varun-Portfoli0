@@ -1,5 +1,5 @@
 import { useEffect, useId, useRef, useState, type FormEvent } from "react";
-import { decryptJson, type CvVault } from "./crypto";
+import { decryptJson, normalisePassphrase, type CvVault } from "./crypto";
 import type { CvDocument } from "./cvDocument";
 
 type Problem = "wrong" | "unsupported";
@@ -45,19 +45,27 @@ function UnlockForm({ vault, onUnlock }: { vault: CvVault; onUnlock: (cv: CvDocu
   const [problem, setProblem] = useState<Problem | null>(null);
   const field = useRef<HTMLInputElement>(null);
   const id = useId();
+  // Stray spaces or a pasted newline must not make the right passphrase fail.
+  const normalised = normalisePassphrase(passphrase);
+  const ready = normalised !== "";
 
   const submit = async (event: FormEvent) => {
     event.preventDefault();
-    if (!passphrase || working) return;
+    if (!ready || working) return;
     setWorking(true);
     setProblem(null);
     try {
-      onUnlock(await decryptJson<CvDocument>(vault, passphrase));
+      onUnlock(await decryptJson<CvDocument>(vault, normalised));
     } catch {
       setProblem(globalThis.crypto?.subtle ? "wrong" : "unsupported");
       setWorking(false);
-      field.current?.focus();
-      field.current?.select();
+      // Back in the field with the cursor at the end, so one slip can be fixed
+      // instead of the whole entry being selected and wiped by the next key.
+      const input = field.current;
+      if (input) {
+        input.focus();
+        input.setSelectionRange(input.value.length, input.value.length);
+      }
     }
   };
 
@@ -89,7 +97,7 @@ function UnlockForm({ vault, onUnlock }: { vault: CvVault; onUnlock: (cv: CvDocu
               setProblem(null);
             }}
           />
-          <button type="submit" className="primary-button" disabled={!passphrase || working}>
+          <button type="submit" className="primary-button" disabled={!ready || working}>
             {working ? "Unlocking…" : "Unlock"}
           </button>
         </div>

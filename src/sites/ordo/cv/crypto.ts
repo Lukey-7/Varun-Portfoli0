@@ -18,6 +18,13 @@ export interface CvVault {
   data: string;
 }
 
+/**
+ * The one way a passphrase is cleaned before it becomes a key, at build time and in the
+ * browser: surrounding whitespace is dropped (a pasted value often ends in a newline) and the
+ * text is put in NFC, so the same word typed on different keyboards derives the same key.
+ */
+export const normalisePassphrase = (value: string) => value.trim().normalize("NFC");
+
 /** OWASP's recommended count for PBKDF2-SHA256: slow to guess, quick enough to unlock once. */
 const DEFAULT_ITERATIONS = 600000;
 

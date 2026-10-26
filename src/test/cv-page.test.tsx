@@ -73,6 +73,35 @@ describe("cv gate", () => {
     expect(unlockButton()).toBeDisabled();
   });
 
+  it("keeps Unlock disabled for a passphrase that is only whitespace", () => {
+    render(<CvGate vault={vault} />);
+    fireEvent.change(passphraseField(), { target: { value: " \t  " } });
+    expect(unlockButton()).toBeDisabled();
+    fireEvent.change(passphraseField(), { target: { value: " a " } });
+    expect(unlockButton()).toBeEnabled();
+  });
+
+  it("ignores spaces and line breaks around the right passphrase", async () => {
+    render(<CvGate vault={vault} />);
+    // A pasted line break is stripped by the input itself; the spaces and tab are ours to ignore.
+    fireEvent.change(passphraseField(), { target: { value: "  correct horse \t\n" } });
+    fireEvent.click(unlockButton());
+    expect(await screen.findByRole("heading", { name: sample.name })).toBeInTheDocument();
+    expect(screen.queryByRole("alert")).toBeNull();
+  });
+
+  it("returns to the field with the cursor at the end after a wrong passphrase", async () => {
+    render(<CvGate vault={vault} />);
+    const field = passphraseField() as HTMLInputElement;
+    fireEvent.change(field, { target: { value: "wrong one" } });
+    fireEvent.click(unlockButton());
+    expect(await screen.findByRole("alert")).toBeInTheDocument();
+    expect(field).toHaveFocus();
+    // Nothing is selected, so the next key adds to the entry instead of wiping it.
+    expect(field.selectionStart).toBe("wrong one".length);
+    expect(field.selectionEnd).toBe("wrong one".length);
+  });
+
   it("rejects a wrong passphrase, then unlocks with the right one", async () => {
     const print = vi.fn();
     vi.stubGlobal("print", print);

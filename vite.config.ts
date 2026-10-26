@@ -3,7 +3,7 @@ import react from "@vitejs/plugin-react-swc";
 import fs from "fs";
 import path from "path";
 import { applyShareHead, privateHead, sharePages, siteUrl, sitemap } from "./src/sites/ordo/share.ts";
-import { encryptJson } from "./src/sites/ordo/cv/crypto.ts";
+import { encryptJson, normalisePassphrase } from "./src/sites/ordo/cv/crypto.ts";
 import { buildCvDocument } from "./src/sites/ordo/cv/cvDocument.ts";
 
 /**
@@ -65,6 +65,22 @@ function spaNotFound(): Plugin {
 }
 
 /**
+ * CV_PASSPHRASE as the visitor's browser will see it: trimmed and in NFC, so a value pasted
+ * into Vercel with a trailing newline still unlocks. Empty when unset or only whitespace.
+ */
+const cvPassphrase = (env: Record<string, string | undefined>) => normalisePassphrase(env.CV_PASSPHRASE ?? "");
+
+/** Fails the build if any file in the output folder contains the passphrase. */
+function assertNoPassphrase(outDir: string, passphrase: string) {
+  for (const name of fs.readdirSync(outDir, { recursive: true, encoding: "utf8" })) {
+    const file = path.join(outDir, name);
+    if (fs.statSync(file).isFile() && fs.readFileSync(file).includes(passphrase)) {
+      throw new Error(`CV_PASSPHRASE appears in ${name}; the build output must hold ciphertext only.`);
+    }
+  }
+}
+
+/**
  * The private CV at /cv imports `virtual:cv-vault`: the CV encrypted with the
  * CV_PASSPHRASE environment variable, or null when it is unset (the page then
  * says it is not set up). The passphrase is read here only and never reaches
@@ -78,7 +94,7 @@ function cvVault(env: Record<string, string | undefined>): Plugin {
     resolveId: (source) => (source === id ? resolved : undefined),
     load: async (source) => {
       if (source !== resolved) return undefined;
-      const passphrase = env.CV_PASSPHRASE;
+      const passphrase = cvPassphrase(env);
       if (!passphrase) return "export default null;";
       return `export default ${JSON.stringify(await encryptJson(buildCvDocument(), passphrase))};`;
     },
@@ -90,7 +106,8 @@ function cvVault(env: Record<string, string | undefined>): Plugin {
  * description and share image, because link previews don't run JavaScript.
  * Also writes sitemap.xml and robots.txt. Images come from `npm run og`.
  * The private CV gets a head with no share tags and a noindex request instead,
- * and stays out of the sitemap.
+ * and stays out of the sitemap. When a passphrase is set, the last step scans
+ * the whole output folder for it.
  */
 function ordoSharePages(env: Record<string, string | undefined>): Plugin {
   let outDir = "";
@@ -126,6 +143,9 @@ Disallow: /cv
 
 Sitemap: ${base}/sitemap.xml
 `);
+      // Last, once every file is written: the passphrase must not have reached any of them.
+      const passphrase = cvPassphrase(env);
+      if (passphrase) assertNoPassphrase(outDir, passphrase);
     },
   };
 }
