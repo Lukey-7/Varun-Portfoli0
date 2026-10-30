@@ -11,6 +11,9 @@ export default defineConfig({
     include: ["src/**/*.{test,spec}.{ts,tsx}"],
     // Full-page renders in jsdom can take several seconds when files run in parallel.
     testTimeout: 15000,
+    // The cyan page prints a one-line greeting to the console when it first mounts. Keep that one
+    // line out of every file's output; the test that checks it spies on console.info itself.
+    onConsoleLog: (log) => (log.startsWith("Hello. This page is built with") ? false : undefined),
   },
   resolve: {
     alias: {
