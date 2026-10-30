@@ -37,6 +37,7 @@ const sample: CvDocument = {
   role: "Engineer",
   location: "Somewhere",
   email: "ada@example.com",
+  phone: "+44 7700 900123",
   github: "https://github.com/ada",
   linkedin: "https://www.linkedin.com/in/ada/",
   summary: "Builds things and checks them.",
@@ -113,6 +114,7 @@ describe("cv gate", () => {
     expect(await screen.findByRole("alert")).toHaveTextContent("That passphrase didn't work.");
     expect(screen.queryByRole("heading", { name: sample.name })).toBeNull();
     expect(document.body.textContent).not.toContain(sample.email);
+    expect(document.body.textContent).not.toContain(sample.phone);
 
     fireEvent.change(passphraseField(), { target: { value: "correct horse" } });
     fireEvent.click(unlockButton());
@@ -120,6 +122,7 @@ describe("cv gate", () => {
     expect(screen.queryByRole("alert")).toBeNull();
     expect(screen.queryByLabelText("Passphrase")).toBeNull();
     expect(screen.getByRole("link", { name: sample.email })).toHaveAttribute("href", `mailto:${sample.email}`);
+    expect(screen.getByRole("link", { name: sample.phone })).toHaveAttribute("href", "tel:+447700900123");
     expect(screen.getByText("Example Ltd", { exact: false })).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "Print or save as PDF" }));
