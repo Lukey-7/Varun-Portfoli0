@@ -138,6 +138,9 @@ function CvSheet({ cv }: { cv: CvDocument }) {
               <a href={`mailto:${cv.email}`}>{cv.email}</a>
             </li>
             <li>
+              <a href={`tel:${cv.phone.replace(/\s/g, "")}`}>{cv.phone}</a>
+            </li>
+            <li>
               <a href={cv.github} target="_blank" rel="noreferrer">
                 {shortUrl(cv.github)}
               </a>

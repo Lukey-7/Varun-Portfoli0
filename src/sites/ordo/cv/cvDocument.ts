@@ -5,8 +5,6 @@
  * module. App code must never import it (a type import is fine), or the CV
  * would ship in plaintext in the page's JavaScript.
  *
- * There is deliberately no phone number: email, GitHub and LinkedIn only.
- *
  * Imports use relative paths with extensions so vite.config.ts can load this file.
  */
 import { education, experience, profile, skills } from "../../../data/profile.ts";
@@ -17,6 +15,7 @@ export interface CvDocument {
   role: string;
   location: string;
   email: string;
+  phone: string;
   github: string;
   linkedin: string;
   summary: string;
@@ -32,6 +31,7 @@ export function buildCvDocument(): CvDocument {
     role: profile.role,
     location: profile.location,
     email: profile.email,
+    phone: profile.phone,
     github: profile.github,
     linkedin: profile.linkedin,
     summary: profile.summary,

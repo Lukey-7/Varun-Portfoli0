@@ -67,11 +67,8 @@ describe("passphrase normalisation", () => {
 });
 
 describe("cv document", () => {
-  it("has no phone number", () => {
-    const shipped = JSON.stringify(buildCvDocument());
-    expect(shipped).not.toContain(profile.phone);
-    expect(shipped).not.toContain(profile.phone.replace(/\s/g, ""));
-    expect(shipped).not.toContain('"phone"');
+  it("carries the phone number", () => {
+    expect(buildCvDocument().phone).toBe(profile.phone);
   });
 
   it("includes every role", () => {

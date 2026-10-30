@@ -14,6 +14,8 @@ export default defineConfig({
     // The cyan page prints a one-line greeting to the console when it first mounts. Keep that one
     // line out of every file's output; the test that checks it spies on console.info itself.
     onConsoleLog: (log) => (log.startsWith("Hello. This page is built with") ? false : undefined),
+    // Node 25+ ships its own localStorage, which hides jsdom's; switch it off in the test workers.
+    poolOptions: { forks: { execArgv: ["--no-experimental-webstorage"] } },
   },
   resolve: {
     alias: {

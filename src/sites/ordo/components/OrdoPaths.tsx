@@ -17,7 +17,7 @@ export function OrdoPaths() {
       </div>
       <div className="ordo-paths-grid">
         {items.map((path) => (
-          <div key={path.id} className={`ordo-path is-${path.id}`}>
+          <div key={path.id} className="ordo-path">
             <h2>
               {path.title[0]}
               <br />
