@@ -1675,9 +1675,6 @@ html[data-portfolio-theme] {
 }
 
 /* Signal map section: the board itself is styled in motion/pcb-signal-map.css */
-.cyan-signal h2 > span:not(.heading-period) {
-  color: var(--accent);
-}
 .cyan-signal {
   padding-block: 40px 100px;
 }
@@ -1939,8 +1936,9 @@ html[data-motion="paused"] .context-gauge-fill {
 .palette-trigger .mono {
   font-size: 11px;
 }
-.palette-dialog {
-  width: min(640px, calc(100vw - 32px));
+/* The two modal sheets (this palette and the shortcuts list) share one box and backdrop. */
+.palette-dialog,
+.shortcuts-dialog {
   margin: 12vh auto auto;
   padding: 0;
   border: 1px solid var(--line);
@@ -1951,9 +1949,13 @@ html[data-motion="paused"] .context-gauge-fill {
     0 30px 80px #0008,
     0 0 0 1px color-mix(in srgb, var(--accent) 20%, transparent);
 }
-.palette-dialog::backdrop {
+.palette-dialog::backdrop,
+.shortcuts-dialog::backdrop {
   background: #0009;
   backdrop-filter: blur(3px);
+}
+.palette-dialog {
+  width: min(640px, calc(100vw - 32px));
 }
 .palette-input {
   display: flex;

@@ -143,10 +143,6 @@ export function CyanResearch() {
 const loadMenu = () => import("./PaletteMenu");
 const PaletteMenu = lazy(loadMenu);
 
-
-
-
-
 export function CommandPalette({ actions }: { actions: PaletteActions }) {
   const ref = useRef<HTMLDialogElement>(null);
   const [open, setOpen] = useState(false);

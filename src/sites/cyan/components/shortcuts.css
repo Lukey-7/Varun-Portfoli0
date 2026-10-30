@@ -3,24 +3,12 @@
    and the footer hint is a quiet mono line that opens it. Nothing here moves:
    there is nothing to pause under reduced motion. */
 
+/* The box and backdrop are shared with the palette (see .palette-dialog in cyan.css). */
 .shortcuts-dialog {
   width: min(460px, calc(100vw - 32px));
   max-height: calc(100dvh - 24vh);
-  margin: 12vh auto auto;
-  padding: 0;
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  background: var(--page);
-  color: var(--ink);
   overflow: auto;
   overscroll-behavior: contain;
-  box-shadow:
-    0 30px 80px #0008,
-    0 0 0 1px color-mix(in srgb, var(--accent) 20%, transparent);
-}
-.shortcuts-dialog::backdrop {
-  background: #0009;
-  backdrop-filter: blur(3px);
 }
 
 .shortcuts-body {
