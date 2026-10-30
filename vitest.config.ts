@@ -11,6 +11,8 @@ export default defineConfig({
     include: ["src/**/*.{test,spec}.{ts,tsx}"],
     // Full-page renders in jsdom can take several seconds when files run in parallel.
     testTimeout: 15000,
+    // Node 25+ ships its own localStorage, which hides jsdom's; switch it off in the test workers.
+    poolOptions: { forks: { execArgv: ["--no-experimental-webstorage"] } },
   },
   resolve: {
     alias: {
