@@ -16,24 +16,18 @@ import {
   Sun,
   X,
   Code2,
-  Gamepad2,
-  Plus,
-  Minus,
 } from "lucide-react";
 import { motion, useReducedMotion } from "framer-motion";
-import { profile, experience, education } from "@/data/profile";
-import {
-  selectedWork,
-  otherWork,
-  deliveryWork,
-  type CaseStudy,
-} from "@/data/portfolio";
+import { profile, education } from "@/data/profile";
+import { selectedWork, type CaseStudy } from "@/data/portfolio";
 import { resetPointer, trackPointer } from "@/lib/pointer";
 import { ORDO_URL } from "@/lib/sites";
 import { isMotionPaused, setMotionPaused, useMotionPaused } from "@/lib/motion-pause";
 import ProjectVisual from "@/components/portfolio/ProjectVisual";
 import ProjectDetail from "@/components/portfolio/ProjectDetail";
 import { CommandPalette, CyanResearch } from "./components/CyanSections";
+import { ExperienceSection } from "./components/ExperienceSection";
+import { OtherWork } from "./components/OtherWork";
 import { ShortcutsDialog, logConsoleNote, useShortcuts } from "./components/Shortcuts";
 import { PcbSignalMap } from "./motion/PcbSignalMap";
 import { CyanResultsInstrument } from "./motion/EvalMeters";
@@ -43,8 +37,6 @@ import { LocalClock } from "./motion/LocalClock";
 import { DitherField } from "./motion/DitherField";
 import { PipelineFlow } from "./motion/PipelineFlow";
 import { ScopeDivider } from "./motion/ScopeDivider";
-import { Lissajous } from "./motion/Lissajous";
-import { ExperienceTimeline } from "./motion/ExperienceTimeline";
 import { EndOfTransmission } from "./motion/EndOfTransmission";
 import "./cyan.css";
 
@@ -78,14 +70,9 @@ export default function CyanPage() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [selected, setSelected] = useState<CaseStudy | null>(null);
   const [step, setStep] = useState(0);
-  const [openJob, setOpenJob] = useState<string | null>("letstute");
   const [copied, setCopied] = useState(false);
   const [copyError, setCopyError] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
-  // The "Also built" card being hovered or focused, by project name.
-  const [signalled, setSignalled] = useState<string | null>(null);
-  // The job being hovered or focused, by id, in the experience timeline or its list.
-  const [active, setActive] = useState<string | null>(null);
   const copyTimer = useRef<ReturnType<typeof setTimeout>>();
   const rootRef = useRef<HTMLDivElement>(null);
   const reducedMotion = useReducedMotion();
@@ -176,13 +163,6 @@ export default function CyanPage() {
   };
   const showShortcuts = () => setHelpOpen(true);
   useShortcuts({ toggleTheme, toggleMotion, showHelp: showShortcuts, go });
-  const signal = (name: string) => setSignalled(name);
-  // Leaving one card must not clear the card that has since taken over.
-  const release = (name: string) =>
-    setSignalled((current) => (current === name ? null : current));
-  // Leaving one job row must not clear the job that has since taken over.
-  const releaseJob = (id: string) =>
-    setActive((current) => (current === id ? null : current));
   const reveal = {
     initial: reducedMotion ? (false as const) : { opacity: 0, y: 20 },
     whileInView: { opacity: 1, y: 0 },
@@ -232,7 +212,7 @@ export default function CyanPage() {
             <button
               className="icon-button theme-toggle"
               aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
-              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+              onClick={toggleTheme}
             >
               {theme === "dark" ? <Sun size={17} /> : <Moon size={17} />}
             </button>
@@ -395,48 +375,7 @@ export default function CyanPage() {
 
         <CyanResultsInstrument />
 
-        <section className="other-section section-wrap">
-          <h2>Also built.</h2>
-          <div className="other-grid">
-            {otherWork.map((project) => (
-              <a
-                className={`other-project ${project.kind}`}
-                href={project.href}
-                target={project.href.startsWith("http") ? "_blank" : undefined}
-                rel="noreferrer"
-                key={project.name}
-                onMouseEnter={() => signal(project.name)}
-                onMouseLeave={() => release(project.name)}
-                onFocus={() => signal(project.name)}
-                onBlur={() => release(project.name)}
-              >
-                <div className="other-symbol">
-                  {project.kind === "language" ? (
-                    <span lang="de">ß</span>
-                  ) : project.kind === "tetris" ? (
-                    <div className="tetromino" aria-hidden="true">
-                      <i />
-                      <i />
-                      <i />
-                      <i />
-                    </div>
-                  ) : (
-                    <Gamepad2 size={38} strokeWidth={1.1} />
-                  )}
-                </div>
-                <div>
-                  <div className="other-name">
-                    <h3>{project.name}</h3>
-                    <ArrowUpRight size={18} />
-                  </div>
-                  <p>{project.description}</p>
-                  <span className="mono">{project.tech}</span>
-                  <Lissajous seed={project.name} active={signalled === project.name} />
-                </div>
-              </a>
-            ))}
-          </div>
-        </section>
+        <OtherWork />
 
         <PcbSignalMap />
 
@@ -510,61 +449,7 @@ export default function CyanPage() {
               intern at my university.
             </p>
           </motion.div>
-          <ExperienceTimeline jobs={experience} active={active} onActive={setActive} />
-          <div className="experience-list">
-            {experience.map((job) => (
-              <article
-                className="experience-item"
-                key={job.id}
-                data-active={active === job.id ? "" : undefined}
-                onMouseEnter={() => setActive(job.id)}
-                onMouseLeave={() => releaseJob(job.id)}
-                onFocus={() => setActive(job.id)}
-                onBlur={() => releaseJob(job.id)}
-              >
-                <button
-                  aria-expanded={openJob === job.id}
-                  aria-controls={`job-${job.id}`}
-                  onClick={() => setOpenJob(openJob === job.id ? null : job.id)}
-                >
-                  <span className="experience-period mono">
-                    {job.period.replace(/[—–]/g, "-")}
-                  </span>
-                  <span className="experience-title">
-                    <strong>{job.role}</strong>
-                    <span>{job.company}</span>
-                  </span>
-                  {openJob === job.id ? <Minus size={20} /> : <Plus size={20} />}
-                </button>
-                <div id={`job-${job.id}`} hidden={openJob !== job.id}>
-                  {job.id === "letstute" ? (
-                    <>
-                      <div className="delivery-grid">
-                        {deliveryWork.map((item) => (
-                          <div key={item.title}>
-                            <h3>{item.title}</h3>
-                            <p>{item.text}</p>
-                            <span className="mono">{item.tags}</span>
-                          </div>
-                        ))}
-                      </div>
-                      <p className="confidential-note">
-                        Client systems are private. I can talk through the
-                        architecture, my part and the engineering decisions
-                        without sharing confidential access or data.
-                      </p>
-                    </>
-                  ) : (
-                    <ul className="experience-details">
-                      {job.highlights.map((line) => (
-                        <li key={line}>{line}</li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
-              </article>
-            ))}
-          </div>
+          <ExperienceSection />
         </section>
 
         <section id="about" tabIndex={-1} className="about-section section-wrap">
