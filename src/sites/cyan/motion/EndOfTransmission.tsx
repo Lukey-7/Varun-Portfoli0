@@ -68,14 +68,16 @@ export function EndOfTransmission() {
   const ref = useRef<HTMLParagraphElement>(null);
   const [ms, setMs] = useState(pageReadyMs);
   const [started, setStarted] = useState(false);
-  // Characters typed so far across both lines. Infinity means the sign-off was shown whole without
-  // typing; it stays that way, so turning motion back on does not replay it.
-  const [count, setCount] = useState(still ? Infinity : 0);
-  if (still && count !== Infinity) setCount(Infinity);
-  const shownWhole = count === Infinity;
+  // True once the sign-off has been shown whole without typing; it stays true, so turning motion
+  // back on does not replay it.
+  const [shownWhole, setShownWhole] = useState(still);
+  if (still && !shownWhole) setShownWhole(true);
+  // Characters typed so far across both lines.
+  const [typed, setTyped] = useState(0);
 
   const measure = ms === null ? null : `page ready in ${ms} ms`;
   const total = LABEL.length + (measure === null ? 0 : BEAT + measure.length);
+  const count = shownWhole ? total : typed;
   const complete = count >= total;
 
   // The page is usually still parsing when this first renders, so DOMContentLoaded has not finished
@@ -112,7 +114,7 @@ export function EndOfTransmission() {
     if (!started || still || complete) return;
     // Never past the end, so a tick that lands before this effect is cleaned up cannot overshoot,
     // and a measurement that turns up later still gets typed.
-    const timer = setInterval(() => setCount((typedSoFar) => Math.min(typedSoFar + 1, total)), TICK_MS);
+    const timer = setInterval(() => setTyped((typedSoFar) => Math.min(typedSoFar + 1, total)), TICK_MS);
     return () => clearInterval(timer);
   }, [started, still, complete, total]);
 

@@ -4,6 +4,7 @@ import { isMotionPaused } from "@/lib/motion-pause";
 const GLYPHS = "01ABCDEF#%&*+=<>/\\|_-:";
 
 /** One frame of the decode: characters left of the sweep are real, the rest are noise. */
+// eslint-disable-next-line react-refresh/only-export-components -- the decode step is exported so its tests can drive it
 export function decodeFrame(text: string, progress: number, random: () => number = Math.random) {
   const revealed = Math.floor(progress * text.length);
   let out = "";
