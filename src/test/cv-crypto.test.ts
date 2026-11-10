@@ -67,8 +67,9 @@ describe("passphrase normalisation", () => {
 });
 
 describe("cv document", () => {
-  it("carries the phone number", () => {
-    expect(buildCvDocument().phone).toBe(profile.phone);
+  it("carries the phone number it is given, and none by default", () => {
+    expect(buildCvDocument("+44 7700 900123").phone).toBe("+44 7700 900123");
+    expect(buildCvDocument().phone).toBe("");
   });
 
   it("includes every role", () => {

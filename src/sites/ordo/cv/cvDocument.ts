@@ -25,13 +25,14 @@ export interface CvDocument {
   skills: string[];
 }
 
-export function buildCvDocument(): CvDocument {
+/** `phone` comes from the CV_PHONE build variable, so it is never in the public source. */
+export function buildCvDocument(phone = ""): CvDocument {
   return {
     name: profile.name,
     role: profile.role,
     location: profile.location,
     email: profile.email,
-    phone: profile.phone,
+    phone,
     github: profile.github,
     linkedin: profile.linkedin,
     summary: profile.summary,

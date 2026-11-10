@@ -63,6 +63,7 @@ The passphrase is the `CV_PASSPHRASE` environment variable, read at build time o
 
 - **Locally:** add `CV_PASSPHRASE="your passphrase"` to `.env.local` in the repo root (git ignores `*.local` files, and `.env` and `.env.*` too), or run `CV_PASSPHRASE="your passphrase" npm run build:ordo`. Then run `npm run preview:ordo` and open `http://127.0.0.1:4176/cv`. `npm run dev:ordo` reads `.env.local` too.
 - **On Vercel:** Project Settings → Environment Variables → add `CV_PASSPHRASE` for Production (and Preview if you want the CV there), marked Sensitive, then redeploy. The CV is encrypted during the build, so a new passphrase or a change to the CV only takes effect with a new deployment.
+- **Phone number:** it appears only on the unlocked CV and is never in the source. Set `CV_PHONE` alongside `CV_PASSPHRASE`, in `.env.local` and on Vercel. Without it the CV simply leaves the phone line out. Never prefix it with `VITE_` either.
 - Never call it `VITE_CV_PASSPHRASE` or pass it through `define`: Vite copies those into the JavaScript, and the passphrase would ship with the ciphertext.
 - Use a long passphrase, such as five random words. The ciphertext is public, so anyone can try guesses against it offline; the 600,000 iterations make each guess slow, not impossible.
 - Share it directly, in person or in a private message, never on a public page.

@@ -7,6 +7,9 @@
 
 export interface ShowcaseMedia {
   src: string;
+  /** Natural size, so the frame holds its space before the file loads. */
+  width: number;
+  height: number;
   alt: string;
   caption: string;
   /** "phone" renders in a tall frame; "wide" fills the stage. */
@@ -33,24 +36,30 @@ export const projectShowcase: Record<string, ProjectShowcase> = {
     pitch:
       "Turns your lecture notes into a cited textbook, study tools and a chat that points to the exact passage behind each answer.",
     facts: [
-      ["33 of 33", "test queries with the right passage ranked first, up from 27"],
+      ["33 of 33", "questions over three short documents with the right passage first, up from 27 with dense search"],
       ["16", "study tools from one set of notes"],
     ],
     media: [
       {
         src: "/projects/studyforge-workspace.webp",
+        width: 1440,
+        height: 900,
         alt: "StudyForge workspace: sources on the left, the living textbook with its support check in the middle, chat on the right",
         caption: "Workspace: sources, the living book with its support check, and chat",
         shape: "wide",
       },
       {
         src: "/projects/studyforge-chat.webp",
+        width: 420,
+        height: 784,
         alt: "A chat answer about hash and B+ tree indexes with S2 and B1 citation marks after each claim",
         caption: "Chat answers cite source passages (S) and book sections (B)",
         shape: "phone",
       },
       {
         src: "/projects/studyforge-concept-map.webp",
+        width: 980,
+        height: 602,
         alt: "Concept map linking B+ tree, hash index, clustered and non-clustered indexes, full table scan and index",
         caption: "Concept maps are drawn by code, never by the model",
         shape: "wide",
@@ -77,24 +86,32 @@ export const projectShowcase: Record<string, ProjectShowcase> = {
     media: [
       {
         src: "/projects/fintrack-home.webp",
+        width: 540,
+        height: 1170,
         alt: "FinTrack home: net spend of 800 rupees this month, a six-month bar chart, income, spent and savings tiles, and a review prompt",
         caption: "Home: net spend after refunds, with the month in context",
         shape: "phone",
       },
       {
         src: "/projects/fintrack-review.webp",
+        width: 540,
+        height: 1170,
         alt: "Needs review screen: an SMS whose direction was unclear, with Add it and Not a transaction buttons",
         caption: "Unclear messages wait for review instead of being guessed",
         shape: "phone",
       },
       {
         src: "/projects/fintrack-split.webp",
+        width: 540,
+        height: 1170,
         alt: "Split bills screen: 1,600 rupees owed by two people for a three-way dinner split",
         caption: "Bill splitting, where only your share counts as spend",
         shape: "phone",
       },
       {
         src: "/projects/fintrack-dark.webp",
+        width: 540,
+        height: 1170,
         alt: "FinTrack home screen in dark mode",
         caption: "Dark mode; all 114 colour pairs across both themes pass WCAG AA",
         shape: "phone",
@@ -120,12 +137,16 @@ export const projectShowcase: Record<string, ProjectShowcase> = {
     media: [
       {
         src: "/projects/mara-answer.webp",
+        width: 1320,
+        height: 900,
         alt: "A MARA answer: the question as title, a five-stage plan, find, read, check and write track, the cited answer, and quoted sources in the margin",
         caption: "Factual sentences carry citations; the quoted source sentence is highlighted",
         shape: "wide",
       },
       {
         src: "/projects/mara-ask.webp",
+        width: 1320,
+        height: 900,
         alt: "The MARA Ask screen: a question box, suggested questions, recent answers and library counts",
         caption: "Ask screen over the sample library: 18 documents, 317 chunks",
         shape: "wide",
@@ -147,18 +168,24 @@ export const projectShowcase: Record<string, ProjectShowcase> = {
     media: [
       {
         src: "/projects/axiomquant/walk_forward.svg",
+        width: 900,
+        height: 460,
         alt: "Walk-forward chart over 19 folds comparing in-sample and out-of-sample Sharpe ratios",
         caption: "Walk-forward: fitted Sharpe 1.03 in sample, 0.38 out of sample",
         shape: "wide",
       },
       {
         src: "/projects/axiomquant/parameter_sweep.svg",
+        width: 900,
+        height: 460,
         alt: "Heatmap of in-sample Sharpe ratios for 41 moving-average parameter pairs",
         caption: "The best of 41 parameter pairs is the luckiest, not a forecast",
         shape: "wide",
       },
       {
         src: "/projects/axiomquant/benchmark.svg",
+        width: 900,
+        height: 420,
         alt: "Bar chart of C++ throughput relative to vectorised NumPy at one, two and four threads",
         caption: "C++ against vectorised NumPy, log scale",
         shape: "wide",
@@ -182,12 +209,16 @@ export const projectShowcase: Record<string, ProjectShowcase> = {
     media: [
       {
         src: "/projects/sprachweg-review.webp",
+        width: 1280,
+        height: 900,
         alt: "FSRS memory review card asking for the German for the speed limit, with an example sentence",
         caption: "FSRS spaced-repetition review",
         shape: "wide",
       },
       {
         src: "/projects/sprachweg-dictionary.webp",
+        width: 1280,
+        height: 828,
         alt: "Dictionary entry for fahren with pronunciation, CEFR level, definition and conjugation",
         caption: "Dictionary entry with conjugation and usage notes",
         shape: "wide",
@@ -209,12 +240,16 @@ export const projectShowcase: Record<string, ProjectShowcase> = {
     media: [
       {
         src: "/projects/arcade-tetris.webp",
+        width: 1280,
+        height: 800,
         alt: "Tetris-89 arcade portal in the Game Boy theme, with game modes and a game in progress",
         caption: "Tetris-89 in the Game Boy theme",
         shape: "wide",
       },
       {
         src: "/projects/arcade-star-vanguard.webp",
+        width: 1280,
+        height: 800,
         alt: "Star Vanguard space shooter in the Cyberpunk Neon theme, at the start of stage one",
         caption: "Star Vanguard, the Galaga-style shooter in the same arcade",
         shape: "wide",

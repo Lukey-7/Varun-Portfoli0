@@ -174,8 +174,8 @@ const Vault = () => {
                     scale: 1,
                   }}
                   transition={{ duration: 0.4, delay: index * 0.05 }}
-                  className="absolute -translate-x-1/2 -translate-y-1/2 w-28 flex flex-col items-center"
-                  style={{ left: `${pos.x}%`, top: `${pos.y}%` }}
+                  className="absolute w-28 flex flex-col items-center"
+                  style={{ left: `${pos.x}%`, top: `${pos.y}%`, x: "-50%", y: -28 }}
                   onMouseEnter={() => setHoveredSkill(skill.id)}
                   onMouseLeave={() => setHoveredSkill(null)}
                   onClick={() =>

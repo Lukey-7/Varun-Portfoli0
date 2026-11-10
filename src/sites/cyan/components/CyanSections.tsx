@@ -1,12 +1,10 @@
 import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { Search } from "lucide-react";
 import { motion, useReducedMotion } from "framer-motion";
-import {
-  memoryConversation,
-  memoryStrategies,
-  research,
-} from "@/data/portfolio";
+import { memoryConversation, research } from "@/data/portfolio";
 import { useMotionPaused } from "@/lib/motion-pause";
+import { cyanMemoryStrategies as memoryStrategies, cyanRetryStudy as retry } from "../copy";
+import { DecodeText } from "../motion/DecodeText";
 import type { PaletteActions } from "./PaletteMenu";
 import { contextCost, savingPercent } from "./tokens";
 
@@ -43,19 +41,22 @@ export function CyanResearch() {
   const [strategyId, setStrategyId] = useState("window");
   const strategy = memoryStrategies.find((s) => s.id === strategyId)!;
   const reduced = useReducedMotion();
-  const retry = research.studies[1];
   return (
     <section id="research" tabIndex={-1} className="cyan-research section-wrap">
       <div className="research-intro">
-        <span className="mono about-label">Research proposal</span>
+        <span className="mono about-label">
+          <DecodeText text="Research proposal" />
+        </span>
         <h2>
           The cost of remembering<span className="heading-period">.</span>
         </h2>
         <p>
-          My research proposal, <em>{research.title.toLowerCase()}</em>, asks
-          how an assistant can keep a user's changing requirements without
-          resending the whole conversation. Choose a memory strategy to see
-          what the model would receive.
+          Resending a whole chat costs more every turn, and trimming it can
+          make the model forget what the user changed their mind about. My
+          proposal, <em>{research.title.toLowerCase()}</em>, sets out to test
+          recent messages plus compact records of each constraint and its
+          revisions. Choose a memory strategy to see what the model would
+          receive.
         </p>
         <span className="research-badge mono">{research.status}</span>
       </div>
@@ -66,12 +67,22 @@ export function CyanResearch() {
           role="radiogroup"
           aria-label="Memory strategy"
         >
-          {memoryStrategies.map((item) => (
+          {memoryStrategies.map((item, index) => (
             <button
               key={item.id}
               role="radio"
               aria-checked={item.id === strategyId}
+              tabIndex={item.id === strategyId ? 0 : -1}
               onClick={() => setStrategyId(item.id)}
+              onKeyDown={(event) => {
+                const forward = event.key === "ArrowDown" || event.key === "ArrowRight";
+                if (!forward && event.key !== "ArrowUp" && event.key !== "ArrowLeft") return;
+                event.preventDefault();
+                const count = memoryStrategies.length;
+                const next = (index + (forward ? 1 : count - 1)) % count;
+                setStrategyId(memoryStrategies[next].id);
+                event.currentTarget.parentElement?.querySelectorAll<HTMLElement>('[role="radio"]')[next]?.focus();
+              }}
             >
               {item.name}
               <span className="mono">
@@ -126,7 +137,9 @@ export function CyanResearch() {
 
       <div className="retry-strip">
         <div>
-          <span className="mono">Second study</span>
+          <span className="mono">
+            <DecodeText text="Second study" />
+          </span>
           <h3>{retry.name}</h3>
           <p>{retry.summary}</p>
         </div>

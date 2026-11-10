@@ -19,12 +19,13 @@ import {
 } from "lucide-react";
 import { motion, useReducedMotion } from "framer-motion";
 import { profile, education } from "@/data/profile";
-import { selectedWork, type CaseStudy } from "@/data/portfolio";
+import type { CaseStudy } from "@/data/portfolio";
 import { resetPointer, trackPointer } from "@/lib/pointer";
-import { ORDO_URL } from "@/lib/sites";
+import { ARCADE_URL, ORDO_URL } from "@/lib/sites";
 import { isMotionPaused, setMotionPaused, useMotionPaused } from "@/lib/motion-pause";
 import ProjectVisual from "@/components/portfolio/ProjectVisual";
 import ProjectDetail from "@/components/portfolio/ProjectDetail";
+import { cyanWork } from "./copy";
 import { CommandPalette, CyanResearch } from "./components/CyanSections";
 import { ExperienceSection } from "./components/ExperienceSection";
 import { OtherWork } from "./components/OtherWork";
@@ -44,29 +45,40 @@ const workflow = [
   {
     name: "Find the evidence",
     description:
-      "Combine semantic and keyword search, then rerank, so the passage that answers the question comes first.",
+      "Dense search and BM25 each pull candidates, then a reranker sorts them. With the reranker on, the right passage came first on all 33 labelled questions over three short StudyForge documents, up from 27 with dense search.",
     chips: ["Documents", "Dense + BM25", "Rerank", "Context"],
-    note: "Retrieval is scored on its own, before any text is generated.",
+    note: "I score retrieval on its own, before the model writes a word.",
   },
   {
     name: "Check the answer",
     description:
-      "Validate the output structure, keep quotes word for word, and test each change on labelled queries.",
+      "StudyForge's study tools have to pass their schemas. Retrieval changes run on labelled queries before I keep them.",
     chips: ["Context", "Generate", "Verify quotes", "Citations"],
-    note: "An answer keeps only the claims its sources support.",
+    note: "In MARA, a note whose quote isn't in the source gets thrown out.",
   },
   {
     name: "Ship and learn",
     description:
-      "Connect the API and interface, test what happens when things fail, and let what users hit decide the next change.",
+      "I wire the API to the interface, then test how it fails. Given MARA's one deliberately unanswerable question, every model replied that no evidence was found. When FinTrack misreads a bank's wording, the report becomes a new row in its parser corpus.",
     chips: ["API", "Tests", "Deploy", "Feedback"],
-    note: "Tests and a container build run on every push.",
+    note: "On StudyForge, every push runs the backend tests, a Docker build and a health check.",
   },
 ];
 
+const THEME_KEY = "cyan-theme";
+
+/** Dark unless the visitor has chosen light. */
+function readTheme(): "dark" | "light" {
+  try {
+    return localStorage.getItem(THEME_KEY) === "light" ? "light" : "dark";
+  } catch {
+    return "dark";
+  }
+}
+
 /** The cyan edition: the original identity, refined. Deployed on its own. */
 export default function CyanPage() {
-  const [theme, setTheme] = useState<"dark" | "light">("dark");
+  const [theme, setTheme] = useState<"dark" | "light">(readTheme);
   const [menuOpen, setMenuOpen] = useState(false);
   const [selected, setSelected] = useState<CaseStudy | null>(null);
   const [step, setStep] = useState(0);
@@ -75,6 +87,7 @@ export default function CyanPage() {
   const [helpOpen, setHelpOpen] = useState(false);
   const copyTimer = useRef<ReturnType<typeof setTimeout>>();
   const rootRef = useRef<HTMLDivElement>(null);
+  const menuToggleRef = useRef<HTMLButtonElement>(null);
   const reducedMotion = useReducedMotion();
   const motionPaused = useMotionPaused();
   const navigate = useNavigate();
@@ -86,9 +99,10 @@ export default function CyanPage() {
     return () => {
       delete document.documentElement.dataset.portfolioTheme;
       delete document.documentElement.dataset.portfolioEdition;
-      clearTimeout(copyTimer.current);
     };
   }, [theme]);
+
+  useEffect(() => () => clearTimeout(copyTimer.current), []);
 
   // The page's graticule brightens around the pointer (see cyan.css).
   useEffect(() => {
@@ -129,7 +143,11 @@ export default function CyanPage() {
   useEffect(() => {
     if (!menuOpen) return;
     const onKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setMenuOpen(false);
+      if (event.key !== "Escape") return;
+      // The menu is about to unmount; focus inside it would fall back to the page.
+      const inside = document.activeElement?.closest("#mobile-navigation");
+      setMenuOpen(false);
+      if (inside) menuToggleRef.current?.focus();
     };
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
@@ -146,7 +164,16 @@ export default function CyanPage() {
       setCopyError(true);
     }
   };
-  const toggleTheme = () => setTheme((value) => (value === "dark" ? "light" : "dark"));
+  const toggleTheme = () => {
+    const next = theme === "dark" ? "light" : "dark";
+    setTheme(next);
+    // Only an explicit choice is stored, so first-time visitors still get dark.
+    try {
+      localStorage.setItem(THEME_KEY, next);
+    } catch {
+      /* storage is blocked; the choice lasts for this visit */
+    }
+  };
   // Shared by the g shortcuts and the palette's "Go to" items. Scrolling alone leaves the keyboard
   // where it was, so the next Tab would fly back to the header; the section takes focus as well.
   const go = (target: string) => {
@@ -220,6 +247,7 @@ export default function CyanPage() {
               Contact me <ArrowUpRight size={15} />
             </a>
             <button
+              ref={menuToggleRef}
               className="icon-button mobile-menu-toggle"
               aria-expanded={menuOpen}
               aria-controls="mobile-navigation"
@@ -246,6 +274,15 @@ export default function CyanPage() {
                 <ArrowUpRight size={18} />
               </a>
             ))}
+            <Link to="/nexus" onClick={() => setMenuOpen(false)}>
+              Project archive <ArrowUpRight size={18} />
+            </Link>
+            <Link to="/terminal" onClick={() => setMenuOpen(false)}>
+              Terminal <ArrowUpRight size={18} />
+            </Link>
+            <a href={ARCADE_URL}>
+              Play Tetris-89 <ArrowUpRight size={18} />
+            </a>
           </nav>
         )}
       </header>
@@ -267,9 +304,10 @@ export default function CyanPage() {
               <span>measured before they ship.</span>
             </h1>
             <p className="hero-description">
-              I build document extraction, retrieval and agent workflows for
-              client systems. In my own projects, every retrieval change is
-              scored against a baseline before I keep it.
+              At LetsTute I work on agent workflows for our lead-generation
+              platform and on bill OCR and LLM field extraction for a client
+              ERP. On my own projects, no retrieval change stays until I've
+              scored it against a baseline.
             </p>
             <div className="hero-actions">
               <a href="#work" className="primary-button">
@@ -323,12 +361,12 @@ export default function CyanPage() {
               Selected work<span className="heading-period">.</span>
             </h2>
             <p>
-              Four projects I built on my own. Open one for the problem, what
-              I built and how I checked it.
+              Four projects I built alone, all with public source. Each one
+              opens to show the mechanism and the check I ran on it.
             </p>
           </motion.div>
           <div className="work-grid">
-            {selectedWork.map((project, index) => (
+            {cyanWork.map((project, index) => (
               <motion.article
                 {...reveal}
                 transition={{ duration: 0.45, delay: (index % 2) * 0.08 }}
@@ -454,21 +492,24 @@ export default function CyanPage() {
 
         <section id="about" tabIndex={-1} className="about-section section-wrap">
           <motion.div {...reveal} className="about-statement">
-            <span className="mono about-label">A little about me</span>
+            <span className="mono about-label">
+              <DecodeText text="A little about me" />
+            </span>
             <h2>
-              Curious about the model.
+              I like the models.
               <br />
-              <span>Responsible for the system.</span>
+              <span>I also mark their homework.</span>
             </h2>
             <p>
-              I'm Varun, an AI engineer in Mumbai. I enjoy the work between an
-              interesting model and a useful application: retrieval, backend
-              APIs, evaluation and the interface someone actually uses.
+              I'm Varun, an AI engineer in Mumbai. My work is the plumbing around
+              an interesting model, meaning retrieval, backend APIs, evaluation
+              and the interface someone has to use.
             </p>
             <p>
-              Outside client work, I build learning tools and an on-device
-              finance app, and I have written a research proposal on cutting
-              the cost of running LLM assistants.
+              Outside client work I've built a study tool that cites your own
+              notes and an Android ledger that counts a refund as a refund.
+              I've also written a research proposal on making LLM assistants
+              cheaper to run.
             </p>
             <a
               href={profile.github}

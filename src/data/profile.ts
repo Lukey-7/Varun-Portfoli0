@@ -14,13 +14,12 @@ export const profile = {
   location: 'Mumbai, Maharashtra',
   timezone: 'IST (UTC+5:30)',
   email: 'varun.darji07@gmail.com',
-  phone: '+91 7977023495',
   github: 'https://github.com/Lukey-7',
   githubHandle: 'Lukey-7',
   linkedin: 'https://www.linkedin.com/in/varun-darji-5713472a9/',
   linkedinHandle: 'varun-darji-5713472a9',
   summary:
-    'AI Engineer at LetsTute and M.Sc. Computer Science graduate. I build retrieval systems, agent workflows, backend APIs and client applications. My work includes building and improving the Webex platform, leading implementation and testing of ERP intelligence features, and deploying KiranOS on GCP while gaining hands-on AWS experience.',
+    'AI Engineer at LetsTute and M.Sc. Computer Science graduate. I build retrieval systems, agent workflows, backend APIs and client applications. My work includes building and improving the Webex platform, leading implementation and testing of ERP intelligence features, and deploying an enterprise ERP solution with AI integrations on GCP while gaining hands-on AWS experience.',
 } as const;
 
 /* ---------------------------------------------------------------- skills */
@@ -155,7 +154,7 @@ export const skills: Skill[] = [
     short: 'GCP',
     category: 'Cloud & DevOps',
     description:
-      'Deploying and maintaining containerised services for KiranOS on GCP, including build pipelines and runtime configuration.',
+      'Deploying and maintaining containerised services for an enterprise ERP solution with AI integrations on GCP, including build pipelines and runtime configuration.',
     connections: ['docker', 'cicd', 'python'],
   },
   {
@@ -229,7 +228,7 @@ export const experience: Experience[] = [
     highlights: [
       'Built and improved Webex, the company\'s lead-generation platform, including its AI workflows and application features.',
       'Leading implementation and testing of AI features for a secured client ERP.',
-      'Developing the KiranOS iOS application, deploying it on GCP and gaining hands-on AWS deployment experience for clients.',
+      'Developing the iOS application for an enterprise ERP solution with AI integrations, deploying it on GCP and gaining hands-on AWS deployment experience for clients.',
     ],
     stack: ['Python', 'LLMs', 'RAG', 'GCP', 'AWS', 'Docker', 'FastAPI'],
   },

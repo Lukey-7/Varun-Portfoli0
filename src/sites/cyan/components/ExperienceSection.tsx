@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Minus, Plus } from "lucide-react";
-import { experience } from "@/data/profile";
-import { deliveryWork } from "@/data/portfolio";
+import { cyanDeliveryWork, cyanExperience } from "../copy";
 import { ExperienceTimeline } from "../motion/ExperienceTimeline";
 
 /**
@@ -19,9 +18,9 @@ export function ExperienceSection() {
 
   return (
     <>
-      <ExperienceTimeline jobs={experience} active={active} onActive={setActive} />
+      <ExperienceTimeline jobs={cyanExperience} active={active} onActive={setActive} />
       <div className="experience-list">
-        {experience.map((job) => (
+        {cyanExperience.map((job) => (
           <article
             className="experience-item"
             key={job.id}
@@ -49,7 +48,7 @@ export function ExperienceSection() {
               {job.id === "letstute" ? (
                 <>
                   <div className="delivery-grid">
-                    {deliveryWork.map((item) => (
+                    {cyanDeliveryWork.map((item) => (
                       <div key={item.title}>
                         <h3>{item.title}</h3>
                         <p>{item.text}</p>
@@ -58,9 +57,10 @@ export function ExperienceSection() {
                     ))}
                   </div>
                   <p className="confidential-note">
-                    Client systems are private. I can talk through the
-                    architecture, my part and the engineering decisions
-                    without sharing confidential access or data.
+                    Client systems are private, so there's nothing to click
+                    here. I can walk you through the architecture, my part in
+                    it and the calls I made, with client access and data left
+                    out.
                   </p>
                 </>
               ) : (

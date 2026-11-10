@@ -95,6 +95,10 @@ html[data-portfolio-theme] {
   outline: 2px solid var(--accent);
   outline-offset: 5px;
 }
+#main:focus,
+#main:focus-visible {
+  outline: none;
+}
 .portfolio ::selection {
   background: var(--accent);
   color: var(--button-ink);
@@ -1725,9 +1729,16 @@ html[data-portfolio-theme] {
     gap: 18px;
     flex-wrap: wrap;
   }
+  .portfolio-footer > div a {
+    display: inline-block;
+    padding-block: 4px;
+  }
   .edition-switch {
     bottom: 14px;
     right: 14px;
+  }
+  .edition-switch > span {
+    display: none;
   }
   .dialog-body {
     padding: 29px 24px;

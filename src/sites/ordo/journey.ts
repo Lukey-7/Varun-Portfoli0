@@ -81,7 +81,7 @@ export const journey: JourneyEntry[] = [
     date: "2026-08",
     kind: "work",
     title: "Joined LetsTute as an AI engineer",
-    text: "Agent workflows for a lead-generation platform, document extraction for a client ERP, and the KiranOS iOS app.",
+    text: "Agent workflows for a lead-generation platform, document extraction for a client ERP, and the iOS app for an enterprise ERP solution with AI integrations.",
     to: "/about#experience",
   },
   {

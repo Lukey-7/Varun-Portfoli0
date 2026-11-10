@@ -1,12 +1,13 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Github, Linkedin, Mail, Phone } from 'lucide-react';
+import { Github, Linkedin, Mail } from 'lucide-react';
 import PageTransition from '@/components/PageTransition';
 import { useFinePointer } from '@/hooks/use-fine-pointer';
 import { profile } from '@/data/profile';
+import { ARCADE_URL, SPACE_GAME_URL } from '@/lib/sites';
 import {
   ASCII_ART,
-  completeCommand,
+  COMMANDS,
   runCommand,
   type CommandOutput,
 } from '@/lib/terminal-commands';
@@ -19,7 +20,15 @@ const QUICK_COMMANDS = [
   'projects',
   'education',
   'contact',
+  'play',
 ];
+
+/** Commands only this page answers: they leave the portfolio for a game. */
+const GAMES: Record<string, string> = {
+  play: ARCADE_URL,
+  tetris: ARCADE_URL,
+  space: SPACE_GAME_URL,
+};
 
 const Terminal = () => {
   const isFinePointer = useFinePointer();
@@ -51,6 +60,13 @@ const Terminal = () => {
     setCommandHistory((prev) => [...prev, trimmed]);
     setHistoryIndex(-1);
 
+    // An own-property check, so typing "constructor" is not taken for a game.
+    if (Object.prototype.hasOwnProperty.call(GAMES, trimmed)) {
+      setHistory((prev) => [...prev, { command: cmd, output: 'Loading cartridge...' }]);
+      setTimeout(() => window.location.assign(GAMES[trimmed]), 450);
+      return;
+    }
+
     const result = runCommand(cmd);
     if (!result) {
       setHistory([
@@ -58,6 +74,9 @@ const Terminal = () => {
         { command: '', output: 'Terminal cleared.\n' },
       ]);
       return;
+    }
+    if (trimmed === 'help') {
+      result.output += '  play        Play Tetris-89\n  space       Play Star Vanguard\n';
     }
     setHistory((prev) => [...prev, result]);
   };
@@ -86,8 +105,15 @@ const Terminal = () => {
       }
     } else if (e.key === 'Tab') {
       e.preventDefault();
-      const match = completeCommand(currentInput);
-      if (match) setCurrentInput(match);
+      const partial = currentInput.toLowerCase();
+      const matches = [...Object.keys(COMMANDS), ...Object.keys(GAMES)].filter((name) =>
+        name.startsWith(partial),
+      );
+      if (matches.length === 1) {
+        setCurrentInput(matches[0]);
+      } else if (matches.length > 1 && currentInput) {
+        setHistory((prev) => [...prev, { command: currentInput, output: matches.join('  ') }]);
+      }
     }
   };
 
@@ -163,23 +189,27 @@ const Terminal = () => {
               className="h-[55vh] min-h-[340px] md:h-[500px] overflow-y-auto overscroll-contain p-4 sm:p-6 font-mono text-[13px] sm:text-sm"
               onClick={() => inputRef.current?.focus()}
             >
-              {history.map((entry, index) => (
-                <div key={index} className="mb-4">
-                  {entry.command && (
-                    <div className="flex items-center gap-2 text-foreground">
-                      <span className="text-primary">❯</span>
-                      <span>{entry.command}</span>
-                    </div>
-                  )}
-                  <pre
-                    className={`whitespace-pre mt-1 scroll-x ${
-                      entry.isError ? 'text-red-400' : 'text-muted-foreground'
-                    }`}
-                  >
-                    {entry.output}
-                  </pre>
-                </div>
-              ))}
+              {history.map((entry, index) => {
+                // Block art and boxes need their columns; everything else can wrap.
+                const drawn = /[█┌│]/.test(entry.output);
+                return (
+                  <div key={index} className="mb-4">
+                    {entry.command && (
+                      <div className="flex items-center gap-2 text-foreground">
+                        <span className="text-primary">❯</span>
+                        <span>{entry.command}</span>
+                      </div>
+                    )}
+                    <pre
+                      className={`${drawn ? 'whitespace-pre' : 'whitespace-pre-wrap break-words'} mt-1 scroll-x ${
+                        entry.isError ? 'text-red-400' : 'text-muted-foreground'
+                      }`}
+                    >
+                      {entry.output}
+                    </pre>
+                  </div>
+                );
+              })}
 
               <div className="flex items-center gap-2">
                 <span className="text-primary">❯</span>
@@ -286,24 +316,6 @@ const Terminal = () => {
                 </h3>
                 <p className="text-sm text-muted-foreground truncate">
                   {profile.email}
-                </p>
-              </div>
-            </a>
-
-            <a
-              href={`tel:${profile.phone.replace(/\s/g, '')}`}
-              className="bento-card group flex items-center gap-4"
-            >
-              <Phone
-                size={24}
-                className="text-muted-foreground group-hover:text-primary transition-colors shrink-0"
-              />
-              <div className="min-w-0">
-                <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors text-sm">
-                  Phone
-                </h3>
-                <p className="text-sm text-muted-foreground truncate">
-                  {profile.phone}
                 </p>
               </div>
             </a>

@@ -120,7 +120,7 @@ describe("portfolio visitor journeys", () => {
     expect(button).toHaveAttribute("aria-expanded", "true");
     expect(
       screen.getByText(
-        "Integrated the PayPal AddTracking API for shipment and order tracking.",
+        "I wired in the PayPal AddTracking API for shipment and order tracking.",
       ),
     ).toBeVisible();
     expect(

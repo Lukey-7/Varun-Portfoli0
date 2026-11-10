@@ -16,7 +16,7 @@ export function ProjectGallery({
   return (
     <figure className="showcase-stage">
       <div className={`stage-frame ${item.shape}`}>
-        <img src={item.src} alt={item.alt} decoding="async" />
+        <img src={item.src} alt={item.alt} width={item.width} height={item.height} decoding="async" />
         {media.length > 1 && (
           <>
             <button className="stage-nav prev" onClick={() => go(-1)} aria-label="Previous screenshot">

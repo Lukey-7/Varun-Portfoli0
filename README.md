@@ -39,6 +39,7 @@ Deploy the monochrome site. On Vercel, create a project from this repository wit
 | Build command | `npm run build:ordo` |
 | Output directory | `dist/ordo` |
 | Environment variable | `SITE_URL`: the public address, e.g. `https://your-domain` |
+| CV variables | `CV_PASSPHRASE` and `CV_PHONE`, marked Sensitive (see `docs/CONTENT.md`) |
 
 `SITE_URL` goes into every page's canonical link and share image URL. Without it the build falls back to `VITE_ORDO_URL`, then to Vercel's production domain.
 

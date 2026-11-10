@@ -34,6 +34,8 @@ export interface GLLoopOptions {
   cellSize?: number;
   /** Element that drives the pointer; defaults to the canvas's parent. */
   pointerTarget?: () => HTMLElement | null;
+  /** A still frame is redrawn when this value changes, for state the graphic shows. */
+  redrawKey?: () => unknown;
 }
 
 /** Compile and link a program, throwing with the driver's log on failure. */
@@ -60,7 +62,8 @@ export function createProgram(gl: WebGL2RenderingContext, vertex: string, fragme
 /**
  * Runs a WebGL2 canvas at the display's frame rate while it is on screen and
  * the tab is visible. Reduced motion and the site-wide pause freeze the clock;
- * a still frame is still redrawn when the pointer moves or the size changes.
+ * a still frame is still redrawn when the pointer moves, the size changes, the
+ * pause or theme switches, or the caller's redrawKey changes.
  * Without WebGL2 the canvas gets data-gl="off" so CSS can show a fallback.
  */
 export function useGLLoop<State>(
@@ -104,6 +107,8 @@ export function useGLLoop<State>(
       last = 0,
       clock = 0,
       lost = false;
+    let lastKey = "";
+    const themed = canvas.closest("[data-theme]");
 
     const resize = () => {
       const cell = optionsRef.current.cellSize;
@@ -143,6 +148,11 @@ export function useGLLoop<State>(
       last = now;
       const still = media.matches || isMotionPaused();
       if (!still) clock += dt;
+      const key = `${isMotionPaused()}|${themed?.getAttribute("data-theme") ?? ""}|${String(optionsRef.current.redrawKey?.() ?? "")}`;
+      if (key !== lastKey) {
+        lastKey = key;
+        dirty = true;
+      }
       if (still && !dirty) return;
       dirty = false;
       gl.viewport(0, 0, width, height);

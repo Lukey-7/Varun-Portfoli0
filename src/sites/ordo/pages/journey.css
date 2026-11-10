@@ -184,6 +184,7 @@
   text-decoration-color: var(--ink);
 }
 .journey-copy h3 svg {
+  display: inline;
   vertical-align: -1px;
 }
 .journey-copy p {

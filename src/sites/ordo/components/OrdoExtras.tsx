@@ -309,7 +309,10 @@ export function OrdoConsole() {
           <div
             ref={bodyRef}
             className="console-body"
-            onClick={() => inputRef.current?.focus()}
+            onClick={() => {
+              if (window.getSelection()?.isCollapsed === false) return;
+              inputRef.current?.focus();
+            }}
           >
             <div role="log" aria-label="Terminal output">
             {history.map((entry, index) => (
@@ -343,7 +346,7 @@ export function OrdoConsole() {
                     const next = Math.min(cursor + 1, past.length - 1);
                     setCursor(next);
                     setInput(past[past.length - 1 - next]);
-                  } else if (event.key === "ArrowDown") {
+                  } else if (event.key === "ArrowDown" && cursor >= 0) {
                     event.preventDefault();
                     const next = cursor - 1;
                     setCursor(Math.max(next, -1));

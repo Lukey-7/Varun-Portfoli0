@@ -137,8 +137,8 @@ export const deliveryWork = [
     tags: "FastAPI / OCR / RAG",
   },
   {
-    title: "KiranOS & deployment",
-    text: "Developing the iOS application and new platform features, deploying on GCP, and gaining hands-on AWS deployment experience for clients.",
+    title: "Enterprise ERP & deployment",
+    text: "Developing the iOS application and new platform features for an enterprise ERP solution with AI integrations, deploying on GCP, and gaining hands-on AWS deployment experience for clients.",
     tags: "React / Capacitor / GCP / AWS",
   },
 ];
@@ -154,7 +154,7 @@ export const aiCapabilities = [
     source: "StudyForge",
     target: { id: "studyforge", label: "StudyForge" },
     text: "Dense and BM25 search with rank fusion, diversity selection and reranking, so answers stay tied to their sources.",
-    metaLeft: "33 TEST QUERIES",
+    metaLeft: "33 QUERIES · 3 DOCUMENTS",
     metaRight: "RIGHT PASSAGE FIRST: 27 → 33",
   },
   {
@@ -178,7 +178,7 @@ export const aiCapabilities = [
   {
     id: "documents",
     name: "Document intelligence",
-    source: "KiranOS ERP",
+    source: "Enterprise ERP",
     target: { id: "letstute", label: "my LetsTute role" },
     text: "Bill OCR with a self-hosted vision model, LLM field extraction with validation checks, and an assistant that cites its sources. I lead implementation and testing.",
     metaLeft: "AUDIT LOG OF MODEL CALLS",

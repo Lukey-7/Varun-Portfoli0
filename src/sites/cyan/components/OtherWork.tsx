@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { ArrowUpRight, Gamepad2 } from "lucide-react";
-import { otherWork } from "@/data/portfolio";
+import { ARCADE_URL } from "@/lib/sites";
+import { cyanOtherWork } from "../copy";
 import { Lissajous } from "../motion/Lissajous";
 
 /**
@@ -18,11 +19,13 @@ export function OtherWork() {
     <section className="other-section section-wrap">
       <h2>Also built.</h2>
       <div className="other-grid">
-        {otherWork.map((project) => (
+        {cyanOtherWork.map((project) => {
+          const href = project.kind === "tetris" ? ARCADE_URL : project.href;
+          return (
           <a
             className={`other-project ${project.kind}`}
-            href={project.href}
-            target={project.href.startsWith("http") ? "_blank" : undefined}
+            href={href}
+            target={href.startsWith("http") ? "_blank" : undefined}
             rel="noreferrer"
             key={project.name}
             onMouseEnter={() => setSignalled(project.name)}
@@ -51,10 +54,12 @@ export function OtherWork() {
               </div>
               <p>{project.description}</p>
               <span className="mono">{project.tech}</span>
+              {project.kind === "tetris" && <span className="mono other-play">Playable in the browser</span>}
               <Lissajous seed={project.name} active={signalled === project.name} />
             </div>
           </a>
-        ))}
+          );
+        })}
       </div>
     </section>
   );

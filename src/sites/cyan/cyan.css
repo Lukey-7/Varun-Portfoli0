@@ -1592,6 +1592,10 @@ html[data-portfolio-theme] {
     bottom: 14px;
     right: 14px;
   }
+  .edition-switch > span,
+  .edition-switch a[aria-current="page"] {
+    display: none;
+  }
   .dialog-body {
     padding: 29px 24px;
   }
@@ -1760,18 +1764,20 @@ html[data-portfolio-theme] {
   padding: 9px 12px;
   border-radius: 6px;
   border: 1px solid transparent;
-  background: var(--panel);
-  opacity: 0.38;
+  background: transparent;
   transition:
-    opacity 0.35s,
+    background 0.35s,
     border-color 0.35s;
 }
 .memory-thread li.assistant {
   margin-left: 36px;
 }
 .memory-thread li.is-sent {
-  opacity: 1;
+  background: var(--panel);
   border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+}
+.memory-thread li:not(.is-sent) p {
+  color: var(--muted);
 }
 .memory-thread li.is-key {
   outline: 1px dashed var(--accent);
@@ -2053,6 +2059,11 @@ html[data-motion="paused"] .context-gauge-fill {
 }
 
 @media (max-width: 767px) {
+  .palette-trigger {
+    min-width: 40px;
+    min-height: 40px;
+    justify-content: center;
+  }
   .palette-trigger .mono {
     display: none;
   }
@@ -2311,4 +2322,44 @@ html[data-motion="paused"] .cyan-edition *::after {
   .cyan-edition .scope-slot {
     margin-block: 36px 0;
   }
+}
+
+.other-project .other-play {
+  display: block;
+  margin-top: 6px;
+  color: var(--accent);
+}
+
+/* The modal sheets arrive quickly. Under the site-wide pause they must not
+   animate at all: a paused entrance would leave the sheet invisible. */
+@keyframes sheet-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+@keyframes sheet-fade {
+  from {
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  html:not([data-motion="paused"]) .palette-dialog[open],
+  html:not([data-motion="paused"]) .shortcuts-dialog[open] {
+    animation: sheet-in 140ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  html:not([data-motion="paused"]) .palette-dialog[open]::backdrop,
+  html:not([data-motion="paused"]) .shortcuts-dialog[open]::backdrop {
+    animation: sheet-fade 140ms ease-out both;
+  }
+}
+
+/* Body text keeps single words off its last line, and headings break evenly. */
+.cyan-edition p,
+.cyan-edition li {
+  text-wrap: pretty;
+}
+.cyan-edition h2,
+.cyan-edition h3 {
+  text-wrap: balance;
 }

@@ -27,6 +27,7 @@ export default function ProjectDetail({
       className="project-dialog"
       aria-labelledby="project-detail-title"
       onCancel={onClose}
+      onClose={onClose}
       onClick={(event) => {
         if (event.target === event.currentTarget) onClose();
       }}

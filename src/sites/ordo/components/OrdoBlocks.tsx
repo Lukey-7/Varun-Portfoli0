@@ -257,6 +257,9 @@ export function OrdoContact() {
           </span>
         </div>
         <div className="social-links">
+          <a href="/Varun-Darji-Resume.pdf" download>
+            <Download size={16} aria-hidden="true" /> Resume
+          </a>
           <a href={profile.github} target="_blank" rel="noreferrer">
             <Github size={16} /> GitHub
           </a>

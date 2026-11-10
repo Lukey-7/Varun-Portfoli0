@@ -10,7 +10,7 @@
  */
 
 /** When the words or facts last changed. Shown in the footer and the hero terminal. */
-const UPDATED = "October 2026";
+const UPDATED = "November 2026";
 
 /** A section label: the bracketed index on the left, a short descriptor on the right. */
 type Label = readonly [string, string];

@@ -15,4 +15,7 @@ if (typeof window !== "undefined") {
       dispatchEvent: () => {},
     }),
   });
+
+  // A remembered theme must not leak from one test into the next.
+  afterEach(() => window.localStorage.clear());
 }

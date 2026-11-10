@@ -1,5 +1,6 @@
 import { useMemo, useRef, useState } from "react";
 import { useReducedMotion } from "framer-motion";
+import { toRgb } from "./colour";
 import { createProgram, useGLLoop, type GLFrame } from "./useGLLoop";
 import "./hero-field.css";
 
@@ -193,9 +194,12 @@ function rotation(yaw: number, pitch: number) {
   };
 }
 
-const rgb = (css: string, fallback: [number, number, number]): [number, number, number] => {
-  const match = css.match(/\d+(\.\d+)?/g);
-  return match && match.length >= 3 ? [Number(match[0]) / 255, Number(match[1]) / 255, Number(match[2]) / 255] : fallback;
+type Unit = [number, number, number];
+
+/** A CSS colour as 0-1 channels for the shader; `current` stands in when it cannot be parsed. */
+const toUnit = (ctx: CanvasRenderingContext2D, css: string, current: Unit): Unit => {
+  const [r, g, b] = toRgb(ctx, css, [current[0] * 255, current[1] * 255, current[2] * 255]);
+  return [r / 255, g / 255, b / 255];
 };
 
 export default function HeroField() {
@@ -242,17 +246,20 @@ export default function HeroField() {
       // Every 12th stream point is mirrored on the CPU for the overlay.
       const sample: number[] = [];
       for (let i = 0; i < count; i += 12) if (kinds[i] === 0) sample.push(i * 4);
-      return { program, vao, u, seeds, sample, frames: 0, elapsed: 0, mix: 0, colour: [0.33, 0.85, 0.81] as [number, number, number], hot: [0.93, 0.96, 0.95] as [number, number, number], light: false, age: 99, yaw: 0.6 };
+      return { program, vao, u, seeds, sample, frames: 0, elapsed: 0, mix: 1, idle: 0, colour: [0.33, 0.85, 0.81] as [number, number, number], hot: [0.93, 0.96, 0.95] as [number, number, number], light: false, age: 99, yaw: 0.6 };
     },
     (frame: GLFrame, state) => {
       const { gl, width, height, dpr, time, dt, pointer, still } = frame;
       const wrap = wrapRef.current;
       // Re-read the theme colours now and then; the theme can switch at runtime.
-      if (++state.age > 45 && wrap) {
+      if ((++state.age > 45 || still) && wrap) {
         state.age = 0;
         const style = getComputedStyle(wrap);
-        state.colour = rgb(style.getPropertyValue("--field-colour") || style.color, state.colour);
-        state.hot = rgb(style.getPropertyValue("--field-hot"), state.hot);
+        const parser = overlayRef.current?.getContext("2d");
+        if (parser) {
+          state.colour = toUnit(parser, style.getPropertyValue("--field-colour").trim() || style.color, state.colour);
+          state.hot = toUnit(parser, style.getPropertyValue("--field-hot").trim(), state.hot);
+        }
         state.light = style.getPropertyValue("--field-mode").trim() === "light";
       }
       // A real measurement for the HUD: frames per second, refreshed twice a second.
@@ -267,8 +274,12 @@ export default function HeroField() {
       state.mix = still ? target : state.mix + (target - state.mix) * (1 - Math.exp(-dt * 2.4));
 
       const d = drag.current;
+      // Left alone for a moment, the knot runs a query of its own.
+      state.idle = pointer.inside || d.active ? 0 : state.idle + dt;
+      const ghost = !still && !pointer.inside && !d.active && state.idle > 1.6;
+      if (still) d.velocity = 0;
       if (!d.active && Math.abs(d.velocity) > 1e-4) {
-        d.yaw += d.velocity;
+        d.yaw += d.velocity * dt * 60;
         d.velocity *= Math.exp(-dt * 3);
       }
       state.yaw += dt * 0.12;
@@ -276,13 +287,15 @@ export default function HeroField() {
       const pitch = 0.42 + d.pitch + (pointer.inside ? (-pointer.y / height) * 0.35 : 0);
       const rot = rotation(yaw, pitch);
       const scale = (Math.min(width, height) * 0.43) / 1.15;
+      const queryX = ghost ? Math.sin(time * 0.31) * scale * 0.72 : pointer.x;
+      const queryY = ghost ? Math.sin(time * 0.47 + 1.1) * scale * 0.62 : pointer.y;
       // Scrolling away dissolves the knot towards its clusters and fades it.
       const box = wrap?.getBoundingClientRect();
       const progress = box ? clamp01(-box.top / Math.max(1, box.height)) : 0;
       const mixAmount = Math.max(state.mix, progress * 0.7);
       const fade = 1 - progress * 0.6;
       const radius = 95 * dpr;
-      const queryOn = pointer.inside && !d.active ? 1 : 0;
+      const queryOn = (pointer.inside && !d.active) || ghost ? 1 : 0;
 
       gl.clearColor(0, 0, 0, 0);
       gl.clear(gl.COLOR_BUFFER_BIT);
@@ -299,7 +312,7 @@ export default function HeroField() {
       gl.uniform2f(u.uHalf, width / 2, height / 2);
       gl.uniform1f(u.uScale, scale);
       gl.uniform1f(u.uDpr, dpr);
-      gl.uniform2f(u.uQuery, pointer.x, pointer.y);
+      gl.uniform2f(u.uQuery, queryX, queryY);
       gl.uniform1f(u.uQueryOn, queryOn);
       gl.uniform1f(u.uRadius, radius);
       gl.uniform1f(u.uFade, fade);
@@ -326,7 +339,7 @@ export default function HeroField() {
         const persp = CAMERA / (CAMERA - v[2]);
         const sx = v[0] * persp * scale,
           sy = v[1] * persp * scale;
-        const dist = Math.hypot(sx - pointer.x, sy - pointer.y);
+        const dist = Math.hypot(sx - queryX, sy - queryY);
         if (dist > radius * 1.6) continue;
         nearest.push({ x: cx + sx, y: cy - sy, d: dist });
       }
@@ -338,8 +351,8 @@ export default function HeroField() {
         if (point.d < 24 * dpr) continue;
         if (picks.every((other) => Math.hypot(other.x - point.x, other.y - point.y) > gap)) picks.push(point);
       }
-      const qx = cx + pointer.x,
-        qy = cy - pointer.y;
+      const qx = cx + queryX,
+        qy = cy - queryY;
       const ink = `rgba(${state.hot.map((c) => Math.round(c * 255)).join(",")},`;
       const accent = `rgba(${state.colour.map((c) => Math.round(c * 255)).join(",")},`;
       ctx.lineWidth = 1 * dpr;
@@ -381,11 +394,11 @@ export default function HeroField() {
       ctx.fillStyle = backing;
       ctx.fillRect(qx + 11 * dpr, qy + 12 * dpr, ctx.measureText(caption).width + 8 * dpr, 28 * dpr);
       ctx.fillStyle = `${ink}0.95)`;
-      ctx.fillText("QUERY", qx + 15 * dpr, qy + 23 * dpr);
+      ctx.fillText(ghost ? "AUTO QUERY" : "QUERY", qx + 15 * dpr, qy + 23 * dpr);
       ctx.fillStyle = `${accent}0.95)`;
       ctx.fillText(caption, qx + 15 * dpr, qy + 36 * dpr);
     },
-    { maxDpr: 1.75, pointerTarget: () => wrapRef.current },
+    { maxDpr: 1.75, pointerTarget: () => wrapRef.current, redrawKey: () => scatteredRef.current },
   );
 
   return (
@@ -420,7 +433,7 @@ export default function HeroField() {
       }}
     >
       <div className="hero-field-hud mono" aria-hidden="true">
-        <span>LATENT SPACE · {count.toLocaleString("en-IN")} PTS · {scattered ? "6 CLUSTERS" : "KNOT"}</span>
+        <span><span className="hero-field-hud-label">LATENT SPACE · </span>{count.toLocaleString("en-IN")} PTS · {scattered ? "6 CLUSTERS" : "KNOT"}</span>
         <span>
           [LIVE] <span ref={rateRef} className="hero-field-rate">— FPS</span>
         </span>

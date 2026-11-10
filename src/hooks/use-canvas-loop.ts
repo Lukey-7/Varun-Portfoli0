@@ -51,8 +51,12 @@ export function useCanvasLoop(draw: (frame: CanvasFrame) => void) {
     const readColours = () => {
       const style = getComputedStyle(canvas);
       const match = style.color.match(/\d+(\.\d+)?/g);
-      if (match) rgb = match.slice(0, 3).join(",");
-      page = style.getPropertyValue("--page").trim() || page;
+      const nextRgb = match ? match.slice(0, 3).join(",") : rgb;
+      const nextPage = style.getPropertyValue("--page").trim() || page;
+      // A frozen canvas only repaints when dirty, so a theme change must say so.
+      if (nextRgb !== rgb || nextPage !== page) dirty = true;
+      rgb = nextRgb;
+      page = nextPage;
     };
     const ink = (alpha = 1) => `rgba(${rgb},${alpha})`;
     const resize = () => {

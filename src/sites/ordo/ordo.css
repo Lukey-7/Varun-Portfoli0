@@ -431,7 +431,8 @@
     font-size: 9px;
   }
   .hero-terminal > a {
-    font-size: 8px;
+    font-size: 11px;
+    padding-block: 6px;
   }
   .ordo-edition .hero-art > .sculpture {
     height: 380px;
@@ -469,7 +470,7 @@
     border-bottom: 0;
   }
   .ordo-section-label {
-    font-size: 7px;
+    font-size: 9px;
     gap: 10px;
   }
   .ordo-section-label > span:last-child {
@@ -1558,6 +1559,8 @@ html[data-portfolio-edition="ordo"], .ordo-edition * { scrollbar-color: #82857d 
 .showcase-stage figcaption span {
   font-family: "IBM Plex Mono", monospace;
   font-size: 9px;
+  white-space: nowrap;
+  flex: none;
 }
 .stage-thumbs {
   display: flex;
@@ -1901,6 +1904,10 @@ html[data-motion="paused"] .ordo-edition *::after {
   /* Anchor jumps clear the 68px sticky header on phones. */
   html[data-portfolio-edition="ordo"] {
     scroll-padding-top: 84px;
+  }
+  .console-tabs {
+    flex-wrap: wrap;
+    overflow-x: visible;
   }
 }
 
@@ -2309,6 +2316,13 @@ html[data-motion="paused"] .ordo-edition *::after {
   padding-top: 25px;
   border-top: 1px solid var(--line);
 }
+@media (min-width: 768px) {
+  .about-page .about-details .edu-timeline {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: 0;
+  }
+}
 .edu-timeline ol {
   position: relative;
   display: grid;
@@ -2432,11 +2446,17 @@ html[data-motion="paused"] .ordo-edition *::after {
   color: var(--ink);
 }
 .hero-now svg {
+  display: inline;
   vertical-align: -2px;
   transition: transform 0.25s;
 }
 .hero-now:hover svg {
   transform: translateY(2px);
+}
+@media (min-width: 1101px) {
+  .hero-now {
+    max-width: calc(100% - 90px);
+  }
 }
 
 /* ---------- Project dialog: idea, then the demo ---------- */
@@ -2591,6 +2611,17 @@ html[data-motion="paused"] .ordo-edition *::after {
 }
 .ordo-card-art.project-hero-art > .tetris-matrix {
   scale: 1.6;
+}
+@media (min-width: 1101px) {
+  .project-hero-art > .finance-visual {
+    scale: 1.2;
+  }
+  .project-hero-art > .agent-visual {
+    scale: 1.25;
+  }
+  .project-hero-art > .quant-visual {
+    scale: 1.1;
+  }
 }
 .page-hero-art {
   position: relative;
@@ -3013,6 +3044,7 @@ html[data-motion="paused"] .ordo-edition *::after {
   text-decoration-color: var(--ink);
 }
 .research-log-copy h3 svg {
+  display: inline;
   vertical-align: -1px;
 }
 .research-log .research-log-copy p {

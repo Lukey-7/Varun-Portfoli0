@@ -96,7 +96,7 @@ function cvVault(env: Record<string, string | undefined>): Plugin {
       if (source !== resolved) return undefined;
       const passphrase = cvPassphrase(env);
       if (!passphrase) return "export default null;";
-      return `export default ${JSON.stringify(await encryptJson(buildCvDocument(), passphrase))};`;
+      return `export default ${JSON.stringify(await encryptJson(buildCvDocument((env.CV_PHONE ?? "").trim()), passphrase))};`;
     },
   };
 }

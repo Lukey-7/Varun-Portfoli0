@@ -104,9 +104,9 @@ export function DitherField({ side = "right", className }: { side?: keyof typeof
       return { program, vao, u, colour: [0.33, 0.85, 0.81], age: 99 };
     },
     (frame, state) => {
-      const { gl, width, height, time, pointer } = frame;
+      const { gl, width, height, time, pointer, still } = frame;
       timeRef.current = time;
-      if (++state.age > 45 && wrapRef.current) {
+      if ((++state.age > 45 || still) && wrapRef.current) {
         state.age = 0;
         const match = getComputedStyle(wrapRef.current).color.match(/\d+(\.\d+)?/g);
         if (match) state.colour = match.slice(0, 3).map((value) => Number(value) / 255);

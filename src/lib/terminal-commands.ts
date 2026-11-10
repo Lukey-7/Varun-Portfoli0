@@ -123,14 +123,13 @@ Available commands:
   contact: () => `
 Contact:
   Email:    ${profile.email}
-  Phone:    ${profile.phone}
   GitHub:   github.com/${profile.githubHandle}
   LinkedIn: linkedin.com/in/${profile.linkedinHandle}
   Location: ${profile.location}
 `,
   resume: () => `
 ${profile.name} — ${profile.role}
-${profile.location} · ${profile.email} · ${profile.phone}
+${profile.location} · ${profile.email}
 
 SUMMARY
 ${profile.summary}
@@ -162,7 +161,9 @@ export interface CommandOutput {
 export function runCommand(input: string): CommandOutput | null {
   const trimmed = input.trim().toLowerCase();
   if (trimmed === 'clear') return null;
-  const commandFn = COMMANDS[trimmed];
+  const key = trimmed.split(/\s+/)[0] === 'sudo' ? 'sudo' : trimmed;
+  // An own-property check, so "constructor" and friends are unknown commands.
+  const commandFn = Object.prototype.hasOwnProperty.call(COMMANDS, key) ? COMMANDS[key] : undefined;
   if (!commandFn)
     return {
       command: input,

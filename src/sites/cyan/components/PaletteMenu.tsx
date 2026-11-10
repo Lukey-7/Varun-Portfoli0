@@ -6,6 +6,7 @@ import {
   Copy,
   Download,
   FileText,
+  Gamepad2,
   Github,
   Keyboard,
   Linkedin,
@@ -14,9 +15,10 @@ import {
   Search,
   SquareTerminal,
 } from "lucide-react";
-import { selectedWork, type SelectedWork } from "@/data/portfolio";
+import type { SelectedWork } from "@/data/portfolio";
 import { profile } from "@/data/profile";
-import { ORDO_URL } from "@/lib/sites";
+import { ARCADE_URL, ORDO_URL, SPACE_GAME_URL } from "@/lib/sites";
+import { cyanWork } from "../copy";
 
 export interface PaletteActions {
   openProject: (project: SelectedWork) => void;
@@ -35,6 +37,12 @@ const sections = [
   ["Experience", "#experience"],
   ["About", "#about"],
   ["Contact", "#contact"],
+] as const;
+
+const pages = [
+  ["Project archive", "go project archive nexus", "/nexus"],
+  ["Skill map", "go skill map vault", "/vault"],
+  ["Experience log", "go experience log logs", "/logs"],
 ] as const;
 
 export default function PaletteMenu({
@@ -73,8 +81,16 @@ export default function PaletteMenu({
               </Command.Item>
             ))}
           </Command.Group>
+          <Command.Group heading="Pages">
+            {pages.map(([label, value, path]) => (
+              <Command.Item key={path} value={value} onSelect={() => run(() => actions.go(path))}>
+                <ArrowRight size={15} />
+                {label}
+              </Command.Item>
+            ))}
+          </Command.Group>
           <Command.Group heading="Case studies">
-            {selectedWork.map((project) => (
+            {cyanWork.map((project) => (
               <Command.Item
                 key={project.id}
                 value={`case ${project.name} ${project.category}`}
@@ -85,6 +101,16 @@ export default function PaletteMenu({
                 <span className="palette-hint mono">{project.category}</span>
               </Command.Item>
             ))}
+          </Command.Group>
+          <Command.Group heading="Play">
+            <Command.Item value="play tetris 89 arcade game" onSelect={() => run(() => window.location.assign(ARCADE_URL))}>
+              <Gamepad2 size={15} />
+              Play Tetris-89
+            </Command.Item>
+            <Command.Item value="play star vanguard space shooter game" onSelect={() => run(() => window.location.assign(SPACE_GAME_URL))}>
+              <Gamepad2 size={15} />
+              Play Star Vanguard
+            </Command.Item>
           </Command.Group>
           <Command.Group heading="Actions">
             <Command.Item value="copy email address" onSelect={() => run(actions.copyEmail)}>

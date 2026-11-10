@@ -50,7 +50,7 @@ const EVAL_SETS: Record<Evidence["project"], EvalSet> = {
     n: 33,
     baseline: "Dense only",
     measured: "Hybrid + MMR + LLM rerank",
-    note: "Written for the repo: a development check, not a held-out benchmark",
+    note: "The questions were written for this repo. Nothing was held out, so treat it as a development check.",
   },
   MARA: {
     set: "35 labelled queries over 317 chunks",
@@ -359,8 +359,9 @@ export function CyanResultsInstrument() {
           <span>with their scope.</span>
         </h2>
         <p>
-          Each change measured against a baseline on a labelled set. These
-          numbers describe those evaluations, not every document.
+          Each row is one metric, comparing a full retrieval stack with a
+          dense-only baseline on its labelled set. Both sets are small. These
+          numbers say nothing about documents outside them.
         </p>
       </div>
 

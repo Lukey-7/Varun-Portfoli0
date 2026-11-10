@@ -138,7 +138,7 @@ describe("cyan Results instrument", () => {
     expect(section).toHaveAttribute("id", "results");
     expect(
       screen.getByText(
-        "Each change measured against a baseline on a labelled set. These numbers describe those evaluations, not every document.",
+        "Each row is one metric, comparing a full retrieval stack with a dense-only baseline on its labelled set. Both sets are small. These numbers say nothing about documents outside them.",
       ),
     ).toBeInTheDocument();
     expect(screen.getByText("[PRECOMPUTED · EVAL RESULTS FILES]")).toBeInTheDocument();
@@ -208,7 +208,7 @@ describe("cyan Results instrument", () => {
     expect(studyforge).toHaveAttribute("data-open", "true");
     expect(
       within(detailsOf(studyforge)).getByText(
-        "Written for the repo: a development check, not a held-out benchmark",
+        "The questions were written for this repo. Nothing was held out, so treat it as a development check.",
       ),
     ).toBeInTheDocument();
     fireEvent.blur(studyforge);

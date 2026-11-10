@@ -81,7 +81,7 @@ export default function ParticleField({
     };
     const host = canvas.parentElement ?? canvas;
     const move = (event: PointerEvent) => {
-      if (event.pointerType !== "mouse") return;
+      if (event.pointerType !== "mouse" || media.matches) return;
       const box = canvas.getBoundingClientRect();
       pointer.x = event.clientX - box.left;
       pointer.y = event.clientY - box.top;

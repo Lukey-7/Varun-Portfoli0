@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from "react";
-import { Link, NavLink, useLocation, useOutlet } from "react-router-dom";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { Link, NavLink, useLocation, useNavigationType, useOutlet } from "react-router-dom";
 import {
   ArrowUpRight,
   Menu,
@@ -30,12 +30,49 @@ const NAV = [
   { label: "Play", to: "/play" },
 ];
 
-/** Scroll to the top on a new page, or to the #section a link points at. */
+const THEME_KEY = "ordo-theme";
+
+/** Light unless the visitor has explicitly chosen dark; the OS preference is not read. */
+function readTheme(): "dark" | "light" {
+  try {
+    return window.localStorage.getItem(THEME_KEY) === "dark" ? "dark" : "light";
+  } catch {
+    return "light";
+  }
+}
+
+/**
+ * Scroll to the top on a new page, back to the visitor's place on browser
+ * Back and Forward, or to the #section a link points at. A move to a new page
+ * also moves keyboard focus to it, because the link just used has gone.
+ */
 function useScrollOnNavigate() {
-  const { pathname, hash } = useLocation();
+  const { pathname, hash, key } = useLocation();
+  const navigationType = useNavigationType();
+  const saved = useRef(new Map<string, number>());
+  const previousPath = useRef(pathname);
+
   useEffect(() => {
+    window.history.scrollRestoration = "manual";
+  }, []);
+
+  // A layout effect, so this entry's listener is gone before a shorter new
+  // page clamps the scroll position and overwrites the place worth keeping.
+  useLayoutEffect(() => {
+    const remember = () => saved.current.set(key, window.scrollY);
+    window.addEventListener("scroll", remember, { passive: true });
+    return () => window.removeEventListener("scroll", remember);
+  }, [key]);
+
+  useEffect(() => {
+    const cameFrom = previousPath.current;
+    previousPath.current = pathname;
     if (!hash) {
-      window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
+      const top = navigationType === "POP" ? (saved.current.get(key) ?? 0) : 0;
+      window.scrollTo({ top, behavior: "instant" as ScrollBehavior });
+      if (navigationType !== "POP" && cameFrom !== pathname) {
+        document.getElementById("main")?.focus({ preventScroll: true });
+      }
       return;
     }
     // Wait a moment for the new page to render its section.
@@ -49,12 +86,12 @@ function useScrollOnNavigate() {
       }
     }, 50);
     return () => clearInterval(timer);
-  }, [pathname, hash]);
+  }, [pathname, hash, key, navigationType]);
 }
 
 /** Everything the monochrome site's pages share: header, contact, wordmark, footer. */
 export default function OrdoLayout() {
-  const [theme, setTheme] = useState<"dark" | "light">("light");
+  const [theme, setTheme] = useState<"dark" | "light">(readTheme);
   const [menuOpen, setMenuOpen] = useState(false);
   const menuToggle = useRef<HTMLButtonElement>(null);
   const reduced = useReducedMotion();
@@ -101,7 +138,12 @@ export default function OrdoLayout() {
           <nav className="desktop-links" aria-label="Main navigation">
             {NAV.map((item) =>
               item.to.startsWith("/#") ? (
-                <Link key={item.label} to={item.to}>
+                <Link
+                  key={item.label}
+                  to={item.to}
+                  className={location.pathname.startsWith("/work/") ? "active" : undefined}
+                  aria-current={location.pathname.startsWith("/work/") ? "page" : undefined}
+                >
                   {item.label}
                 </Link>
               ) : (
@@ -124,7 +166,15 @@ export default function OrdoLayout() {
             <button
               className="icon-button theme-toggle"
               aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
-              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+              onClick={() => {
+                const next = theme === "dark" ? "light" : "dark";
+                setTheme(next);
+                try {
+                  window.localStorage.setItem(THEME_KEY, next);
+                } catch {
+                  // Storage can be blocked; the choice then lasts for this visit.
+                }
+              }}
             >
               {theme === "dark" ? <Sun size={17} /> : <Moon size={17} />}
             </button>
@@ -152,7 +202,7 @@ export default function OrdoLayout() {
                   <ArrowUpRight size={18} aria-hidden="true" />
                 </a>
               ) : (
-                <Link key={item.label} to={item.to}>
+                <Link key={item.label} to={item.to} onClick={() => setMenuOpen(false)}>
                   {item.label}
                   <ArrowUpRight size={18} aria-hidden="true" />
                 </Link>
@@ -166,6 +216,7 @@ export default function OrdoLayout() {
           so a page change can never stall behind paused animation frames. */}
       <motion.main
         id="main"
+        tabIndex={-1}
         key={location.pathname}
         initial={reduced ? false : { opacity: 0, y: 18 }}
         animate={{ opacity: 1, y: 0 }}
