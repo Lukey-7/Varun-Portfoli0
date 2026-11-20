@@ -15,11 +15,47 @@
   border-top: 1px solid var(--line);
 }
 .writing-card {
+  position: relative;
   display: grid;
   gap: 10px;
-  padding: 28px 0;
+  padding: 28px 0 28px 64px;
   border-bottom: 1px solid var(--line);
   transition: background 0.25s;
+}
+/* The issue number hangs in the left margin, like a contents page. */
+.writing-card-index {
+  position: absolute;
+  top: 30px;
+  left: 0;
+  font-size: 10px !important;
+  letter-spacing: 0.04em;
+  color: var(--subtle);
+  transition: color 0.25s;
+}
+/* A hairline draws along the card's foot on hover or focus. */
+.writing-card-rule {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 1px;
+  background: var(--ink);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.writing-card:hover .writing-card-rule,
+.writing-card:focus-visible .writing-card-rule {
+  transform: scaleX(1);
+}
+.writing-card:hover .writing-card-index {
+  color: var(--ink);
+}
+.writing-card-action svg {
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.writing-card:hover .writing-card-action svg {
+  transform: translate(3px, -3px);
 }
 .writing-card > .mono {
   font-size: 10px;
@@ -53,11 +89,73 @@
   text-underline-offset: 6px;
 }
 
-/* The post: one readable column, figures may run wider. */
+/* The post: one readable column, with its contents in the margin on wide screens. */
+.writing-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 760px);
+  justify-content: center;
+  padding-block: 50px 90px;
+}
 .writing-body {
+  min-width: 0;
+  width: 100%;
   max-width: 760px;
   margin-inline: auto;
-  padding-block: 50px 90px;
+}
+.writing-body > p,
+.writing-body > ul li {
+  text-wrap: pretty;
+}
+.writing-body > p.writing-lede {
+  font-size: 19px;
+  line-height: 1.7;
+  letter-spacing: -0.01em;
+}
+.writing-body > h2,
+.writing-sources h2 {
+  scroll-margin-top: 110px;
+}
+.writing-body > h2:focus,
+.writing-sources h2:focus {
+  outline: none;
+}
+.writing-h2-index {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 10px !important;
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  color: var(--subtle);
+}
+@media (min-width: 1200px) {
+  .writing-layout {
+    grid-template-columns: 190px minmax(0, 760px) 190px;
+    gap: 0 56px;
+  }
+  .writing-layout > .writing-body {
+    margin-inline: 0;
+  }
+  /* The index sits in the margin, level with its heading's first line. */
+  .writing-body > h2 {
+    position: relative;
+  }
+  .writing-h2-index {
+    position: absolute;
+    top: 8px;
+    right: calc(100% + 18px);
+    margin: 0;
+  }
+}
+
+/* The crumb back to the list, inside the bracket label. */
+.writing-crumb {
+  text-decoration: underline;
+  text-decoration-color: var(--line);
+  text-underline-offset: 3px;
+  transition: text-decoration-color 0.2s;
+}
+.writing-crumb:hover {
+  text-decoration-color: var(--ink);
 }
 .writing-body > p,
 .writing-body > ul li {
@@ -212,8 +310,14 @@
 }
 
 @media (max-width: 767px) {
-  .writing-body {
+  .writing-layout {
     padding-block: 34px 60px;
+  }
+  .writing-card {
+    padding-left: 40px;
+  }
+  .writing-body > p.writing-lede {
+    font-size: 17px;
   }
   .writing-body > p,
   .writing-body > ul li {

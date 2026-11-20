@@ -32,6 +32,7 @@ export default function Sculpture({
   bare = false,
   shape,
   detail,
+  scrollSpin = 0,
 }: {
   dark?: boolean;
   /** Motion applied to the canvas only, so the controls stay put. */
@@ -44,6 +45,8 @@ export default function Sculpture({
   shape?: number;
   /** Rings around the surface; lower is cheaper. */
   detail?: number;
+  /** Extra turn, in radians per screen height scrolled, so the form rotates with the page. */
+  scrollSpin?: number;
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const formRef = useRef(0);
@@ -68,12 +71,16 @@ export default function Sculpture({
   const paused = useMotionPaused();
   const pausedRef = useRef(paused);
   const [reduced, setReduced] = useState(false);
+  // Restarts the render loop, which stops itself whenever there is nothing to draw.
+  const wakeRef = useRef<() => void>(() => {});
 
   useEffect(() => {
     formRef.current = form;
+    wakeRef.current();
   }, [form]);
   useEffect(() => {
     pausedRef.current = paused;
+    wakeRef.current();
   }, [paused]);
   useEffect(() => {
     if (!autoCycle || picked || paused || reduced) return;
@@ -87,9 +94,6 @@ export default function Sculpture({
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
     const media = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const syncReduced = () => setReduced(media.matches);
-    syncReduced();
-    media.addEventListener("change", syncReduced);
     let width = 0,
       height = 0,
       frame = 0,
@@ -144,13 +148,44 @@ export default function Sculpture({
       canvas.height = height * ratio;
       ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
       dirty = true;
+      wake();
     };
+    // The loop runs only while there is something to draw: it stops offscreen,
+    // in a hidden tab and once a paused or reduced-motion form has settled.
+    let ready = false;
+    const wake = () => {
+      if (ready && !frame && visible && !document.hidden) frame = requestAnimationFrame(draw);
+    };
+    wakeRef.current = wake;
+    const syncReduced = () => {
+      setReduced(media.matches);
+      dirty = true;
+      wake();
+    };
+    syncReduced();
+    media.addEventListener("change", syncReduced);
     const observer = new ResizeObserver(resize);
     observer.observe(canvas);
     const intersection = new IntersectionObserver((entries) => {
       visible = entries[0].isIntersecting;
+      wake();
     });
     intersection.observe(canvas);
+    const onVisibility = () => wake();
+    document.addEventListener("visibilitychange", onVisibility);
+    // Scrolling turns the form a little, when the page asks for it.
+    let scrollYaw = 0,
+      scrollTarget = 0;
+    const onScroll = () => {
+      if (media.matches) return;
+      scrollTarget = (window.scrollY / Math.max(1, window.innerHeight)) * scrollSpin;
+      wake();
+    };
+    if (scrollSpin) {
+      onScroll();
+      scrollYaw = scrollTarget;
+      window.addEventListener("scroll", onScroll, { passive: true });
+    }
 
     // The shape leans toward the mouse anywhere on the page, not only over the canvas.
     const pointer = pointerRef.current;
@@ -163,11 +198,13 @@ export default function Sculpture({
       pointer.y = clamp((pointer.py / bounds.height - 0.5) * 2, -1.5, 1.5);
       pointer.inside =
         pointer.px >= 0 && pointer.px <= bounds.width && pointer.py >= 0 && pointer.py <= bounds.height;
+      wake();
     };
     const onMouseOut = (event: PointerEvent) => {
       if (event.relatedTarget) return;
       pointer.x = pointer.y = 0;
       pointer.inside = false;
+      wake();
     };
     window.addEventListener("pointermove", onMouseMove, { passive: true });
     document.addEventListener("pointerout", onMouseOut);
@@ -208,8 +245,9 @@ export default function Sculpture({
       fit = 0,
       fitting = true;
     const draw = (time = 0) => {
-      frame = requestAnimationFrame(draw);
+      frame = 0;
       if (!visible || document.hidden) return;
+      frame = requestAnimationFrame(draw);
       // Cache geometry and render at 30fps; settled, paused frames do no drawing.
       if (time - lastTime < 32) return;
       const dt = Math.min(time - lastTime, 50);
@@ -237,6 +275,7 @@ export default function Sculpture({
         } else spin.velocity = 0;
         if (!still) spin.pitch *= 0.96;
       }
+      scrollYaw += (scrollTarget - scrollYaw) * (still ? 1 : 0.12);
       const settling =
         pointer.dragging ||
         fitting ||
@@ -244,8 +283,14 @@ export default function Sculpture({
         Math.abs(spin.pitch) > 0.002 ||
         Math.abs(targetTiltX - tiltX) > 0.002 ||
         Math.abs(targetTiltY - tiltY) > 0.002 ||
-        Math.abs(targetBulge - bulge) > 0.01;
-      if (!animating && !morphing && !dirty && !settling) return;
+        Math.abs(targetBulge - bulge) > 0.01 ||
+        Math.abs(scrollTarget - scrollYaw) > 0.002;
+      if (!animating && !morphing && !dirty && !settling) {
+        // Nothing moves: sleep until an event wakes the loop.
+        cancelAnimationFrame(frame);
+        frame = 0;
+        return;
+      }
       if (animating) {
         angle += dt * 0.00022;
         phase += dt * 0.0016;
@@ -265,7 +310,7 @@ export default function Sculpture({
       }
       dirty = false;
       const ax = 0.36 + tiltX * 0.3 + spin.pitch;
-      const ay = angle + spin.yaw + tiltY * 0.55;
+      const ay = angle + spin.yaw + tiltY * 0.55 + scrollYaw;
       const cosX = Math.cos(ax),
         sinX = Math.sin(ax),
         cosY = Math.cos(ay),
@@ -378,16 +423,21 @@ export default function Sculpture({
       }
     };
     resize();
-    draw();
+    ready = true;
+    wake();
     return () => {
       cancelAnimationFrame(frame);
+      frame = 0;
+      wakeRef.current = () => {};
       observer.disconnect();
       intersection.disconnect();
       window.removeEventListener("pointermove", onMouseMove);
+      window.removeEventListener("scroll", onScroll);
       document.removeEventListener("pointerout", onMouseOut);
+      document.removeEventListener("visibilitychange", onVisibility);
       media.removeEventListener("change", syncReduced);
     };
-  }, [dark, detail, interactive]);
+  }, [dark, detail, interactive, scrollSpin]);
 
   const nextForm = () => {
     if (shape !== undefined) return;
@@ -418,6 +468,7 @@ export default function Sculpture({
             lastY: event.clientY,
           });
           spinRef.current.velocity = 0;
+          wakeRef.current();
         }}
         onPointerMove={(event) => {
           const pointer = pointerRef.current;
@@ -431,6 +482,7 @@ export default function Sculpture({
           spin.yaw += dx * 0.01;
           spin.pitch = clamp(spin.pitch + dy * 0.006, -0.9, 0.9);
           spin.velocity = dx * 0.01;
+          wakeRef.current();
         }}
         onPointerUp={() => {
           const pointer = pointerRef.current;
@@ -440,10 +492,12 @@ export default function Sculpture({
             spinRef.current.velocity = 0;
             nextForm();
           }
+          wakeRef.current();
         }}
         onPointerCancel={() => {
           pointerRef.current.dragging = false;
           spinRef.current.velocity = 0;
+          wakeRef.current();
         }}
       />
       {!bare && (

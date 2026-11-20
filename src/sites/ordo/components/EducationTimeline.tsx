@@ -26,6 +26,7 @@ export function EducationTimeline() {
         {stops.map((item, index) => (
           <motion.li
             key={item.id}
+            id={`spot-edu-${item.id}`}
             initial={reduced ? false : { opacity: 0, x: -12 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, amount: 0.6 }}

@@ -1,22 +1,25 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
-import { ArrowDown, ArrowLeft, ArrowRight, ArrowUpRight } from "lucide-react";
+import { ArrowDown, ArrowUpRight, Github } from "lucide-react";
 import { findProject, ordoProjects } from "../projects";
 import { projectShowcase } from "../projectShowcase";
-import ProjectArt from "../components/ProjectArt";
 import { ProjectGallery } from "../components/ProjectShowcase";
 import { hasDemo, ProjectDemo } from "../demos/ProjectDemo";
 import { posts } from "../writing";
+import CountUp from "../work/CountUp";
+import HeroFigure from "../work/HeroFigure";
+import NextProject from "../work/NextProject";
+import SectionRail, { type RailSection } from "../work/SectionRail";
+import { pad } from "../work/hooks";
+import "../work/work.css";
 import NotFoundPage from "./NotFoundPage";
 
 /** One project's case study: animated icon, gallery, verified detail, next and previous. */
 export default function ProjectPage() {
   const { slug } = useParams();
   const project = findProject(slug);
-  const [shot, setShot] = useState(0);
 
   useEffect(() => {
-    setShot(0);
     if (project) document.title = `${project.study.name} | Varun Darji`;
   }, [project]);
 
@@ -26,7 +29,8 @@ export default function ProjectPage() {
   const showcase = projectShowcase[project.showcaseId];
   const index = ordoProjects.indexOf(project);
   const previous = ordoProjects[(index - 1 + ordoProjects.length) % ordoProjects.length];
-  const next = ordoProjects[(index + 1) % ordoProjects.length];
+  const nextIndex = (index + 1) % ordoProjects.length;
+  const next = ordoProjects[nextIndex];
   const idea = [
     ["The problem", study.problem],
     ["What I built", study.approach ?? showcase?.idea],
@@ -39,15 +43,25 @@ export default function ProjectPage() {
   const writeUp = posts.find((post) => post.project === project.slug);
   const links =
     showcase?.links ?? (study.github ? [{ label: "View on GitHub", href: study.github }] : []);
+  const repo = links.find((link) => link.href.includes("github.com"));
+  const demo = hasDemo(project.showcaseId);
+  const media = showcase?.media ?? [];
+
+  const sections: RailSection[] = [
+    media.length ? { id: "screens", label: "Screens" } : null,
+    idea.length ? { id: "idea", label: "Idea" } : null,
+    demo ? { id: "try-it", label: "Demo" } : null,
+    { id: "details", label: "Details" },
+  ].filter((section): section is RailSection => section !== null);
+  const step = (id: string) => pad(sections.findIndex((section) => section.id === id) + 1);
 
   return (
-    <article className="project-page">
+    <article className="project-page work-page">
       <header className="project-hero section-wrap">
         <div className="ordo-section-label">
           <span>[ WORK / {study.name.toUpperCase()} ]</span>
           <span>
-            PROJECT {String(index + 1).padStart(2, "0")} /{" "}
-            {String(ordoProjects.length).padStart(2, "0")}
+            PROJECT {pad(index + 1)} / {pad(ordoProjects.length)}
           </span>
         </div>
         <div className="project-hero-grid">
@@ -59,55 +73,63 @@ export default function ProjectPage() {
               <div className="project-facts">
                 {facts.map(([value, label]) => (
                   <div key={label}>
-                    <strong>{value}</strong>
+                    <strong>
+                      <CountUp value={value} />
+                    </strong>
                     <span>{label}</span>
                   </div>
                 ))}
               </div>
             )}
             <div className="project-actions">
-              {hasDemo(project.showcaseId) && (
+              {demo && (
                 <a href="#try-it" className="primary-button">
                   {showcase?.play ? "Play it here" : "Try the demo"} <ArrowDown size={16} aria-hidden="true" />
                 </a>
               )}
+              {links.map((link) => {
+                const isRepo = link === repo;
+                return (
+                  <a
+                    key={link.href}
+                    className={demo ? (isRepo ? "work-repo-button" : "text-button") : "primary-button"}
+                    href={link.href}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    {isRepo && <Github size={16} aria-hidden="true" />}
+                    {link.label} <ArrowUpRight size={16} aria-hidden="true" />
+                  </a>
+                );
+              })}
               {writeUp && (
                 <Link to={`/writing/${writeUp.slug}`} className="text-button">
                   Read the write-up <ArrowUpRight size={16} aria-hidden="true" />
                 </Link>
               )}
-              {links.map((link) => (
-                <a
-                  key={link.href}
-                  className={hasDemo(project.showcaseId) ? "text-button" : "primary-button"}
-                  href={link.href}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  {link.label} <ArrowUpRight size={16} aria-hidden="true" />
-                </a>
-              ))}
             </div>
           </div>
-          <div
-            className={`project-hero-art ordo-card-art${art.type === "visual" ? "" : " ordo-personal-art"}`}
-            aria-hidden="true"
-          >
-            <ProjectArt art={art} />
-          </div>
+          <HeroFigure art={art} name={study.name} number={index + 1} />
         </div>
       </header>
 
-      {showcase?.media.length ? (
-        <section className="project-gallery section-wrap" aria-label="Screenshots">
-          <ProjectGallery media={showcase.media} index={shot} onIndex={setShot} />
-          {showcase.note && <p className="showcase-note mono">{showcase.note}</p>}
+      <SectionRail name={study.name} sections={sections} repo={repo} />
+
+      {media.length ? (
+        <section id="screens" tabIndex={-1} className="project-gallery work-section section-wrap" aria-label="Screenshots">
+          <div className="work-section-head">
+            <span className="mono project-step">{step("screens")} / Screens</span>
+            <span className="mono project-step">
+              {pad(media.length)} {media.length === 1 ? "image" : "images"}
+            </span>
+          </div>
+          <ProjectGallery name={study.name} media={media} note={showcase?.note} />
         </section>
       ) : null}
 
       {idea.length > 0 && (
-        <section className="project-idea section-wrap">
-          <span className="mono project-step">01 / The idea</span>
+        <section id="idea" tabIndex={-1} className="project-idea work-section section-wrap">
+          <span className="mono project-step">{step("idea")} / The idea</span>
           {idea.map(([heading, text]) => (
             <div key={heading}>
               <h2>{heading}</h2>
@@ -117,9 +139,9 @@ export default function ProjectPage() {
         </section>
       )}
 
-      {hasDemo(project.showcaseId) && (
-        <section id="try-it" className="project-demo section-wrap">
-          <span className="mono project-step">02 / Try it</span>
+      {demo && (
+        <section id="try-it" tabIndex={-1} className="project-demo work-section section-wrap">
+          <span className="mono project-step">{step("try-it")} / Try it</span>
           <ProjectDemo id={project.showcaseId} />
           {showcase?.play && (
             <Link to="/play" className="section-link">
@@ -129,7 +151,8 @@ export default function ProjectPage() {
         </section>
       )}
 
-      <section className="project-body section-wrap">
+      <section id="details" tabIndex={-1} className="project-body work-section section-wrap">
+        <span className="mono project-step work-body-step">{step("details")} / Details</span>
         {showcase?.highlights.length ? (
           <div className="project-highlights">
             <h2>In numbers and decisions</h2>
@@ -147,29 +170,23 @@ export default function ProjectPage() {
               <p>{text}</p>
             </section>
           ))}
-          {!showcase?.media.length && showcase?.note && (
-            <p className="showcase-note mono">{showcase.note}</p>
+          {!media.length && showcase?.note && <p className="showcase-note mono">{showcase.note}</p>}
+          {repo && (
+            <a className="work-source" href={repo.href} target="_blank" rel="noreferrer">
+              <span className="mono">Source code</span>
+              <strong>
+                <Github size={18} aria-hidden="true" />
+                {repo.href.replace(/^https:\/\/(www\.)?/, "")}
+              </strong>
+              <span className="work-source-cta">
+                {repo.label} <ArrowUpRight size={15} aria-hidden="true" />
+              </span>
+            </a>
           )}
         </div>
       </section>
 
-      <nav className="project-pager section-wrap" aria-label="More projects">
-        <Link to={`/work/${previous.slug}`} className="pager-link">
-          <span className="mono">
-            <ArrowLeft size={13} aria-hidden="true" /> Previous project
-          </span>
-          <strong>{previous.study.name}</strong>
-        </Link>
-        <Link to="/#work" className="pager-all mono">
-          All projects
-        </Link>
-        <Link to={`/work/${next.slug}`} className="pager-link is-next">
-          <span className="mono">
-            Next project <ArrowRight size={13} aria-hidden="true" />
-          </span>
-          <strong>{next.study.name}</strong>
-        </Link>
-      </nav>
+      <NextProject previous={previous} next={next} nextNumber={nextIndex + 1} total={ordoProjects.length} />
     </article>
   );
 }

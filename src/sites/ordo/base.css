@@ -72,6 +72,14 @@ html[data-portfolio-theme] {
   --button-ink: #171a13;
   --art-line: #6b765f;
 }
+/* The canvas behind the app (overscroll on phones, the frame before React paints)
+   follows ORDO's theme instead of the shared stylesheet's near-black body. */
+html[data-portfolio-edition="ordo"][data-portfolio-theme="light"] body {
+  background: #fafaf8;
+}
+html[data-portfolio-edition="ordo"][data-portfolio-theme="dark"] body {
+  background: #141512;
+}
 .portfolio * {
   box-sizing: border-box;
 }

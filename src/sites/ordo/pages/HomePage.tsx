@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { Link, useNavigate, useOutletContext } from "react-router-dom";
 import { ArrowUpRight } from "lucide-react";
 import type { OrdoContext } from "../OrdoLayout";
@@ -9,18 +9,23 @@ import { OrdoActivity } from "../components/OrdoActivity";
 import { OrdoShowcase, OrdoWork } from "../components/OrdoSections";
 import { OrdoProcess } from "../components/OrdoProcess";
 import { OrdoCapabilities, OrdoConsole, OrdoResearch } from "../components/OrdoExtras";
+import { useHomeMotion } from "../home/useHomeMotion";
 import { JourneyTeaser } from "./JourneyPage";
+import "../home/home.css";
 
 /** The landing page: every signature animation, in the order of the reference film. */
 export default function HomePage() {
   const { theme } = useOutletContext<OrdoContext>();
   const navigate = useNavigate();
+  const rootRef = useRef<HTMLDivElement>(null);
+  useHomeMotion(rootRef);
   useEffect(() => {
     document.title = "Varun Darji | AI Engineer";
   }, []);
 
   return (
-    <>
+    // Home-only styles and entrances are scoped to this wrapper.
+    <div className="ordo-home" ref={rootRef}>
       <OrdoHero theme={theme} />
       <OrdoPaths />
       {/* Client roles live on the About page, so those cards go there. */}
@@ -52,6 +57,6 @@ export default function HomePage() {
           </div>
         </div>
       </section>
-    </>
+    </div>
   );
 }

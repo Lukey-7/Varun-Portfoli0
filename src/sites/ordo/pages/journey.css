@@ -77,8 +77,95 @@
 }
 .journey-filters button[aria-pressed="true"] {
   border-color: var(--ink);
-  background: var(--ink);
   color: var(--page);
+}
+/* The inked block slides from the old filter to the new one. */
+.journey-filters button {
+  position: relative;
+  isolation: isolate;
+}
+.journey-filter-pill {
+  position: absolute;
+  inset: -1px;
+  z-index: -1;
+  background: var(--ink);
+}
+.journey-filter-text {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Filters and year markers stay to hand while the log scrolls. */
+.journey-toolbar {
+  position: sticky;
+  top: var(--ct-header, 64px);
+  z-index: 5;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px 24px;
+  margin-inline: -12px;
+  padding: 10px 12px;
+  background: var(--page);
+  border-bottom: 1px solid var(--line);
+}
+.journey-years {
+  display: flex;
+  gap: 2px;
+}
+.journey-years button {
+  position: relative;
+  min-height: 40px;
+  padding: 0 10px;
+  border: 0;
+  background: transparent;
+  color: var(--subtle);
+  font-size: 11px !important;
+  letter-spacing: 0.02em;
+  transition: color 0.2s;
+}
+.journey-years button::after {
+  content: "";
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  bottom: 8px;
+  height: 1px;
+  background: var(--ink);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.journey-years button:hover,
+.journey-years button[aria-current] {
+  color: var(--ink);
+}
+.journey-years button[aria-current]::after {
+  transform: scaleX(1);
+}
+.journey-years-list {
+  position: relative;
+}
+.journey-year-count {
+  display: block;
+  margin-top: 10px;
+  font-size: 9px !important;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--subtle);
+}
+/* The inked rail draws down over the grey one as the year scrolls past. */
+.journey-rail-ink {
+  position: absolute;
+  top: 26px;
+  bottom: 26px;
+  left: 108px;
+  width: 1px;
+  background: var(--ink);
+  transform-origin: top;
+  pointer-events: none;
 }
 .journey-count {
   margin-top: 14px !important;
@@ -97,7 +184,7 @@
 }
 .journey-year-label {
   position: sticky;
-  top: 110px;
+  top: calc(var(--ct-header, 64px) + 84px);
   align-self: start;
   font-family: "IBM Plex Mono", monospace;
   font-size: 54px;
@@ -264,8 +351,22 @@
     position: static;
     font-size: 36px;
   }
-  .journey-year ol::before {
+  .journey-year ol::before,
+  .journey-rail-ink {
     left: 4px;
+  }
+  /* On a phone the filters wrap to several rows; they scroll away with the page. */
+  .journey-toolbar {
+    position: static;
+    margin-inline: 0;
+    padding-inline: 0;
+  }
+  .journey-years {
+    display: none;
+  }
+  .journey-year-count {
+    display: inline;
+    margin: 0 0 0 12px;
   }
   .journey-entry {
     grid-template-columns: 26px 1fr;

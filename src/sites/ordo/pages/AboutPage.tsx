@@ -1,17 +1,28 @@
 import { useEffect } from "react";
 import { useLocation, useOutletContext } from "react-router-dom";
 import { ArrowUpRight, Download } from "lucide-react";
+import { useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { profile } from "@/data/profile";
 import type { OrdoContext } from "../OrdoLayout";
 import { content } from "../content";
 import { spotlight } from "../spotlight";
 import Sculpture from "../components/Sculpture";
-import { AboutDetails, OrdoExperience } from "../components/OrdoBlocks";
+import { OrdoExperience } from "../components/OrdoBlocks";
+import { EducationTimeline } from "../components/EducationTimeline";
+import { CareerRail } from "../content/CareerRail";
+import { MaskTitle } from "../content/MaskTitle";
+import { ToolboxExplorer } from "../content/ToolboxExplorer";
+import "../content/content.css";
 
 /** Experience, education and toolbox: the CV-style detail, off the landing page. */
 export default function AboutPage() {
   const { theme } = useOutletContext<OrdoContext>();
   const { hash } = useLocation();
+  const reduced = useReducedMotion();
+  // The sphere drifts down and settles back a touch as the hero scrolls away.
+  const { scrollY } = useScroll();
+  const drift = useTransform(scrollY, [0, 700], [0, 70]);
+  const fade = useTransform(scrollY, [0, 700], [1, 0.55]);
   useEffect(() => {
     document.title = "About | Varun Darji";
   }, []);
@@ -22,6 +33,7 @@ export default function AboutPage() {
     return () => window.clearTimeout(timer);
   }, [hash]);
 
+  // The layout settles the hero in on arrival; only the title's lines get their own reveal.
   return (
     <article className="about-page">
       <header className="page-hero section-wrap">
@@ -32,11 +44,7 @@ export default function AboutPage() {
         <div className="page-hero-grid">
           <div className="page-hero-copy">
             <span className="mono project-category">{content.about.label}</span>
-            <h1>
-              {content.about.title[0]}
-              <br />
-              <span>{content.about.title[1]}</span>
-            </h1>
+            <MaskTitle lines={content.about.title} delay={0.08} />
             {content.about.body.map((paragraph) => (
               <p className="project-lede" key={paragraph}>
                 {paragraph}
@@ -52,15 +60,26 @@ export default function AboutPage() {
             </div>
           </div>
           <div className="page-hero-art is-calm" aria-hidden="true">
-            <Sculpture dark={theme === "dark"} bare shape={1} />
+            <Sculpture
+              dark={theme === "dark"}
+              bare
+              shape={1}
+              scrollSpin={1.1}
+              canvasStyle={reduced ? undefined : { y: drift, opacity: fade }}
+            />
           </div>
         </div>
       </header>
 
+      <CareerRail />
+
       <OrdoExperience />
 
       <section className="about-section section-wrap">
-        <AboutDetails />
+        <div className="about-details">
+          <ToolboxExplorer />
+          <EducationTimeline />
+        </div>
       </section>
     </article>
   );

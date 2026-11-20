@@ -1,0 +1,660 @@
+/* Content pages (about, journey, writing, research, play, 404): the motion and
+   interaction layer on top of ordo.css. Every class here starts with .ct- or
+   is scoped under one of those pages. */
+
+/* ---------- Mask title: two lines rise out of a hairline ---------- */
+.ct-mask {
+  display: inline-block;
+  max-width: 100%;
+  overflow: hidden;
+  /* Room for descenders inside the mask, given back to the line box. */
+  padding-bottom: 0.1em;
+  margin-bottom: -0.1em;
+  vertical-align: bottom;
+}
+.ct-mask-inner {
+  display: inline-block;
+  max-width: 100%;
+}
+/* The first line keeps the ink colour that .page-hero h1 > span would mute. */
+.ordo-edition h1 > .ct-mask.ct-lead,
+.ordo-edition h2 > .ct-mask.ct-lead {
+  color: var(--ink);
+}
+
+/* ---------- Reading progress: a hairline under the sticky header ---------- */
+.ct-progress {
+  position: fixed;
+  left: 0;
+  right: 0;
+  z-index: 9;
+  height: 2px;
+  pointer-events: none;
+}
+.ct-progress > span {
+  display: block;
+  height: 100%;
+  background: var(--ink);
+  transform-origin: left;
+  transform: scaleX(0);
+}
+
+/* ---------- Article contents with scroll-spy ---------- */
+.ct-toc a {
+  display: grid;
+  grid-template-columns: 26px 1fr;
+  gap: 4px;
+  padding: 7px 0 7px 12px;
+  border-left: 1px solid var(--line);
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--muted);
+  transition: color 0.25s, border-color 0.25s;
+}
+.ct-toc a .mono {
+  font-size: 10px;
+  padding-top: 1px;
+  color: var(--subtle);
+}
+.ct-toc a:hover {
+  color: var(--ink);
+}
+.ct-toc li.is-read a {
+  border-left-color: color-mix(in srgb, var(--ink) 40%, transparent);
+}
+.ct-toc li.is-active a {
+  border-left: 1px solid var(--ink);
+  box-shadow: inset 1px 0 0 var(--ink);
+  color: var(--ink);
+}
+.ct-toc ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.ct-toc-label {
+  display: block;
+  margin-bottom: 12px;
+  font-size: 9px !important;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.ct-toc-wide {
+  display: none;
+}
+.ct-toc-narrow {
+  margin-bottom: 26px;
+  border: 1px solid var(--line);
+}
+.ct-toc-narrow summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+  padding: 0 14px;
+  font-size: 10px !important;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  cursor: pointer;
+  list-style: none;
+}
+.ct-toc-narrow summary::-webkit-details-marker {
+  display: none;
+}
+.ct-toc-narrow summary > span:last-child {
+  color: var(--muted);
+}
+.ct-toc-narrow summary > span:last-child::after {
+  content: " +";
+}
+.ct-toc-narrow[open] summary > span:last-child::after {
+  content: " −";
+}
+.ct-toc-narrow ol {
+  padding: 0 14px 12px;
+}
+@media (min-width: 1200px) {
+  .ct-toc-wide {
+    display: block;
+    position: sticky;
+    top: 110px;
+    padding-top: 6px;
+  }
+  .ct-toc-narrow {
+    display: none;
+  }
+}
+
+.ct-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ================= About: the career rail ================= */
+.ct-rail {
+  padding-block: 64px 10px;
+}
+.ct-rail-chart {
+  position: relative;
+  margin-top: 30px;
+  padding-left: 72px;
+}
+.ct-rail-years {
+  position: relative;
+  height: 30px;
+  border-bottom: 1px solid var(--ink);
+}
+.ct-rail-years > span {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  padding: 0 0 0 8px;
+  border-left: 1px solid var(--line);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  color: var(--subtle);
+}
+.ct-rail-lanes {
+  position: relative;
+}
+.ct-rail-lane {
+  position: relative;
+  height: 58px;
+  border-bottom: 1px solid var(--line);
+}
+.ct-rail-lane-label {
+  position: absolute;
+  top: 50%;
+  left: -72px;
+  transform: translateY(-50%);
+  font-size: 9px !important;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.ct-rail-track {
+  position: absolute;
+  inset: 0;
+}
+.ordo-edition .ct-rail-bar {
+  position: absolute;
+  top: 14px;
+  bottom: 14px;
+  display: flex;
+  align-items: center;
+  min-width: 10px;
+  padding: 0 10px;
+  overflow: hidden;
+  border: 1px solid var(--ink);
+  background: var(--page);
+  color: var(--ink);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  letter-spacing: 0.02em;
+  text-align: left;
+  white-space: nowrap;
+  transform-origin: left;
+  transition: background-color 0.25s, color 0.25s;
+}
+.ct-rail-bar > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ct-rail-lane[data-lane="study"] .ct-rail-bar {
+  border-style: dashed;
+  background-image: repeating-linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--ink) 10%, transparent) 0 1px,
+    transparent 1px 5px
+  );
+}
+.ct-rail-bar:hover,
+.ct-rail-bar[aria-pressed="true"],
+.ct-rail-lane[data-lane="study"] .ct-rail-bar:hover,
+.ct-rail-lane[data-lane="study"] .ct-rail-bar[aria-pressed="true"] {
+  background: var(--ink);
+  color: var(--page);
+}
+.ct-rail-bar.is-current {
+  border-right-style: dashed;
+}
+.ct-rail-now {
+  position: absolute;
+  top: -30px;
+  bottom: 0;
+  width: 0;
+  border-left: 1px dashed var(--ink);
+  pointer-events: none;
+}
+.ct-rail-now > span {
+  position: absolute;
+  top: 2px;
+  right: 6px;
+  font-size: 9px !important;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.ct-rail-now::before {
+  content: "";
+  position: absolute;
+  bottom: -4px;
+  left: -4px;
+  width: 7px;
+  height: 7px;
+  background: var(--ink);
+  animation: ct-now-pulse 2.4s ease-in-out infinite;
+}
+@keyframes ct-now-pulse {
+  50% {
+    box-shadow: 0 0 0 6px color-mix(in srgb, var(--ink) 10%, transparent);
+  }
+}
+.ct-rail-readout {
+  display: grid;
+  grid-template-columns: 170px minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: 4px 24px;
+  min-height: 64px;
+  margin-top: 18px;
+  padding: 14px 0 18px;
+}
+.ct-rail-when {
+  font-size: 11px !important;
+  color: var(--muted);
+}
+.ct-rail-readout strong {
+  font-size: 18px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+.ct-rail-place {
+  grid-column: 2;
+  font-size: 13px;
+  color: var(--muted);
+}
+.ct-rail-hint {
+  grid-column: 3;
+  grid-row: 1;
+  font-size: 9px !important;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--subtle);
+}
+@media (max-width: 767px) {
+  .ct-rail {
+    padding-block: 44px 0;
+  }
+  .ct-rail-chart {
+    padding-left: 0;
+    margin-top: 24px;
+  }
+  .ct-rail-lane {
+    height: 64px;
+  }
+  .ct-rail-lane-label {
+    top: 6px;
+    left: 0;
+    transform: none;
+  }
+  .ordo-edition .ct-rail-bar {
+    top: 24px;
+    bottom: 10px;
+    padding: 0 6px;
+    font-size: 9px;
+  }
+  .ct-rail-readout {
+    grid-template-columns: minmax(0, 1fr);
+    min-height: 118px;
+  }
+  .ct-rail-place,
+  .ct-rail-hint {
+    grid-column: 1;
+    grid-row: auto;
+  }
+}
+
+/* ================= About: the toolbox to explore ================= */
+.ct-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.ordo-edition .ct-chip {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 3px;
+  min-height: 32px;
+  padding: 6px 10px;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--ink);
+  font-size: 12px;
+  line-height: 1.5;
+  transition: border-color 0.2s, background-color 0.2s, color 0.2s;
+}
+button.ct-chip:hover {
+  border-color: var(--ink);
+}
+button.ct-chip[aria-pressed="true"] {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--page);
+}
+.ct-chip sup {
+  font-size: 8px !important;
+  line-height: 1;
+  color: inherit;
+  opacity: 0.7;
+}
+.ct-chip.is-plain {
+  border-style: dashed;
+  color: var(--muted);
+}
+.ct-tool-places {
+  min-height: 168px;
+  margin-top: 18px;
+  padding: 14px 16px;
+  border: 1px dashed var(--line);
+}
+.ct-tool-head {
+  display: block;
+  font-size: 10px !important;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+.ct-tool-places ul {
+  display: grid;
+  gap: 2px;
+  margin: 10px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.ct-tool-places li {
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1fr);
+  align-items: baseline;
+  gap: 10px;
+  padding: 6px 0;
+  border-top: 1px solid var(--line);
+}
+.ct-tool-places li > .mono {
+  font-size: 9px !important;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--subtle);
+}
+.ct-tool-places li a,
+.ordo-edition .ct-tool-places li button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  justify-self: start;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ink);
+  font-size: 13px;
+  text-align: left;
+  text-decoration: underline;
+  text-decoration-color: var(--line);
+  text-underline-offset: 4px;
+  transition: text-decoration-color 0.2s;
+}
+.ct-tool-places li a:hover,
+.ct-tool-places li button:hover {
+  text-decoration-color: var(--ink);
+}
+
+/* ================= Research ================= */
+.ct-log-ink {
+  position: absolute;
+  top: 26px;
+  bottom: 26px;
+  left: 108px;
+  width: 1px;
+  background: var(--ink);
+  transform-origin: top;
+  pointer-events: none;
+}
+@media (max-width: 767px) {
+  .ct-log-ink {
+    left: 4px;
+  }
+}
+.research-labs-intro {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
+}
+.research-labs-intro > .mono {
+  font-size: 10px !important;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.research-labs-intro > .ct-live-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 3px 8px;
+  border: 1px solid var(--ink);
+  color: var(--ink);
+}
+.ct-live-tag i {
+  width: 6px;
+  height: 6px;
+  background: var(--ink);
+  animation: ct-live 1.6s ease-in-out infinite;
+}
+@keyframes ct-live {
+  50% {
+    opacity: 0.25;
+  }
+}
+.research-labs-intro > .ct-illustration-tag {
+  padding: 3px 8px;
+  border: 1px dashed var(--muted);
+  color: var(--ink);
+}
+/* The selected tab's inked block slides between the two studies. */
+.research-labs [role="tab"] {
+  position: relative;
+  isolation: isolate;
+}
+.research-labs [role="tab"][aria-selected="true"] {
+  background: transparent;
+}
+.ct-tab-ink {
+  position: absolute;
+  inset: -1px;
+  z-index: -1;
+  background: var(--ink);
+}
+.ct-tab-text {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+.ct-lab-cues {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 22px;
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 10px !important;
+  letter-spacing: 0.03em;
+  color: var(--muted);
+}
+.ct-lab-cues li > span {
+  color: var(--ink);
+}
+
+/* ================= Play: the cartridge moment ================= */
+.play-stage .arcade-cabinet__cart {
+  transition:
+    border-color 0.2s,
+    background-color 0.2s,
+    opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.play-stage .arcade-cabinet__cart:nth-child(2) {
+  transition-delay: 0s, 0s, 0.1s, 0.1s;
+}
+/* The chosen cartridge sits pushed into the slot. */
+.play-stage .arcade-cabinet__cart[aria-pressed="true"] {
+  transform: translateX(6px);
+}
+.play-stage[data-boot="pending"] .arcade-cabinet__cart {
+  opacity: 0;
+  transform: translateX(-28px);
+  transition: none;
+}
+/* The screen powers on: a bright line opens to the full picture. */
+.play-stage .arcade-cabinet__screen {
+  clip-path: inset(0);
+  transition:
+    clip-path 0.7s cubic-bezier(0.7, 0, 0.2, 1) 0.3s,
+    filter 0.9s ease 0.3s;
+}
+.play-stage[data-boot="pending"] .arcade-cabinet__screen,
+.play-stage[data-swap="pending"] .arcade-cabinet__screen {
+  clip-path: inset(49.6% 0 49.6% 0);
+  filter: brightness(1.6);
+  transition: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .play-stage .arcade-cabinet__cart[aria-pressed="true"] {
+    transform: none;
+  }
+}
+
+/* ================= 404 ================= */
+.ct-404 {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+  gap: 60px;
+  align-items: center;
+}
+.ct-404-path {
+  display: block;
+  margin: -12px 0 30px !important;
+  font-size: 12px !important;
+  color: var(--muted);
+}
+.ct-404-url {
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+.ct-404-caret {
+  display: inline-block;
+  width: 6px;
+  height: 13px;
+  margin-left: 6px;
+  vertical-align: -2px;
+  background: var(--ink);
+  animation: caret-blink 1.2s step-end infinite;
+}
+.ct-404-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px 26px;
+}
+.ct-404-matrix {
+  position: relative;
+  display: grid;
+  gap: 5px;
+  width: min(100%, 420px);
+  justify-self: center;
+  overflow: hidden;
+}
+.ct-404-matrix > i {
+  aspect-ratio: 1;
+  background: color-mix(in srgb, var(--ink) 8%, transparent);
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.35s;
+}
+.ct-404-matrix > i.is-lit {
+  background: var(--ink);
+  animation: ct-dot-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+}
+/* Pass the pointer over the matrix and the dots swell. */
+.ct-404-matrix > i:hover {
+  transform: scale(1.5);
+}
+.ct-404-matrix > i:not(.is-lit):hover {
+  background: color-mix(in srgb, var(--ink) 30%, transparent);
+}
+@keyframes ct-dot-in {
+  from {
+    opacity: 0;
+    transform: scale(0.2);
+  }
+}
+/* One slow scan line passes down the matrix on arrival. */
+.ct-404-scan {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 1px;
+  background: var(--ink);
+  opacity: 0;
+  animation: ct-scan 1.6s cubic-bezier(0.6, 0, 0.4, 1) 0.9s;
+  pointer-events: none;
+}
+@keyframes ct-scan {
+  0% {
+    opacity: 0.8;
+    top: 0;
+  }
+  100% {
+    opacity: 0;
+    top: 100%;
+  }
+}
+.ct-404-matrix.is-still > i,
+.ct-404-matrix.is-still .ct-404-scan {
+  animation: none;
+}
+@media (max-width: 767px) {
+  .ct-404 {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 34px;
+  }
+  .ct-404-matrix {
+    order: -1;
+    width: min(100%, 300px);
+    justify-self: start;
+    gap: 3px;
+  }
+}
+
+/* ================= Motion off ================= */
+@media (prefers-reduced-motion: reduce) {
+  .ct-toc a,
+  .ct-rail-bar,
+  .ct-chip,
+  .ct-404-matrix > i {
+    transition: none;
+  }
+  .ct-rail-now::before,
+  .ct-live-tag i,
+  .ct-404-caret,
+  .ct-404-matrix > i,
+  .ct-404-scan {
+    animation: none !important;
+  }
+}

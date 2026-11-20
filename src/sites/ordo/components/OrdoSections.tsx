@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, Github } from "lucide-react";
 import {
   motion,
   useMotionValueEvent,
@@ -9,7 +9,9 @@ import {
 import { Link } from "react-router-dom";
 import { otherWork } from "@/data/portfolio";
 import { CYAN_URL } from "@/lib/sites";
-import { ordoProjects } from "../projects";
+import { ordoProjects, type OrdoProject } from "../projects";
+import { projectShowcase } from "../projectShowcase";
+import { ProjectPreview } from "../home/ProjectPreview";
 import ProjectArt from "./ProjectArt";
 import ParticleField from "./ParticleField";
 import { content } from "../content";
@@ -48,9 +50,69 @@ export function HeroTerminal() {
   );
 }
 
-/** The project grid. Each card links to the project's own page. */
-export function OrdoWork() {
+/** One project card: artwork that gives way to real screens on hover or focus. */
+function ProjectCard({ project, index }: { project: OrdoProject; index: number }) {
   const reduced = useReducedMotion();
+  const [active, setActive] = useState(false);
+  const showcase = projectShowcase[project.showcaseId];
+  const media = showcase?.media ?? [];
+  const repo =
+    showcase?.links?.find((link) => link.href.includes("github.com"))?.href ?? project.study.github;
+  const id = `card-${project.slug}`;
+  return (
+    <motion.article
+      id={`spot-${project.slug}`}
+      className={active ? "is-previewing" : undefined}
+      initial={reduced ? false : { opacity: 0, y: 24 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.1 }}
+      transition={{ duration: 0.5, delay: (index % 3) * 0.06 }}
+      onPointerEnter={(event) => {
+        if (event.pointerType === "mouse") setActive(true);
+      }}
+      onPointerLeave={() => setActive(false)}
+      onFocus={() => setActive(true)}
+      onBlur={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setActive(false);
+      }}
+    >
+      <Link
+        to={`/work/${project.slug}`}
+        className="ordo-project-button"
+        aria-labelledby={`${id}-title ${id}-action`}
+      >
+        <div className="ordo-card-top">
+          <span>/{String(index + 1).padStart(2, "0")}</span>
+          <span>{project.tag}</span>
+        </div>
+        <div className={`ordo-card-art${project.art.type === "visual" ? "" : " ordo-personal-art"}`}>
+          <ProjectArt art={project.art} />
+          <ProjectPreview media={media} active={active} />
+        </div>
+        <div className="ordo-card-copy">
+          <h3 id={`${id}-title`}>{project.study.name}</h3>
+          <p>{project.study.description}</p>
+          <span className="ordo-card-action" id={`${id}-action`}>
+            {project.action} <ArrowUpRight size={15} aria-hidden="true" />
+          </span>
+        </div>
+      </Link>
+      {(media.length > 0 || repo) && (
+        <div className="ordo-card-foot mono">
+          <span>{media.length > 0 && `${String(media.length).padStart(2, "0")} screens`}</span>
+          {repo && (
+            <a href={repo} target="_blank" rel="noreferrer" aria-label={`${project.study.name} source on GitHub`}>
+              <Github size={13} aria-hidden="true" /> Source <ArrowUpRight size={12} aria-hidden="true" />
+            </a>
+          )}
+        </div>
+      )}
+    </motion.article>
+  );
+}
+
+/** The project grid. Each card links to the project's own page and its source. */
+export function OrdoWork() {
   return (
     <section id="work" className="ordo-work section-wrap">
       <div className="ordo-section-label">
@@ -65,37 +127,7 @@ export function OrdoWork() {
       <p className="ordo-section-intro">{content.work.intro}</p>
       <div className="ordo-project-grid">
         {ordoProjects.map((project, i) => (
-          <motion.article
-            key={project.slug}
-            id={`spot-${project.slug}`}
-            initial={reduced ? false : { opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.1 }}
-            transition={{ duration: 0.5, delay: (i % 3) * 0.06 }}
-          >
-            <Link
-              to={`/work/${project.slug}`}
-              className="ordo-project-button"
-              aria-labelledby={`card-${project.slug}-title card-${project.slug}-action`}
-            >
-              <div className="ordo-card-top">
-                <span>/{String(i + 1).padStart(2, "0")}</span>
-                <span>{project.tag}</span>
-              </div>
-              <div
-                className={`ordo-card-art${project.art.type === "visual" ? "" : " ordo-personal-art"}`}
-              >
-                <ProjectArt art={project.art} />
-              </div>
-              <div className="ordo-card-copy">
-                <h3 id={`card-${project.slug}-title`}>{project.study.name}</h3>
-                <p>{project.study.description}</p>
-                <span className="ordo-card-action" id={`card-${project.slug}-action`}>
-                  {project.action} <ArrowUpRight size={15} aria-hidden="true" />
-                </span>
-              </div>
-            </Link>
-          </motion.article>
+          <ProjectCard key={project.slug} project={project} index={i} />
         ))}
       </div>
       <div className="ordo-archive-row">
@@ -132,7 +164,12 @@ export function OrdoShowcase() {
         <div className="section-wrap showcase-inner">
           <div className="ordo-section-label">
             <span>[ 05 / SYSTEM ]</span>
-            <span>
+            <span className="showcase-phase">
+              <span className="phase-ticks" aria-hidden="true">
+                {PHASES.map((name, i) => (
+                  <i key={name} className={i <= phase ? "is-on" : undefined} />
+                ))}
+              </span>
               PHASE 0{phase + 1} / {PHASES[phase]}
             </span>
           </div>

@@ -9,14 +9,21 @@ import {
   Sun,
   X,
 } from "lucide-react";
-import { motion, useReducedMotion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { CYAN_URL } from "@/lib/sites";
 import { setMotionPaused, useMotionPaused } from "@/lib/motion-pause";
 import { DotWordmark } from "./components/OrdoExtras";
 import { OrdoContact } from "./components/OrdoBlocks";
 import { content } from "./content";
+import { NavRail } from "./chrome/NavRail";
+import { ReadingProgress, RouteRule } from "./chrome/HeaderRules";
+import { BackToTop } from "./chrome/BackToTop";
+import { PointerField } from "./chrome/PointerField";
+import { useScrollChrome } from "./chrome/useScrollChrome";
+import { withThemeWipe } from "./chrome/themeWipe";
 import "./base.css";
 import "./ordo.css";
+import "./chrome/chrome.css";
 
 export interface OrdoContext {
   theme: "dark" | "light";
@@ -98,6 +105,8 @@ export default function OrdoLayout() {
   const paused = useMotionPaused();
   const location = useLocation();
   const outlet = useOutlet({ theme } satisfies OrdoContext);
+  const { condensed, farDown, scrollYProgress } = useScrollChrome();
+  const onWork = location.pathname.startsWith("/work/");
   useScrollOnNavigate();
 
   useEffect(() => {
@@ -127,7 +136,8 @@ export default function OrdoLayout() {
       <a className="skip-link" href="#main">
         Skip to content
       </a>
-      <header className="portfolio-header">
+      <PointerField />
+      <header className={condensed ? "portfolio-header is-condensed" : "portfolio-header"}>
         <div className="header-inner">
           <Link to="/" className="wordmark">
             <span className="brand-mark" aria-hidden="true">
@@ -135,24 +145,7 @@ export default function OrdoLayout() {
             </span>
             VARUN.DEV
           </Link>
-          <nav className="desktop-links" aria-label="Main navigation">
-            {NAV.map((item) =>
-              item.to.startsWith("/#") ? (
-                <Link
-                  key={item.label}
-                  to={item.to}
-                  className={location.pathname.startsWith("/work/") ? "active" : undefined}
-                  aria-current={location.pathname.startsWith("/work/") ? "page" : undefined}
-                >
-                  {item.label}
-                </Link>
-              ) : (
-                <NavLink key={item.label} to={item.to}>
-                  {item.label}
-                </NavLink>
-              ),
-            )}
-          </nav>
+          <NavRail items={NAV} pathname={location.pathname} />
           <div className="header-actions">
             <button
               className="icon-button motion-toggle"
@@ -168,7 +161,7 @@ export default function OrdoLayout() {
               aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
               onClick={() => {
                 const next = theme === "dark" ? "light" : "dark";
-                setTheme(next);
+                withThemeWipe(() => setTheme(next), reduced ?? false);
                 try {
                   window.localStorage.setItem(THEME_KEY, next);
                 } catch {
@@ -176,7 +169,18 @@ export default function OrdoLayout() {
                 }
               }}
             >
-              {theme === "dark" ? <Sun size={17} /> : <Moon size={17} />}
+              <AnimatePresence mode="wait" initial={false}>
+                <motion.span
+                  key={theme}
+                  className="chrome-theme-icon"
+                  initial={reduced ? false : { opacity: 0, rotate: -90 }}
+                  animate={{ opacity: 1, rotate: 0 }}
+                  exit={reduced ? { opacity: 0, transition: { duration: 0 } } : { opacity: 0, rotate: 90 }}
+                  transition={{ duration: 0.16 }}
+                >
+                  {theme === "dark" ? <Sun size={17} /> : <Moon size={17} />}
+                </motion.span>
+              </AnimatePresence>
             </button>
             <a className="header-contact" href="#contact">
               Contact me <ArrowUpRight size={15} aria-hidden="true" />
@@ -195,35 +199,54 @@ export default function OrdoLayout() {
         </div>
         {menuOpen && (
           <nav id="mobile-navigation" className="mobile-links" aria-label="Mobile navigation">
-            {[...NAV, { label: "Contact", to: "#contact" }].map((item) =>
-              item.to === "#contact" ? (
-                <a key={item.label} href="#contact" onClick={() => setMenuOpen(false)}>
-                  {item.label}
+            {[...NAV, { label: "Contact", to: "#contact" }].map((item, index) => {
+              const inner = (
+                <>
+                  <span className="mobile-index" aria-hidden="true">
+                    {String(index + 1).padStart(2, "0")}
+                  </span>
+                  <span className="mobile-label">{item.label}</span>
                   <ArrowUpRight size={18} aria-hidden="true" />
-                </a>
-              ) : (
-                <Link key={item.label} to={item.to} onClick={() => setMenuOpen(false)}>
-                  {item.label}
-                  <ArrowUpRight size={18} aria-hidden="true" />
-                </Link>
-              ),
-            )}
+                </>
+              );
+              if (item.to === "#contact") {
+                return (
+                  <a key={item.label} href="#contact" onClick={() => setMenuOpen(false)}>
+                    {inner}
+                  </a>
+                );
+              }
+              if (item.to.startsWith("/#")) {
+                return (
+                  <Link
+                    key={item.label}
+                    to={item.to}
+                    className={onWork ? "active" : undefined}
+                    aria-current={onWork ? "page" : undefined}
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    {inner}
+                  </Link>
+                );
+              }
+              return (
+                <NavLink key={item.label} to={item.to} onClick={() => setMenuOpen(false)}>
+                  {inner}
+                </NavLink>
+              );
+            })}
           </nav>
         )}
+        <ReadingProgress progress={scrollYProgress} />
+        <RouteRule key={location.pathname} />
       </header>
 
-      {/* Each page fades in on arrival. There is no exit animation to wait for,
-          so a page change can never stall behind paused animation frames. */}
-      <motion.main
-        id="main"
-        tabIndex={-1}
-        key={location.pathname}
-        initial={reduced ? false : { opacity: 0, y: 18 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-      >
+      {/* Each page settles in on arrival, its sections a beat apart (CSS, in
+          chrome/chrome.css), while a stroke draws across the header rule. There
+          is no exit animation to wait for, so a page change never stalls. */}
+      <main id="main" tabIndex={-1} key={location.pathname}>
         {outlet}
-      </motion.main>
+      </main>
 
       <OrdoContact />
       <DotWordmark />
@@ -245,6 +268,7 @@ export default function OrdoLayout() {
           </a>
         </div>
       </footer>
+      <BackToTop shown={farDown} progress={scrollYProgress} />
       <aside className="edition-switch" aria-label="Portfolio design edition">
         <span>Design</span>
         <a href={CYAN_URL}>Cyan</a>

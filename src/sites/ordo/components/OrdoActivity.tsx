@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react"
 import { ArrowUpRight } from "lucide-react";
 import { githubSnapshot } from "@/data/github-activity";
 import { content } from "../content";
+import { CountUp } from "../home/CountUp";
 import {
   activityStats,
   contributionLevel,
@@ -122,11 +123,15 @@ export function OrdoActivity() {
       <dl className="activity-stats">
         <div>
           <dt>Contributions, last 12 months</dt>
-          <dd>{stats.total}</dd>
+          <dd>
+            <CountUp value={stats.total} />
+          </dd>
         </div>
         <div>
           <dt>Days with a contribution</dt>
-          <dd>{stats.activeDays}</dd>
+          <dd>
+            <CountUp value={stats.activeDays} />
+          </dd>
         </div>
         {latest && (
           <div>
@@ -138,7 +143,9 @@ export function OrdoActivity() {
         )}
         <div>
           <dt>Public repositories</dt>
-          <dd>{activity.publicRepos}</dd>
+          <dd>
+            <CountUp value={activity.publicRepos} duration={800} />
+          </dd>
         </div>
       </dl>
 
