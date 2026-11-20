@@ -11,16 +11,16 @@ Two separate portfolio sites, cyan and monochrome (ORDO), built from one React 1
 
 Run `npm ci` first. `npm run dev` starts the cyan site; `npm run build` builds both.
 
-**Cyan** (`src/sites/cyan`): pointer-lit hero, case studies, results with their scope, signal map, interactive research explainer and a command palette (Ctrl/⌘ K or /). It keeps the original pages: `/nexus` (project archive), `/logs`, `/vault` (skill map), `/terminal` and `/classic`. `/ordo` redirects to the monochrome site.
+**Cyan** (`src/sites/cyan`): pointer-lit hero, case studies, results with their scope, signal map, interactive research explainer and a command palette (Ctrl/⌘ K or /). Its lab pages share the home page's header, graticule and controls through `src/sites/cyan/lab/LabShell.tsx`: `/nexus` (project archive with screenshot galleries and GitHub links), `/logs` (career signal trace), `/vault` (radar skill map), `/terminal` and a signal-lost 404. `/classic` keeps the original home page and look. `/ordo` redirects to the monochrome site.
 
 **Monochrome** (`src/sites/ordo`): a multi-page site following the ORDO reference film.
 - `/` is the landing page: interactive hero shape, AI capability grid, project grid, GitHub activity, the process loop, the particle system, research teaser, console and the latest journey entries.
-- `/work/<project>` has screenshots, the idea, a working in-browser demo, then the details.
+- `/work/<project>` has a screenshot gallery with a full-screen viewer, a View on GitHub link, the idea, a working in-browser demo, then the details, with a section rail that tracks your place.
 - `/research` holds the proposal, interactive versions of both studies, and my research interests.
 - `/journey` is a dated log, `/writing` holds write-ups, `/about` covers experience, education and toolbox, and `/play` runs the arcade.
 - Unknown paths show its own 404.
 
-Both have a light/dark toggle and respect reduced-motion preferences. The bottom-right design switch links to the other site.
+Both have a light/dark toggle and respect reduced-motion preferences and the site's pause control. The bottom-right design switch links to the other site.
 
 ### How the split works
 
