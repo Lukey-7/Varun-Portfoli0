@@ -1,0 +1,370 @@
+/* The lab: the cyan site's sub-pages (archive, logs, skill map, terminal).
+   They borrow the home page's tokens, graticule and header from cyan.css and
+   add a small kit of their own: hero, panels with a cursor light, chips,
+   readouts and section titles. Every page's own styles live beside it. */
+
+.lab {
+  --lab-ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --lab-width: min(1312px, calc(100% - 112px));
+}
+
+/* ------------------------------------------------------------ header */
+.lab .lab-links {
+  gap: 26px;
+  align-items: center;
+}
+.lab .lab-links a {
+  position: relative;
+  font-size: 14px;
+  color: var(--muted);
+  transition: color 0.2s;
+}
+.lab .lab-links a:hover,
+.lab .lab-links a[aria-current="page"] {
+  color: var(--ink);
+}
+.lab .lab-links a[aria-current="page"]::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -8px;
+  height: 2px;
+  background: var(--accent);
+  box-shadow: 0 0 12px var(--accent);
+}
+.lab .lab-code {
+  font-size: 10px;
+  color: var(--subtle);
+  margin-right: 6px;
+}
+.lab .mobile-links a[aria-current="page"] {
+  color: var(--accent);
+}
+
+/* -------------------------------------------------------------- main */
+.lab-main {
+  padding-block: 64px 120px;
+  min-height: 70vh;
+}
+.lab-hero {
+  width: var(--lab-width);
+  margin-inline: auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+  gap: 56px;
+  align-items: end;
+  padding-bottom: 56px;
+  margin-bottom: 64px;
+  border-bottom: 1px solid var(--line);
+}
+.lab-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+}
+.lab-eyebrow::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 12px var(--accent);
+  animation: lab-blink 2.4s steps(2, jump-none) infinite;
+}
+.portfolio .lab-title {
+  margin-top: 22px;
+  font-size: clamp(48px, 7.4vw, 112px);
+  line-height: 0.92;
+  font-weight: 500;
+  letter-spacing: -0.065em;
+}
+.lab-title span {
+  color: var(--muted);
+}
+.lab-intro {
+  margin-top: 28px;
+  max-width: 56ch;
+  color: var(--muted);
+  font-size: 17px;
+  line-height: 1.65;
+}
+.lab-intro p + p {
+  margin-top: 12px;
+}
+.lab-hero-aside {
+  min-width: 0;
+}
+
+/* -------------------------------------------------------------- kit */
+.lab-section {
+  width: var(--lab-width);
+  margin-inline: auto;
+}
+.lab-section + .lab-section {
+  margin-top: 96px;
+}
+.portfolio .lab-section-title {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  font-size: clamp(26px, 2.6vw, 36px);
+  line-height: 1.1;
+  letter-spacing: -0.045em;
+  margin-bottom: 28px;
+}
+.lab-section-title .mono {
+  color: var(--accent);
+  letter-spacing: 0.1em;
+}
+
+/* A panel with a soft cursor light (set --mx/--my with pointerLight). */
+.lab-panel {
+  position: relative;
+  isolation: isolate;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--panel) 84%, transparent);
+  overflow: hidden;
+  transition:
+    border-color 0.3s,
+    transform 0.4s var(--lab-ease),
+    box-shadow 0.4s var(--lab-ease);
+}
+.lab-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(
+    300px circle at var(--mx, -999px) var(--my, -999px),
+    color-mix(in srgb, var(--accent) 16%, transparent),
+    transparent 70%
+  );
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.lab-panel:hover::before,
+.lab-panel:focus-within::before {
+  opacity: 1;
+}
+.lab-panel:hover {
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--line));
+}
+
+/* .portfolio prefixes outrank cyan.css's `.portfolio button { font: inherit }`. */
+.portfolio .lab-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 11px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: transparent;
+  color: var(--muted);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 11px;
+  line-height: 1.4;
+  transition:
+    color 0.2s,
+    border-color 0.2s,
+    background 0.2s;
+}
+button.lab-chip:hover {
+  color: var(--ink);
+  border-color: color-mix(in srgb, var(--accent) 50%, var(--line));
+}
+.lab-chip[aria-pressed="true"] {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--button-ink);
+}
+
+.lab-readout {
+  font-family: "IBM Plex Mono", monospace;
+  color: var(--phosphor);
+}
+
+.portfolio .lab-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 0 18px;
+  border-radius: 4px;
+  border: 1px solid var(--accent);
+  background: var(--accent);
+  color: var(--button-ink) !important;
+  font-size: 14px;
+  font-weight: 500;
+  transition:
+    transform 0.2s var(--lab-ease),
+    box-shadow 0.2s;
+}
+.lab-button:hover {
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 22%, transparent);
+}
+.lab-button:active {
+  transform: translateY(1px);
+}
+.lab-button.ghost {
+  background: transparent;
+  color: var(--ink) !important;
+  border-color: var(--line);
+}
+.lab-button.ghost:hover {
+  border-color: var(--accent);
+}
+
+/* Corner brackets, as on the home page's instruments. */
+.lab-bracket {
+  position: relative;
+}
+.lab-bracket::before,
+.lab-bracket::after {
+  content: "";
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border-color: var(--accent);
+  border-style: solid;
+  pointer-events: none;
+}
+.lab-bracket::before {
+  top: -1px;
+  left: -1px;
+  border-width: 1px 0 0 1px;
+}
+.lab-bracket::after {
+  right: -1px;
+  bottom: -1px;
+  border-width: 0 1px 1px 0;
+}
+
+/* ------------------------------------------------------------ footer */
+.lab-footer {
+  position: relative;
+  z-index: 1;
+  border-top: 1px solid var(--line);
+}
+.lab-footer-inner {
+  width: min(1400px, calc(100% - 80px));
+  margin-inline: auto;
+  min-height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  color: var(--muted);
+  padding-right: 230px;
+}
+.lab-footer-links {
+  display: flex;
+  gap: 4px;
+}
+.lab-footer-links a {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border-radius: 4px;
+  color: var(--muted);
+}
+.lab-footer-links a:hover {
+  color: var(--accent);
+  background: var(--panel);
+}
+
+/* ----------------------------------------------------------- loading */
+.lab-loading {
+  width: var(--lab-width);
+  margin: 80px auto;
+  display: grid;
+  gap: 12px;
+  color: var(--muted);
+}
+.lab-loading-bar {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  background-size: 40% 100%;
+  background-repeat: no-repeat;
+  animation: lab-scan 1.2s var(--lab-ease) infinite;
+}
+
+@keyframes lab-blink {
+  50% {
+    opacity: 0.2;
+  }
+}
+@keyframes lab-scan {
+  from {
+    background-position: -40% 0;
+  }
+  to {
+    background-position: 140% 0;
+  }
+}
+
+/* The site-wide pause and the visitor's reduced-motion setting both stop the lab's CSS loops. */
+html[data-motion="paused"] .lab *,
+html[data-motion="paused"] .lab *::before,
+html[data-motion="paused"] .lab *::after {
+  animation-play-state: paused !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  .lab *,
+  .lab *::before,
+  .lab *::after {
+    animation: none !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ---------------------------------------------------------- responsive */
+@media (max-width: 1180px) {
+  .lab .lab-links {
+    gap: 18px;
+    margin-right: 20px;
+  }
+  .lab .lab-code {
+    display: none;
+  }
+}
+@media (max-width: 1100px) {
+  .lab {
+    --lab-width: calc(100% - 64px);
+  }
+  .lab-hero {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+}
+@media (max-width: 767px) {
+  .lab {
+    --lab-width: calc(100% - 40px);
+  }
+  .lab-main {
+    padding-block: 40px 96px;
+  }
+  .lab-hero {
+    padding-bottom: 40px;
+    margin-bottom: 48px;
+  }
+  .lab-intro {
+    font-size: 16px;
+  }
+  .lab-section + .lab-section {
+    margin-top: 72px;
+  }
+  .lab-footer-inner {
+    width: calc(100% - 40px);
+    padding: 16px 0 88px;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

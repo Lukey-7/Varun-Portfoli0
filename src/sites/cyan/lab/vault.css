@@ -1,0 +1,922 @@
+/* Lab / 03, the skill map: a radar scope of every skill, its readout, the
+   index and the hero's area spectrum. Cyan is signal, phosphor amber is
+   reserved for measurements, and glows belong to the dark theme only: the
+   light theme is ink on paper. */
+
+.vault-page {
+  --vault-glow: drop-shadow(0 0 4px color-mix(in srgb, var(--accent) 70%, transparent));
+  --vault-halo: 0 0 22px color-mix(in srgb, var(--accent) 26%, transparent);
+  --vault-hot: color-mix(in srgb, var(--accent) 35%, #ffffff);
+  --vault-node: color-mix(in srgb, var(--panel) 80%, var(--page));
+  --vault-sweep: 0.2;
+  --vault-flare: 0.26;
+}
+.cyan-edition[data-theme="light"] .vault-page {
+  --vault-glow: none;
+  --vault-halo: none;
+  --vault-hot: var(--accent);
+  --vault-node: var(--page);
+  --vault-sweep: 0.1;
+  --vault-flare: 0.14;
+}
+
+/* ------------------------------------------------------- hero spectrum */
+.vault-spectrum {
+  margin: 0;
+  padding: 22px 22px 18px;
+}
+.vault-spectrum-head,
+.vault-spectrum-foot {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 6px 16px;
+  font-size: 10.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--subtle);
+}
+.vault-spectrum ul {
+  list-style: none;
+  margin: 18px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+.vault-spectrum li {
+  display: grid;
+  grid-template-columns: 128px minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 14px;
+  padding-bottom: 8px;
+  border-bottom: 1px dashed var(--line);
+  transition: opacity 0.3s;
+}
+.vault-spectrum li.is-quiet {
+  opacity: 0.35;
+}
+.vault-spectrum-name {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.vault-spectrum-lamps {
+  display: flex;
+  align-items: flex-end;
+  gap: 5px;
+  height: 26px;
+}
+.vault-spectrum-lamps i {
+  display: block;
+  width: 9px;
+  border-radius: 1px;
+  background: var(--accent);
+  opacity: 0.55;
+  transform-origin: bottom;
+  animation: vault-lamp 2.6s ease-in-out infinite alternate;
+}
+.vault-spectrum li.is-on .vault-spectrum-lamps i {
+  opacity: 1;
+  box-shadow: var(--vault-halo);
+}
+.vault-spectrum li > .lab-readout {
+  font-size: 15px;
+  line-height: 1;
+}
+.vault-spectrum-foot {
+  margin: 14px 0 0;
+  text-transform: none;
+  letter-spacing: 0.04em;
+}
+@keyframes vault-lamp {
+  from {
+    transform: scaleY(0.62);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+
+/* ------------------------------------------------------ chart section */
+.vault-chart-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px 24px;
+}
+.vault-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 28px;
+}
+.vault-filters .lab-chip {
+  min-height: 32px;
+}
+.vault-chip-count {
+  opacity: 0.6;
+}
+.vault-chart-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(320px, 420px);
+  gap: 24px;
+  align-items: start;
+}
+
+/* ---------------------------------------------------------- the scope */
+.vault-scope {
+  position: relative;
+  isolation: isolate;
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 50% 52%, color-mix(in srgb, var(--accent) 7%, transparent), transparent 62%),
+    color-mix(in srgb, var(--panel) 70%, var(--page));
+}
+/* Faint scan lines, as on a phosphor screen. */
+.vault-scope::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--ink) 5%, transparent) 0 1px,
+    transparent 1px 3px
+  );
+  opacity: 0.5;
+}
+.cyan-edition[data-theme="light"] .vault-scope {
+  background:
+    radial-gradient(circle at 50% 52%, color-mix(in srgb, var(--accent) 5%, transparent), transparent 62%),
+    var(--page);
+}
+.cyan-edition[data-theme="light"] .vault-scope::after {
+  opacity: 0.25;
+}
+.vault-svg {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1;
+  max-height: min(860px, calc(100vh - 120px));
+  margin-inline: auto;
+  overflow: visible;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Heads-up readouts in the corners. */
+.vault-hud {
+  position: absolute;
+  left: 18px;
+  right: 18px;
+  z-index: 2;
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  pointer-events: none;
+}
+.vault-hud-top {
+  top: 16px;
+  align-items: flex-start;
+}
+.vault-hud-bottom {
+  bottom: 14px;
+  align-items: center;
+}
+.vault-hud p {
+  margin: 0;
+}
+.vault-hud-status {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  max-width: 62%;
+}
+.vault-hud-code {
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  color: var(--accent);
+}
+.vault-hud-name {
+  font-size: 19px;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  color: var(--ink);
+}
+.vault-hud-meta {
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
+  color: var(--subtle);
+  text-transform: uppercase;
+}
+.vault-hud-gauges {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+}
+.vault-hud-hint {
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
+  color: var(--subtle);
+  text-transform: uppercase;
+}
+.vault-reset {
+  white-space: nowrap;
+  pointer-events: auto;
+  min-height: 32px;
+  background: color-mix(in srgb, var(--page) 80%, transparent);
+}
+
+/* Dial */
+.vault-sky {
+  fill: transparent;
+}
+.vault-scope[data-mode="focus"] .vault-sky {
+  cursor: zoom-out;
+}
+.vault-range {
+  fill: none;
+  stroke: var(--line);
+  stroke-width: 1;
+  stroke-dasharray: 2 7;
+}
+.vault-cross {
+  stroke: var(--line);
+  stroke-width: 1;
+  opacity: 0.7;
+}
+.vault-rim {
+  fill: none;
+  stroke: var(--line);
+  stroke-width: 1.5;
+}
+.vault-ticks {
+  stroke: var(--subtle);
+  stroke-width: 1;
+  opacity: 0.45;
+}
+.vault-dial,
+.vault-sweep,
+.vault-edges,
+.vault-pulses,
+.vault-labels,
+.vault-reticle {
+  pointer-events: none;
+}
+.vault-sector-arc {
+  fill: none;
+  stroke: var(--art-line);
+  stroke-width: 3;
+  stroke-linecap: round;
+  transition: stroke 0.3s;
+}
+.vault-sector-wash {
+  fill: var(--accent);
+  opacity: 0;
+  transition: opacity 0.4s var(--lab-ease);
+}
+.vault-sector-label {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  fill: var(--subtle);
+  transition: fill 0.3s;
+}
+.vault-sector-count {
+  fill: var(--phosphor);
+}
+.vault-sector.is-on .vault-sector-arc,
+.vault-sector.is-probed .vault-sector-arc {
+  stroke: var(--accent);
+  filter: var(--vault-glow);
+}
+.vault-sector.is-on .vault-sector-label,
+.vault-sector.is-probed .vault-sector-label {
+  fill: var(--accent);
+}
+.vault-sector.is-on .vault-sector-wash {
+  opacity: 0.06;
+}
+
+/* Sweep */
+.vault-sweep path {
+  fill: var(--accent);
+}
+.vault-sweep {
+  opacity: calc(var(--vault-sweep) * 1);
+}
+.vault-sweep-edge {
+  stroke: var(--accent);
+  stroke-width: 2;
+}
+.vault-scope[data-still] .vault-sweep {
+  display: none;
+}
+
+/* Lines: drawn on as the sweep wakes both ends. */
+.vault-edge {
+  fill: none;
+  stroke: color-mix(in srgb, var(--accent) 52%, var(--line));
+  stroke-width: 1.8;
+  stroke-dasharray: 1 1;
+  stroke-dashoffset: 1;
+  opacity: 0.75;
+  transition:
+    stroke-dashoffset 1.1s var(--lab-ease),
+    opacity 0.3s var(--lab-ease),
+    stroke 0.3s,
+    stroke-width 0.3s;
+}
+.vault-edge[data-on] {
+  stroke-dashoffset: 0;
+}
+.vault-edge.is-lit {
+  stroke: var(--accent);
+  stroke-width: 2.4;
+  opacity: 1;
+  filter: var(--vault-glow);
+}
+.vault-edge.is-dim {
+  opacity: 0.13;
+}
+.vault-edge.is-half {
+  opacity: 0.3;
+}
+.vault-edge.is-out {
+  opacity: 0.07;
+}
+.vault-edge.is-lit.is-out,
+.vault-edge.is-lit.is-half {
+  opacity: 0.7;
+}
+
+/* Pulses */
+.vault-pulse-head {
+  fill: var(--vault-hot);
+  filter: var(--vault-glow);
+}
+.vault-pulse-tail {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 2.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.vault-scope[data-still] .vault-pulses {
+  display: none;
+}
+
+/* Stars */
+.vault-node {
+  cursor: pointer;
+  outline: none;
+  opacity: 0.16;
+  transition: opacity 0.5s var(--lab-ease);
+}
+.vault-node[data-on] {
+  opacity: 1;
+}
+.vault-node[data-on].is-dim {
+  opacity: 0.34;
+}
+.vault-node[data-on].is-out {
+  opacity: 0.16;
+}
+.vault-node[data-on].is-far {
+  opacity: 0.4;
+}
+.vault-node[data-on].is-far.is-linked,
+.vault-node[data-on].is-far.is-active {
+  opacity: 1;
+}
+.vault-node-hit {
+  fill: transparent;
+}
+.vault-node-halo {
+  fill: var(--accent);
+  opacity: calc(var(--flare, 0) * var(--vault-flare));
+  transition: opacity 0.2s;
+}
+.vault-node-body {
+  fill: var(--vault-node);
+  stroke: color-mix(in srgb, var(--accent) 42%, var(--line));
+  stroke-width: 1.5;
+  transition:
+    fill 0.25s,
+    stroke 0.25s,
+    stroke-width 0.25s;
+}
+.vault-node-code {
+  font-family: "IBM Plex Mono", monospace;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-anchor: middle;
+  fill: var(--ink);
+  pointer-events: none;
+  transition: fill 0.25s;
+}
+.vault-node-orbit {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 1.5;
+  stroke-dasharray: 3 5;
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: opacity 0.25s;
+}
+.vault-node:hover .vault-node-body,
+.vault-node.is-linked .vault-node-body {
+  stroke: var(--accent);
+}
+.vault-node.is-active .vault-node-body {
+  stroke: var(--accent);
+  stroke-width: 2.5;
+  fill: color-mix(in srgb, var(--accent) 16%, var(--vault-node));
+}
+.vault-node.is-active .vault-node-halo {
+  opacity: 0.3;
+}
+.cyan-edition[data-theme="light"] .vault-node.is-active .vault-node-halo {
+  opacity: 0.12;
+}
+.vault-node.is-selected .vault-node-body {
+  fill: var(--accent);
+  stroke: var(--accent);
+}
+.vault-node.is-selected .vault-node-code {
+  fill: var(--button-ink);
+}
+.vault-node.is-selected .vault-node-orbit {
+  opacity: 1;
+  animation: vault-orbit 12s linear infinite;
+}
+.vault-node:focus-visible .vault-node-orbit {
+  opacity: 1;
+  stroke: var(--ink);
+  stroke-width: 2.5;
+  stroke-dasharray: none;
+}
+@keyframes vault-orbit {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Labels: along the radius, outward from each star. */
+.vault-label {
+  opacity: 0;
+  transition: opacity 0.45s var(--lab-ease);
+}
+.vault-label text {
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  fill: var(--muted);
+  paint-order: stroke;
+  stroke: color-mix(in srgb, var(--panel) 70%, var(--page));
+  stroke-width: 5px;
+  stroke-linejoin: round;
+  transition: fill 0.25s;
+}
+.cyan-edition[data-theme="light"] .vault-label text {
+  stroke: var(--page);
+}
+.vault-label[data-on] {
+  opacity: 1;
+}
+.vault-label[data-on].is-dim {
+  opacity: 0.28;
+}
+.vault-label[data-on].is-out {
+  opacity: 0.12;
+}
+.vault-label[data-on].is-none {
+  opacity: 0;
+}
+.vault-label.is-active text,
+.vault-label.is-linked text {
+  fill: var(--ink);
+}
+.vault-label.is-below text {
+  font-size: 24px;
+  letter-spacing: -0.03em;
+  fill: var(--ink);
+}
+
+/* Pointer reticle with its range ring. */
+.vault-reticle {
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.vault-reticle[data-on] {
+  opacity: 1;
+}
+.vault-reticle-range {
+  fill: none;
+  stroke: var(--phosphor);
+  stroke-width: 1;
+  stroke-dasharray: 2 6;
+  opacity: 0.45;
+}
+.vault-reticle-cross path {
+  stroke: var(--phosphor);
+  stroke-width: 1.5;
+}
+
+/* Phones: no labels on the chart (the readout above names the star), a static HUD. */
+.vault-scope[data-size="compact"] .vault-hud {
+  position: relative;
+  left: auto;
+  right: auto;
+  top: auto;
+  bottom: auto;
+  padding: 14px 14px 0;
+}
+.vault-scope[data-size="compact"] .vault-hud-bottom {
+  padding: 0 14px 14px;
+}
+.vault-scope[data-size="compact"] .vault-hud-status {
+  max-width: none;
+}
+.vault-scope[data-size="compact"] .vault-hud-name {
+  font-size: 17px;
+}
+.vault-scope[data-size="compact"] .vault-hud-gauges {
+  display: none;
+}
+.vault-scope[data-size="compact"] .vault-sector-label {
+  font-size: 25px;
+  letter-spacing: 0.12em;
+}
+.vault-scope[data-size="compact"] .vault-sector-arc {
+  stroke-width: 6;
+}
+.vault-scope[data-size="compact"] .vault-edge {
+  stroke-width: 2.4;
+}
+.vault-scope[data-size="compact"] .vault-edge.is-lit {
+  stroke-width: 4;
+}
+.vault-scope[data-size="compact"] .vault-pulse-tail {
+  stroke-width: 4.5;
+}
+.vault-scope[data-size="compact"] .vault-node-body {
+  stroke-width: 2.5;
+}
+.vault-scope[data-size="compact"] .vault-ticks {
+  stroke-width: 2;
+}
+@media (hover: none) {
+  .vault-reticle {
+    display: none;
+  }
+}
+
+/* ------------------------------------------------------------ dossier */
+.vault-dossier {
+  position: sticky;
+  top: 96px;
+  min-width: 0;
+  padding: 26px;
+  min-height: 460px;
+}
+.vault-dossier-head {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 16px;
+  align-items: start;
+}
+.vault-dossier-code {
+  display: grid;
+  place-items: center;
+  min-width: 58px;
+  height: 58px;
+  padding: 0 8px;
+  border: 1px solid var(--accent);
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--accent) 9%, transparent);
+  color: var(--accent);
+  font-size: 15px;
+  letter-spacing: 0.08em;
+  box-shadow: var(--vault-halo);
+}
+.vault-dossier-area {
+  margin: 0;
+  font-size: 10.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.portfolio .vault-dossier-name {
+  margin: 8px 0 0;
+  font-size: 25px;
+  font-weight: 500;
+  line-height: 1.12;
+  letter-spacing: -0.04em;
+  color: var(--ink);
+}
+.vault-dossier-close {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: transparent;
+  color: var(--muted);
+  transition:
+    color 0.2s,
+    border-color 0.2s;
+}
+.vault-dossier-close:hover {
+  color: var(--ink);
+  border-color: var(--accent);
+}
+.vault-dossier-readouts {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  margin: 22px 0 0;
+  border-block: 1px solid var(--line);
+}
+.vault-dossier-readouts div {
+  padding: 12px 0 12px 14px;
+}
+.vault-dossier-readouts div:first-child {
+  padding-left: 0;
+}
+.vault-dossier-readouts div + div {
+  border-left: 1px dashed var(--line);
+}
+.vault-dossier-readouts dt {
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--subtle);
+}
+.vault-dossier-readouts dd {
+  margin: 4px 0 0;
+  font-size: 22px;
+  line-height: 1;
+}
+.vault-dossier-text {
+  margin: 20px 0 0;
+  font-size: 15.5px;
+  line-height: 1.65;
+  color: var(--muted);
+}
+.vault-dossier-block {
+  margin-top: 22px;
+}
+.vault-dossier-label {
+  margin: 0 0 10px;
+  font-size: 10.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--subtle);
+}
+.vault-dossier-chips {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.vault-link-chip {
+  min-height: 32px;
+  text-align: left;
+}
+.vault-link-code {
+  color: var(--accent);
+  letter-spacing: 0.06em;
+}
+.vault-dossier-projects {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+.vault-dossier-projects a {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+  padding: 0 14px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  color: var(--ink);
+  font-weight: 500;
+  transition:
+    border-color 0.2s,
+    background 0.2s;
+}
+.vault-dossier-projects a .mono {
+  font-size: 10.5px;
+  color: var(--subtle);
+}
+.vault-dossier-projects a svg {
+  color: var(--accent);
+}
+.vault-dossier-projects a:hover {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 7%, transparent);
+}
+
+/* -------------------------------------------------------------- index */
+.portfolio .vault-section-intro {
+  margin: -12px 0 32px;
+  color: var(--muted);
+  max-width: 60ch;
+}
+.vault-index {
+  display: grid;
+  gap: 44px;
+}
+.portfolio .vault-index-heading {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin: 0 0 14px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--line);
+  font-size: 20px;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+}
+.vault-index-heading .mono {
+  color: var(--accent);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+}
+.vault-index-heading .lab-readout {
+  margin-left: auto;
+  font-size: 13px;
+}
+.vault-index ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+  gap: 12px;
+}
+.vault-index-item {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+}
+.vault-index-item.is-selected {
+  border-color: var(--accent);
+}
+.vault-index-top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.vault-index-code {
+  display: grid;
+  place-items: center;
+  min-width: 42px;
+  height: 28px;
+  padding: 0 6px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
+  color: var(--accent);
+}
+.portfolio .vault-index-top h4 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 500;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+}
+.vault-index-item p {
+  margin: 12px 0 0;
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+.vault-index-item .vault-index-meta {
+  margin-top: 14px;
+  font-size: 10.5px;
+  line-height: 1.6;
+  letter-spacing: 0.02em;
+  color: var(--subtle);
+  flex: 1;
+}
+.vault-index-show {
+  align-self: flex-start;
+  min-height: 32px;
+  margin-top: 12px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--accent);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.vault-index-show::after {
+  content: " →";
+}
+.vault-index-show:hover {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+/* ---------------------------------------------------------- strengths */
+.vault-strength-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.vault-strength-list li {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 16px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--panel) 70%, transparent);
+  font-size: 15px;
+}
+.vault-strength-list .mono {
+  color: var(--accent);
+  font-size: 10.5px;
+}
+
+/* ---------------------------------------------------------- responsive */
+@media (max-width: 1100px) {
+  .vault-chart-grid {
+    grid-template-columns: 1fr;
+  }
+  .vault-dossier {
+    position: relative;
+    top: auto;
+    min-height: 0;
+  }
+  .vault-svg {
+    max-height: none;
+    max-width: 760px;
+  }
+}
+@media (max-width: 767px) {
+  .vault-chart-head {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .vault-filters {
+    margin-bottom: 20px;
+  }
+  .vault-dossier {
+    padding: 20px;
+  }
+  .portfolio .vault-dossier-name {
+    font-size: 22px;
+  }
+  .vault-spectrum li {
+    grid-template-columns: 104px minmax(0, 1fr) auto;
+    gap: 10px;
+  }
+  .vault-spectrum-name {
+    font-size: 10px;
+  }
+  .vault-index ul {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* The orbit ring is the focus indicator for stars; the sector wash only means something on the full chart. */
+.vault-scope .vault-node:focus,
+.vault-scope .vault-node:focus-visible {
+  outline: none;
+}
+.vault-scope[data-mode="focus"] .vault-sector.is-on .vault-sector-wash {
+  opacity: 0;
+}

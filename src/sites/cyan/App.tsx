@@ -5,6 +5,7 @@ import Navigation from "@/components/Navigation";
 import NebulaBackground from "@/components/NebulaBackground";
 import { ORDO_URL } from "@/lib/sites";
 import CyanPage from "./CyanPage";
+import LabShell from "./lab/LabShell";
 
 // The original pages belong to the cyan site and load on demand.
 const Index = lazy(() => import("@/pages/Index"));
@@ -105,11 +106,14 @@ const AnimatedRoutes = () => {
           <Route path="/cyan" element={<Navigate to="/" replace />} />
           <Route path="/ordo" element={<ToOrdo />} />
           <Route path="/classic" element={<Index />} />
-          <Route path="/logs" element={<Logs />} />
-          <Route path="/nexus" element={<Nexus />} />
-          <Route path="/vault" element={<Vault />} />
-          <Route path="/terminal" element={<Terminal />} />
-          <Route path="*" element={<NotFound />} />
+          {/* The lab pages share the home page's chrome. */}
+          <Route element={<LabShell />}>
+            <Route path="/logs" element={<Logs />} />
+            <Route path="/nexus" element={<Nexus />} />
+            <Route path="/vault" element={<Vault />} />
+            <Route path="/terminal" element={<Terminal />} />
+            <Route path="*" element={<NotFound />} />
+          </Route>
         </Routes>
       </Suspense>
     </AnimatePresence>
@@ -118,7 +122,8 @@ const AnimatedRoutes = () => {
 
 const LegacyChrome = () => {
   const { pathname } = useLocation();
-  if (["/", "/cyan", "/ordo"].includes(pathname)) return null;
+  // Only the archived /classic home keeps the original chrome.
+  if (pathname !== "/classic") return null;
   return (
     <>
       <NebulaBackground />

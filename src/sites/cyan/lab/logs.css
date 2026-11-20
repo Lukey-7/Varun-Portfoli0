@@ -1,0 +1,1138 @@
+/* Lab 02, the logs. The career log as an oscilloscope trace, education as a
+   calibration record, ways of working as a channel bank. Cyan is live signal;
+   amber (--phosphor) only for measured figures. Glows belong to the dark
+   screen; the light theme is ink on paper. Loops here are CSS, so lab.css
+   pauses them with the site-wide control and drops them for reduced motion. */
+
+.logs-page {
+  --logs-hot: color-mix(in srgb, var(--accent) 45%, #fff);
+  --logs-glow: drop-shadow(
+    0 0 3px color-mix(in srgb, var(--accent) 75%, transparent)
+  );
+  --logs-glow-wide: drop-shadow(
+    0 0 7px color-mix(in srgb, var(--accent) 80%, transparent)
+  );
+  --logs-amber-glow: 0 0 14px
+    color-mix(in srgb, var(--phosphor) 35%, transparent);
+  --logs-node-glow: 0 0 14px color-mix(in srgb, var(--accent) 70%, transparent);
+}
+.lab[data-theme="light"] .logs-page {
+  --logs-hot: var(--accent);
+  --logs-glow: none;
+  --logs-glow-wide: none;
+  --logs-amber-glow: none;
+  --logs-node-glow: none;
+}
+
+.logs-lede {
+  max-width: 64ch;
+  margin: -8px 0 32px;
+  color: var(--muted);
+  font-size: 16px;
+  line-height: 1.7;
+}
+
+.logs-glyph {
+  flex: none;
+  overflow: visible;
+}
+.logs-glyph path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.3;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+/* ============================================================ hero: summary */
+.logs-summary {
+  padding: 22px 22px 18px;
+  background: color-mix(in srgb, var(--panel) 72%, transparent);
+  backdrop-filter: blur(3px);
+}
+.logs-corner {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border: 0 solid var(--accent);
+  pointer-events: none;
+}
+.logs-corner.tl {
+  top: -1px;
+  left: -1px;
+  border-width: 1px 0 0 1px;
+  border-top-left-radius: 10px;
+}
+.logs-corner.br {
+  right: -1px;
+  bottom: -1px;
+  border-width: 0 1px 1px 0;
+  border-bottom-right-radius: 10px;
+}
+.logs-summary-head,
+.logs-hist-head,
+.logs-hud-head,
+.logs-modes-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--subtle);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+.logs-live {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--accent);
+}
+.logs-live::before,
+.logs-dot {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 10px var(--accent);
+  animation: lab-blink 2.4s steps(2, jump-none) infinite;
+}
+.lab[data-theme="light"] .logs-live::before,
+.lab[data-theme="light"] .logs-dot {
+  box-shadow: none;
+}
+.logs-summary-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  margin: 18px 0 20px;
+  border-top: 1px solid var(--line);
+}
+.logs-summary-grid > div {
+  padding: 14px 0 12px;
+  border-bottom: 1px solid var(--line);
+}
+.logs-summary-grid > div:nth-child(odd) {
+  padding-right: 14px;
+  border-right: 1px solid var(--line);
+}
+.logs-summary-grid > div:nth-child(even) {
+  padding-left: 16px;
+}
+.logs-summary-grid dt {
+  display: block;
+  color: var(--subtle);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+.logs-summary-grid dd {
+  margin: 4px 0 0;
+  font-size: 32px;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+  text-shadow: var(--logs-amber-glow);
+  white-space: nowrap;
+}
+.logs-summary-grid dd .logs-arrow {
+  color: var(--subtle);
+  text-shadow: none;
+}
+.logs-hist-head output {
+  min-height: 1.6em;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: none;
+  text-shadow: var(--logs-amber-glow);
+}
+.logs-hist {
+  position: relative;
+  height: 74px;
+  margin-top: 10px;
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  padding: 0 0 1px;
+  border-bottom: 1px solid color-mix(in srgb, var(--muted) 45%, var(--line));
+  border-radius: 2px;
+  cursor: crosshair;
+  touch-action: pan-y;
+}
+.logs-hist-col {
+  position: relative;
+  flex: 1;
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
+}
+.logs-hist-col[data-year-start]::before {
+  content: "";
+  position: absolute;
+  left: -2px;
+  top: 0;
+  bottom: 0;
+  border-left: 1px dashed var(--line);
+}
+.logs-hist-bar {
+  display: block;
+  width: 100%;
+  border-radius: 2px 2px 0 0;
+  background: color-mix(in srgb, var(--accent) 62%, transparent);
+  transform-origin: bottom;
+  transition:
+    background 0.2s,
+    box-shadow 0.2s;
+}
+.logs-hist-bar[data-empty] {
+  background: var(--line);
+}
+.logs-hist[data-probe] .logs-hist-bar:not([data-empty]) {
+  background: color-mix(in srgb, var(--accent) 30%, transparent);
+}
+.logs-hist .logs-hist-col[data-active] .logs-hist-bar {
+  background: var(--phosphor);
+  box-shadow: var(--logs-amber-glow);
+}
+.logs-hist-axis {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 6px;
+  color: var(--subtle);
+  font-size: 10px !important;
+}
+.logs-summary-now {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+  color: var(--ink);
+}
+.logs-summary-now .lab-readout {
+  margin-left: auto;
+}
+
+/* ============================================================ trace controls */
+.logs-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px 24px;
+  flex-wrap: wrap;
+  margin-bottom: 28px;
+}
+.logs-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.logs-filters .lab-chip {
+  min-height: 34px;
+  color: var(--muted);
+}
+.logs-chip .logs-glyph {
+  color: var(--accent);
+}
+.logs-filters .lab-chip[aria-pressed="true"],
+.logs-filters .lab-chip[aria-pressed="true"] .logs-glyph {
+  color: var(--button-ink);
+}
+.logs-chip-count {
+  opacity: 0.7;
+  font-variant-numeric: tabular-nums;
+}
+.logs-showing {
+  color: var(--subtle);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+/* ============================================================ trace layout */
+.logs-trace-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  grid-template-areas: "track hud";
+  gap: 48px;
+  align-items: start;
+}
+.logs-track {
+  --rail: 76px;
+  --rail-cx: 30px;
+  grid-area: track;
+  position: relative;
+  min-width: 0;
+}
+/* The scope's centre axis, dotted like its graticule. */
+.logs-track::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: var(--rail-cx);
+  border-left: 1px dashed color-mix(in srgb, var(--accent) 22%, var(--line));
+  pointer-events: none;
+}
+.logs-rail {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: var(--rail);
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+  z-index: 2;
+}
+.logs-rail path {
+  fill: none;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+.logs-ghost {
+  stroke: var(--accent);
+  stroke-width: 1;
+  opacity: 0.16;
+}
+.logs-beam {
+  stroke: var(--accent);
+  stroke-width: 1.5;
+  filter: var(--logs-glow);
+}
+.logs-hot {
+  stroke: var(--logs-hot);
+  stroke-width: 2.4;
+  filter: var(--logs-glow-wide);
+}
+.logs-head {
+  fill: var(--logs-hot);
+}
+.logs-head-halo {
+  fill: var(--accent);
+  fill-opacity: 0.2;
+}
+.lab[data-theme="light"] .logs-head-halo {
+  fill-opacity: 0.12;
+}
+.logs-trace[data-still] .logs-hot,
+.logs-trace[data-still] .logs-head,
+.logs-trace[data-still] .logs-head-halo {
+  display: none;
+}
+/* A new filter: the scope loses the signal for a moment and finds it again. */
+.logs-retune {
+  animation: logs-retune 0.6s steps(6, end) both;
+}
+@keyframes logs-retune {
+  0% {
+    opacity: 0;
+  }
+  30% {
+    opacity: 0.8;
+  }
+  45% {
+    opacity: 0.2;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.logs-list {
+  position: relative;
+  list-style: none;
+  margin: 0;
+  padding: 0 0 8px;
+}
+
+/* ------------------------------------------------------------ years */
+.logs-year {
+  position: relative;
+  padding: 30px 0 4px var(--rail);
+}
+.logs-year h3 {
+  color: var(--accent);
+  font-size: 12px !important;
+  font-weight: 500;
+  letter-spacing: 0.24em;
+}
+.logs-year-tick {
+  position: absolute;
+  left: calc(var(--rail-cx) - 12px);
+  top: calc(30px + 0.8em);
+  width: 24px;
+  height: 1px;
+  background: var(--accent);
+  box-shadow: var(--logs-node-glow);
+}
+.logs-year-tick::after {
+  content: "";
+  position: absolute;
+  left: 30px;
+  top: 0;
+  width: calc(var(--rail) - var(--rail-cx) - 26px);
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--accent) 45%, transparent),
+    transparent
+  );
+}
+
+/* ------------------------------------------------------------ rows */
+.logs-row {
+  --node-top: 22px;
+  position: relative;
+  padding: 16px 0 16px var(--rail);
+}
+.logs-row[data-role] {
+  --node-top: 44px;
+  padding-block: 14px;
+}
+/* A short wash of light along the row as the beam reaches it. */
+.logs-row::after {
+  content: "";
+  position: absolute;
+  inset: 8px 0 8px calc(var(--rail) - 14px);
+  border-radius: 10px;
+  pointer-events: none;
+  opacity: 0;
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--accent) 14%, transparent),
+    transparent 70%
+  );
+}
+.logs-row[data-lit]::after {
+  animation: logs-wash 1.1s var(--lab-ease);
+}
+@keyframes logs-wash {
+  0% {
+    opacity: 0;
+    transform: translateX(-24px);
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: none;
+  }
+}
+
+.logs-node {
+  position: absolute;
+  z-index: 3;
+  left: calc(var(--rail-cx) - 6px);
+  top: var(--node-top);
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--line));
+  background: var(--page);
+  transition:
+    background 0.35s,
+    border-color 0.35s,
+    box-shadow 0.35s,
+    transform 0.35s var(--lab-ease);
+}
+.logs-row[data-lit] .logs-node {
+  background: var(--accent);
+  border-color: var(--accent);
+  box-shadow:
+    0 0 0 4px color-mix(in srgb, var(--accent) 16%, transparent),
+    var(--logs-node-glow);
+}
+/* The ring that leaves a node when it lights; it starts invisible, so a paused frame shows nothing. */
+.logs-node::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: 50%;
+  border: 1px solid var(--accent);
+  opacity: 0;
+  pointer-events: none;
+}
+.logs-row[data-lit] .logs-node::after {
+  animation: logs-ring 0.9s var(--lab-ease);
+}
+@keyframes logs-ring {
+  0% {
+    opacity: 0;
+    transform: scale(1);
+  }
+  15% {
+    opacity: 0.9;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(3.2);
+  }
+}
+.logs-row[data-probe] .logs-node {
+  transform: scale(1.35);
+  border-color: var(--accent);
+}
+
+.logs-card {
+  position: relative;
+  min-width: 0;
+}
+.logs-card.lab-panel {
+  padding: 20px 24px 22px;
+}
+.logs-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 14px;
+  color: var(--subtle);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+.logs-meta time {
+  font-variant-numeric: tabular-nums;
+}
+.logs-kind {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--accent);
+}
+.logs-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 7px;
+  border: 1px solid color-mix(in srgb, var(--accent) 60%, transparent);
+  border-radius: 4px;
+  color: var(--accent);
+}
+.logs-badge::before {
+  content: "";
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: lab-blink 1.6s steps(2, jump-none) infinite;
+}
+.portfolio .logs-title {
+  margin-top: 6px;
+  max-width: 46ch;
+  color: var(--muted);
+  font-size: 21px;
+  font-weight: 500;
+  line-height: 1.3;
+  letter-spacing: -0.03em;
+  transition: color 0.5s;
+}
+.logs-row[data-lit] .logs-title,
+.logs-row[data-role] .logs-title {
+  color: var(--ink);
+}
+.portfolio .logs-row[data-role] .logs-title {
+  font-size: 26px;
+}
+.logs-company {
+  margin-top: 4px;
+  color: var(--subtle);
+  letter-spacing: 0.04em;
+}
+.logs-text {
+  margin-top: 6px;
+  max-width: 64ch;
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.7;
+}
+.logs-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  color: var(--accent) !important;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.2s;
+}
+.logs-link:hover {
+  border-bottom-color: var(--accent);
+}
+
+.logs-expand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 36px;
+  margin-top: 16px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--page) 50%, transparent);
+  color: var(--ink);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  transition: border-color 0.2s;
+}
+.logs-expand:hover {
+  border-color: var(--accent);
+}
+.logs-expand svg {
+  transition: transform 0.35s var(--lab-ease);
+}
+.logs-expand[aria-expanded="true"] svg {
+  transform: rotate(180deg);
+}
+.logs-detail {
+  overflow: hidden;
+}
+.logs-highlights {
+  list-style: none;
+  margin: 18px 0 0;
+  padding: 16px 0 0;
+  border-top: 1px dashed var(--line);
+  display: grid;
+  gap: 10px;
+}
+.logs-highlights li {
+  position: relative;
+  padding-left: 22px;
+  max-width: 70ch;
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.7;
+}
+.logs-highlights li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.82em;
+  width: 10px;
+  height: 1px;
+  background: var(--accent);
+}
+.logs-detail-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 20px;
+  margin-top: 18px;
+}
+.logs-stack {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.logs-length {
+  color: var(--subtle);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+.logs-length .lab-readout {
+  margin-left: 6px;
+  text-shadow: var(--logs-amber-glow);
+}
+
+/* ------------------------------------------------------------ the present */
+.logs-now {
+  padding-top: 26px;
+}
+.logs-now .logs-node {
+  top: calc(var(--node-top) + 10px);
+}
+.logs-now .logs-title {
+  color: var(--ink);
+}
+.logs-now .logs-node::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: 50%;
+  border: 1px solid var(--accent);
+  opacity: 0;
+}
+.logs-now[data-lit] .logs-node::before {
+  animation: logs-live 2s var(--lab-ease) infinite;
+}
+@keyframes logs-live {
+  0% {
+    opacity: 0;
+    transform: scale(1);
+  }
+  10% {
+    opacity: 0.85;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(3.6);
+  }
+}
+.logs-now .lab-readout {
+  text-shadow: var(--logs-amber-glow);
+}
+
+/* ============================================================ readout (HUD) */
+.logs-hud {
+  grid-area: hud;
+  position: sticky;
+  top: 28px;
+  padding: 18px 18px 16px;
+  background: color-mix(in srgb, var(--panel) 80%, transparent);
+  backdrop-filter: blur(6px);
+}
+.logs-hud-mode {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--accent);
+}
+.logs-hud-mode::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+.logs-hud-mode[data-mode="probe"] {
+  color: var(--ink);
+}
+.logs-hud-date {
+  margin-top: 14px;
+  font-size: 34px;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+  text-shadow: var(--logs-amber-glow);
+  white-space: nowrap;
+}
+.logs-hud-kind {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+.logs-hud-title {
+  margin-top: 8px;
+  min-height: 3.2em;
+  color: var(--ink);
+  font-size: 15px;
+  line-height: 1.55;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.logs-minimap {
+  position: relative;
+  height: 210px;
+  margin-top: 16px;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  background-image: linear-gradient(var(--line) 1px, transparent 1px);
+  background-size: 100% 42px;
+  background-position: 0 -1px;
+}
+.logs-minimap-rail {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  border-left: 1px dashed color-mix(in srgb, var(--accent) 30%, var(--line));
+}
+.logs-minimap-tick {
+  position: absolute;
+  left: calc(50% - 22px);
+  width: 44px;
+  height: 9px;
+  margin-top: -4px;
+  cursor: pointer;
+}
+.logs-minimap-tick::before {
+  content: "";
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  top: 4px;
+  height: 1px;
+  background: color-mix(in srgb, var(--muted) 55%, transparent);
+  transition:
+    background 0.3s,
+    left 0.3s var(--lab-ease),
+    right 0.3s var(--lab-ease);
+}
+.logs-minimap-tick[data-kind="work"]::before {
+  left: 4px;
+  right: 4px;
+}
+.logs-minimap-tick[data-lit]::before {
+  background: var(--accent);
+}
+.logs-minimap-tick:hover::before,
+.logs-minimap-tick[data-probe]::before {
+  left: 0;
+  right: 0;
+  height: 2px;
+  top: 3px;
+  background: var(--ink);
+}
+.logs-minimap-cursor {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--accent);
+  box-shadow: 0 0 10px var(--accent);
+  pointer-events: none;
+}
+.lab[data-theme="light"] .logs-minimap-cursor {
+  box-shadow: none;
+}
+.logs-minimap-cursor::before {
+  content: "";
+  position: absolute;
+  left: calc(50% - 3px);
+  top: -3px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+.logs-hud-hint {
+  margin-top: 10px;
+  color: var(--subtle);
+  font-size: 10px !important;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* ============================================================ education */
+.logs-cal-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.logs-cal {
+  display: flex;
+  flex-direction: column;
+  min-height: 340px;
+  padding: 20px 22px 18px;
+}
+.logs-cal-head {
+  display: flex;
+  justify-content: space-between;
+  color: var(--subtle);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+.logs-cal-head time {
+  color: var(--accent);
+}
+.portfolio .logs-cal-title {
+  margin-top: 18px;
+  font-size: 23px;
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: -0.035em;
+}
+.logs-cal-place {
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.6;
+}
+.logs-gauge,
+.logs-cal-year {
+  margin-top: auto;
+  padding-top: 18px;
+}
+.logs-gauge svg {
+  display: block;
+  width: 100%;
+  max-width: 230px;
+  margin-inline: auto;
+  overflow: visible;
+}
+.logs-gauge-track,
+.logs-gauge-value {
+  fill: none;
+  stroke-width: 4;
+}
+.logs-gauge-track {
+  stroke: var(--line);
+}
+.logs-gauge-value {
+  stroke: var(--phosphor);
+  stroke-linecap: round;
+  filter: drop-shadow(
+    0 0 4px color-mix(in srgb, var(--phosphor) 50%, transparent)
+  );
+  transition: stroke-dasharray 1.4s var(--lab-ease) 0.15s;
+}
+.lab[data-theme="light"] .logs-gauge-value {
+  filter: none;
+}
+.logs-gauge-tick {
+  stroke: color-mix(in srgb, var(--muted) 45%, transparent);
+  stroke-width: 1;
+}
+.logs-gauge-tick.major {
+  stroke: var(--muted);
+}
+.logs-gauge-label {
+  fill: var(--subtle);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 8px;
+}
+.logs-needle {
+  transition: transform 1.4s var(--lab-ease) 0.15s;
+}
+.logs-needle line {
+  stroke: var(--phosphor);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+}
+.logs-needle-hub {
+  fill: var(--phosphor);
+}
+.logs-gauge-readout {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 6px;
+  color: var(--subtle);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+.logs-gauge-readout .lab-readout {
+  font-size: 28px;
+  letter-spacing: -0.02em;
+  text-shadow: var(--logs-amber-glow);
+}
+.logs-cal-year {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  color: var(--subtle);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+.logs-cal-year strong {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  max-width: 230px;
+  min-height: 116px;
+  border: 1px dashed var(--line);
+  border-radius: 6px;
+  color: var(--ink);
+  font-size: 54px;
+  font-weight: 400;
+  letter-spacing: -0.05em;
+  text-transform: none;
+}
+
+/* ============================================================ channel bank */
+.logs-modes {
+  padding: 18px 18px 18px;
+}
+.logs-modes-grid {
+  --step: 1.3s;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1px;
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+  background: var(--line);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.logs-mode {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+  padding: 16px 16px 14px;
+  background: var(--page);
+  transition: background 0.3s;
+}
+.logs-mode:hover {
+  background: color-mix(in srgb, var(--accent) 7%, var(--page));
+}
+.logs-mode-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: var(--subtle);
+  letter-spacing: 0.12em;
+}
+.logs-led {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--accent) 40%, var(--line));
+  animation: logs-select calc(var(--channels, 6) * var(--step)) steps(1, end)
+    infinite;
+  animation-delay: calc(var(--i, 0) * var(--step));
+}
+.logs-mode:hover .logs-led {
+  background: var(--accent);
+  box-shadow: 0 0 10px var(--accent);
+}
+@keyframes logs-select {
+  0% {
+    background: var(--accent);
+    box-shadow: 0 0 10px var(--accent);
+  }
+  16% {
+    background: color-mix(in srgb, var(--accent) 40%, var(--line));
+    box-shadow: none;
+  }
+}
+.portfolio .logs-mode-name {
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 1.25;
+  letter-spacing: -0.03em;
+}
+.logs-carrier {
+  display: block;
+  height: 18px;
+  margin-top: auto;
+  overflow: hidden;
+  opacity: 0.75;
+}
+.logs-carrier svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.logs-carrier path {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 1.2;
+  vector-effect: non-scaling-stroke;
+  animation: logs-carrier calc(3.4s - var(--i, 0) * 0.3s) linear infinite;
+}
+@keyframes logs-carrier {
+  to {
+    transform: translateX(-120px);
+  }
+}
+
+/* ============================================================ responsive */
+@media (max-width: 1100px) {
+  .logs-trace-grid {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "hud"
+      "track";
+    gap: 12px;
+  }
+  /* The readout becomes a strip that rides along the top of the screen. */
+  .logs-hud {
+    top: 0;
+    z-index: 6;
+    display: grid;
+    grid-template-columns: auto auto minmax(0, 1fr);
+    align-items: center;
+    gap: 6px 18px;
+    padding: 10px 14px;
+    border-radius: 0 0 10px 10px;
+    background: color-mix(in srgb, var(--page) 88%, transparent);
+    backdrop-filter: blur(10px);
+  }
+  .logs-hud-head {
+    gap: 10px;
+  }
+  .logs-hud-date {
+    margin: 0;
+    font-size: 20px;
+  }
+  .logs-hud-kind {
+    margin: 0;
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .logs-hud-title,
+  .logs-minimap,
+  .logs-hud-hint {
+    display: none;
+  }
+  .logs-cal-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 767px) {
+  .logs-track {
+    --rail: 46px;
+    --rail-cx: 16px;
+  }
+  .logs-lede {
+    font-size: 15px;
+  }
+  .logs-summary-grid dd {
+    font-size: 26px;
+  }
+  .logs-hud {
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 4px 14px;
+  }
+  .logs-hud-kind {
+    grid-column: 1 / -1;
+  }
+  .logs-hud-date {
+    justify-self: end;
+    font-size: 18px;
+  }
+  .portfolio .logs-title {
+    font-size: 18px;
+  }
+  .portfolio .logs-row[data-role] .logs-title {
+    font-size: 21px;
+  }
+  .logs-row[data-role] {
+    --node-top: 38px;
+  }
+  .logs-card.lab-panel {
+    padding: 16px 16px 18px;
+  }
+  .logs-text,
+  .logs-highlights li {
+    font-size: 14px;
+  }
+  .logs-cal-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .logs-cal {
+    min-height: 0;
+  }
+  .logs-modes-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .portfolio .logs-mode-name {
+    font-size: 15px;
+  }
+  .logs-mode {
+    padding: 14px 12px 12px;
+  }
+}

@@ -1,313 +1,138 @@
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import PageTransition from '@/components/PageTransition';
-import {
-  skills,
-  skillCategories,
-  softSkills,
-  type Skill,
-} from '@/data/profile';
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useReducedMotion } from "framer-motion";
+import { useSearchParams } from "react-router-dom";
+import { skillCategories, softSkills, type SkillCategory } from "@/data/profile";
+import { LabHero, LabSectionTitle, Reveal } from "@/sites/cyan/lab/LabParts";
+import { AreaSpectrum } from "@/sites/cyan/lab/vault/AreaSpectrum";
+import { NODES, NODE_BY_ID, TOTALS } from "@/sites/cyan/lab/vault/graph";
+import { SkillConstellation } from "@/sites/cyan/lab/vault/SkillConstellation";
+import { SkillDossier } from "@/sites/cyan/lab/vault/SkillDossier";
+import { SkillIndex } from "@/sites/cyan/lab/vault/SkillIndex";
+import "@/sites/cyan/lab/vault.css";
+
+const NUMBERS = ["Zero", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen", "Twenty"];
+const inWords = (n: number) => NUMBERS[n] ?? String(n);
 
 /**
- * Graph coordinates are percentages of the canvas. The canvas itself only
- * renders on large screens — below that the same data is shown as a grouped
- * grid, which is far more usable with a thumb.
+ * Lab / 03: the skill map. A radar-style star chart of every skill, a readout
+ * for the selected one, and the same skills as a plain index below. The
+ * selection lives in the address (?skill=python) so a view can be shared.
  */
-const nodePositions: Record<string, { x: number; y: number }> = {
-  java: { x: 12, y: 12 },
-  python: { x: 32, y: 16 },
-  cpp: { x: 52, y: 10 },
-  js: { x: 72, y: 14 },
-  llm: { x: 88, y: 27 },
-  frameworks: { x: 68, y: 33 },
-  rag: { x: 46, y: 35 },
-  fastapi: { x: 26, y: 37 },
-  react: { x: 8, y: 35 },
-  vector: { x: 60, y: 53 },
-  nlp: { x: 38, y: 55 },
-  databases: { x: 16, y: 57 },
-  data: { x: 84, y: 53 },
-  gcp: { x: 30, y: 77 },
-  docker: { x: 54, y: 75 },
-  cicd: { x: 76, y: 75 },
-};
-
-const categoryAccent: Record<string, string> = {
-  Languages: 'text-primary',
-  'AI/ML': 'text-primary',
-  Web: 'text-primary',
-  'Cloud & DevOps': 'text-primary',
-  Data: 'text-primary',
-};
-
-const SkillDetail = ({
-  skill,
-  onPick,
-}: {
-  skill: Skill;
-  onPick: (skill: Skill) => void;
-}) => (
-  <div className="glass-intense rounded-2xl p-5 sm:p-7">
-    <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between mb-4">
-      <div>
-        <h3 className="text-xl sm:text-2xl font-bold text-foreground leading-tight">
-          {skill.name}
-        </h3>
-        <p className="text-muted-foreground text-sm mt-1">{skill.category}</p>
-      </div>
-
-      <div className="flex flex-wrap items-center gap-2">
-        <span className="text-xs text-muted-foreground w-full md:w-auto">
-          Connected to:
-        </span>
-        {skill.connections.map((id) => {
-          const linked = skills.find((s) => s.id === id);
-          return linked ? (
-            <button
-              key={id}
-              onClick={() => onPick(linked)}
-              className="px-3 py-1.5 rounded-lg bg-primary/10 border border-primary/30 text-primary text-xs hover:bg-primary/20 transition-colors"
-            >
-              {linked.name}
-            </button>
-          ) : null;
-        })}
-      </div>
-    </div>
-
-    <p className="text-muted-foreground text-sm sm:text-base leading-relaxed">
-      {skill.description}
-    </p>
-  </div>
-);
-
 const Vault = () => {
-  const [selectedSkill, setSelectedSkill] = useState<Skill | null>(null);
-  const [hoveredSkill, setHoveredSkill] = useState<string | null>(null);
+  const [params, setParams] = useSearchParams();
+  const raw = params.get("skill");
+  const selected = raw && NODE_BY_ID.has(raw) ? raw : null;
+  const [filter, setFilter] = useState<SkillCategory | null>(null);
+  const chartRef = useRef<HTMLElement>(null);
+  const reduced = useReducedMotion();
 
-  const activeId = selectedSkill?.id ?? hoveredSkill;
-  const activeSkill = skills.find((s) => s.id === activeId);
+  const select = useCallback(
+    (id: string | null) => {
+      if (id && filter && NODE_BY_ID.get(id)?.skill.category !== filter) setFilter(null);
+      setParams(
+        (current) => {
+          const next = new URLSearchParams(current);
+          if (id) next.set("skill", id);
+          else next.delete("skill");
+          return next;
+        },
+        { replace: true, preventScrollReset: true },
+      );
+    },
+    [filter, setParams],
+  );
 
-  const isLinked = (id: string) =>
-    !!activeSkill &&
-    (activeSkill.id === id || activeSkill.connections.includes(id));
+  useEffect(() => {
+    if (!selected) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape" && !event.defaultPrevented) select(null);
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [selected, select]);
+
+  const showOnChart = (id: string) => {
+    select(id);
+    chartRef.current?.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "start" });
+  };
+
+  const node = selected ? NODE_BY_ID.get(selected) : undefined;
 
   return (
-    <PageTransition>
-      <div className="page-shell">
-        <div className="max-w-6xl mx-auto">
-          {/* Header */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="mb-8 md:mb-12"
-          >
-            <div className="section-eyebrow">
-              <div className="w-3 h-3 rounded-full bg-primary animate-pulse" />
-              <span className="text-xs text-muted-foreground tracking-widest">
-                VAULT / TECHNICAL STACK
-              </span>
-            </div>
-
-            <h1 className="section-title">
-              <span className="gradient-text text-glow">Technical Stack</span>
-            </h1>
-
-            <p className="text-sm md:text-base text-muted-foreground max-w-2xl leading-relaxed">
-              Sixteen capabilities and how they connect. Select any node to see
-              what it is used for and what it pairs with.
+    <div className="vault-page">
+      <LabHero
+        code="03"
+        eyebrow="Skill map"
+        title="What I build with,"
+        muted="and how it all connects."
+        intro={
+          <>
+            <p>
+              {inWords(TOTALS.skills)} skills across {inWords(TOTALS.areas).toLowerCase()} areas, plotted like a star
+              chart. Each area holds a sector of the dial, the best-linked skills sit nearest the centre, and a line
+              joins every pair that relate.
             </p>
-          </motion.div>
+            <p>Select a skill to bring it to the middle and read what it covers.</p>
+          </>
+        }
+        aside={<AreaSpectrum filter={filter} />}
+      />
 
-          {/* Network canvas — large screens only */}
-          <div className="relative w-full h-[680px] glass rounded-2xl overflow-hidden mb-8 hidden lg:block">
-            <svg className="absolute inset-0 w-full h-full pointer-events-none">
-              {skills.map((skill) =>
-                skill.connections.map((connectionId) => {
-                  const start = nodePositions[skill.id];
-                  const end = nodePositions[connectionId];
-                  if (!start || !end) return null;
-
-                  const highlighted =
-                    activeId === skill.id || activeId === connectionId;
-
-                  return (
-                    <motion.line
-                      key={`${skill.id}-${connectionId}`}
-                      x1={`${start.x}%`}
-                      y1={`${start.y}%`}
-                      x2={`${end.x}%`}
-                      y2={`${end.y}%`}
-                      stroke={
-                        highlighted
-                          ? 'hsl(180, 100%, 50%)'
-                          : 'hsl(180, 30%, 20%)'
-                      }
-                      strokeWidth={highlighted ? 2 : 1}
-                      strokeDasharray={highlighted ? '0' : '5,5'}
-                      initial={{ pathLength: 0 }}
-                      animate={{
-                        pathLength: 1,
-                        opacity: highlighted ? 1 : activeId ? 0.12 : 0.3,
-                      }}
-                      transition={{ duration: 0.8 }}
-                    />
-                  );
-                }),
-              )}
-            </svg>
-
-            {skills.map((skill, index) => {
-              const pos = nodePositions[skill.id];
-              if (!pos) return null;
-
-              const selected = selectedSkill?.id === skill.id;
-              const linked = isLinked(skill.id);
-
-              return (
-                <motion.button
-                  key={skill.id}
-                  initial={{ opacity: 0, scale: 0 }}
-                  animate={{
-                    opacity: activeId && !linked ? 0.35 : 1,
-                    scale: 1,
-                  }}
-                  transition={{ duration: 0.4, delay: index * 0.05 }}
-                  className="absolute w-28 flex flex-col items-center"
-                  style={{ left: `${pos.x}%`, top: `${pos.y}%`, x: "-50%", y: -28 }}
-                  onMouseEnter={() => setHoveredSkill(skill.id)}
-                  onMouseLeave={() => setHoveredSkill(null)}
-                  onClick={() =>
-                    setSelectedSkill(selected ? null : skill)
-                  }
-                >
-                  <div
-                    className={`relative w-14 h-14 rounded-full flex items-center justify-center border-2 transition-all duration-300 ${
-                      selected
-                        ? 'bg-primary/30 border-primary shadow-[0_0_30px_hsl(180,100%,50%/0.5)]'
-                        : linked
-                          ? 'bg-primary/20 border-primary/60'
-                          : 'bg-muted/50 border-border hover:border-primary/50'
-                    }`}
-                  >
-                    <span
-                      className={`text-xs font-bold tracking-wider ${
-                        selected ? 'text-primary' : 'text-foreground'
-                      }`}
-                    >
-                      {skill.short}
-                    </span>
-                  </div>
-
-                  <span
-                    className={`mt-2 text-[11px] leading-tight text-center ${
-                      selected ? 'text-primary text-glow' : 'text-muted-foreground'
-                    }`}
-                  >
-                    {skill.name}
-                  </span>
-                </motion.button>
-              );
-            })}
-          </div>
-
-          {/* Detail panel */}
-          <AnimatePresence mode="wait">
-            {selectedSkill && (
-              <motion.div
-                key={selectedSkill.id}
-                initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -8 }}
-                transition={{ duration: 0.25 }}
-                className="mb-10 md:mb-12"
+      <section ref={chartRef} className="lab-section vault-chart" aria-labelledby="vault-chart-title">
+        <div className="vault-chart-head">
+          <LabSectionTitle index="01" id="vault-chart-title">
+            The chart
+          </LabSectionTitle>
+          <div className="vault-filters" role="group" aria-label="Show one area">
+            <button type="button" className="lab-chip" aria-pressed={filter === null} onClick={() => setFilter(null)}>
+              All <span className="vault-chip-count">{String(TOTALS.skills).padStart(2, "0")}</span>
+            </button>
+            {skillCategories.map((category) => (
+              <button
+                key={category}
+                type="button"
+                className="lab-chip"
+                aria-pressed={filter === category}
+                onClick={() => setFilter(filter === category ? null : category)}
               >
-                <SkillDetail skill={selectedSkill} onPick={setSelectedSkill} />
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          {/* Grouped grid — the primary view on phones and tablets */}
-          <div className="space-y-8 md:space-y-10">
-            {skillCategories.map((category) => {
-              const group = skills.filter((s) => s.category === category);
-              if (!group.length) return null;
-
-              return (
-                <section key={category}>
-                  <h2 className="text-sm font-semibold text-foreground mb-4 flex items-center gap-2">
-                    <span className={categoryAccent[category]}>&gt;</span>
-                    {category}
-                    <span className="text-xs text-muted-foreground font-normal">
-                      ({group.length})
-                    </span>
-                  </h2>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
-                    {group.map((skill, index) => {
-                      const selected = selectedSkill?.id === skill.id;
-                      return (
-                        <motion.button
-                          key={skill.id}
-                          initial={{ opacity: 0, y: 16 }}
-                          whileInView={{ opacity: 1, y: 0 }}
-                          viewport={{ once: true, margin: '-40px' }}
-                          transition={{ duration: 0.4, delay: index * 0.05 }}
-                          onClick={() =>
-                            setSelectedSkill(selected ? null : skill)
-                          }
-                          className={`bento-card text-left ${
-                            selected ? 'border-primary/50 glass-intense' : ''
-                          }`}
-                        >
-                          <div className="flex items-center gap-3 mb-2">
-                            <span
-                              className={`w-9 h-9 shrink-0 rounded-lg border flex items-center justify-center text-[10px] font-bold ${
-                                selected
-                                  ? 'bg-primary/25 border-primary text-primary'
-                                  : 'bg-muted/50 border-border text-muted-foreground'
-                              }`}
-                            >
-                              {skill.short}
-                            </span>
-                            <h3 className="text-sm sm:text-base font-semibold text-foreground leading-snug">
-                              {skill.name}
-                            </h3>
-                          </div>
-
-                          <p className="text-xs text-muted-foreground leading-relaxed line-clamp-3">
-                            {skill.description}
-                          </p>
-                        </motion.button>
-                      );
-                    })}
-                  </div>
-                </section>
-              );
-            })}
-          </div>
-
-          {/* Soft skills */}
-          <section className="mt-12 md:mt-16">
-            <h2 className="text-sm font-semibold text-foreground mb-4 flex items-center gap-2">
-              <span className="text-primary">&gt;</span> Core Strengths
-            </h2>
-
-            <div className="flex flex-wrap gap-2.5">
-              {softSkills.map((skill) => (
-                <span
-                  key={skill}
-                  className="px-3.5 py-2 rounded-xl glass text-sm text-muted-foreground"
-                >
-                  {skill}
+                {category}
+                <span className="vault-chip-count">
+                  {String(NODES.filter((n) => n.skill.category === category).length).padStart(2, "0")}
                 </span>
-              ))}
-            </div>
-          </section>
+              </button>
+            ))}
+          </div>
         </div>
-      </div>
-    </PageTransition>
+
+        <div className="vault-chart-grid">
+          <SkillConstellation selected={selected} filter={filter} onSelect={select} />
+          <SkillDossier selected={selected} onSelect={select} />
+        </div>
+        <p className="sr-only" role="status" aria-live="polite">
+          {node ? `Chart centred on ${node.skill.name}, with ${node.links.length} linked skills.` : ""}
+        </p>
+      </section>
+
+      <section className="lab-section vault-index-section" aria-labelledby="vault-index-title">
+        <LabSectionTitle index="02" id="vault-index-title">
+          Index
+        </LabSectionTitle>
+        <p className="vault-section-intro">Every skill on the chart, in plain text, grouped by area.</p>
+        <SkillIndex selected={selected} onShow={showOnChart} />
+      </section>
+
+      <Reveal as="section" className="lab-section vault-strengths">
+        <LabSectionTitle index="03">Working strengths</LabSectionTitle>
+        <ul className="vault-strength-list">
+          {softSkills.map((skill, k) => (
+            <li key={skill}>
+              <span className="mono">{String(k + 1).padStart(2, "0")}</span>
+              {skill}
+            </li>
+          ))}
+        </ul>
+      </Reveal>
+    </div>
   );
 };
 

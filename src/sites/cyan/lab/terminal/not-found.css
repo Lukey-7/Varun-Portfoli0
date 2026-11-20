@@ -1,0 +1,324 @@
+/* The lab's not-found page: a dead channel. A huge 404 in phosphor amber
+   (it is a reading, the status the server gave back), a line of copy, and an
+   oscilloscope that sweeps for a carrier it never finds. The 404 tears now
+   and then, a fine static crawls over the scope, and both stop with the
+   site-wide pause or reduced motion (lab.css). */
+
+.nf {
+  --nf-glow: 0 0 2px color-mix(in srgb, var(--phosphor) 60%, transparent),
+    0 0 36px color-mix(in srgb, var(--phosphor) 32%, transparent);
+  --nf-glass: #030807;
+  padding-top: 24px;
+}
+.cyan-edition[data-theme="light"] .nf {
+  --nf-glow: none;
+  --nf-glass: color-mix(in srgb, var(--panel) 62%, var(--page));
+}
+
+.nf-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  gap: 64px;
+  align-items: center;
+}
+.nf-copy {
+  min-width: 0;
+}
+
+.portfolio .nf-title {
+  margin-top: 18px;
+  font-size: clamp(30px, 3.4vw, 46px);
+  line-height: 1.08;
+  font-weight: 500;
+  letter-spacing: -0.045em;
+}
+.nf-title > span:last-child {
+  color: var(--muted);
+}
+
+/* The readout. Two copies sit over it and tear sideways for a moment every few seconds. */
+.nf-code {
+  position: relative;
+  display: block;
+  width: fit-content;
+  margin-bottom: 18px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: clamp(120px, 19vw, 260px);
+  font-weight: 500;
+  line-height: 0.86;
+  letter-spacing: -0.06em;
+  color: var(--phosphor);
+  text-shadow: var(--nf-glow);
+  font-variant-numeric: tabular-nums;
+  animation: nf-flicker 5.2s steps(1) infinite;
+}
+.nf-code::before,
+.nf-code::after {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+}
+.nf-code::before {
+  color: var(--accent);
+  text-shadow: none;
+  mix-blend-mode: screen;
+  animation: nf-tear-a 5.2s steps(1) infinite;
+}
+.nf-code::after {
+  color: var(--phosphor);
+  animation: nf-tear-b 5.2s steps(1) infinite;
+}
+.cyan-edition[data-theme="light"] .nf-code::before {
+  mix-blend-mode: multiply;
+}
+
+.nf-shell {
+  margin-top: 26px;
+  padding: 12px 14px;
+  border-left: 2px solid var(--accent);
+  background: color-mix(in srgb, var(--panel) 70%, transparent);
+  color: var(--muted);
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+.nf-prompt {
+  color: var(--accent);
+}
+.nf-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 30px;
+}
+
+/* ---------------------------------------------------------------- scope */
+.nf-scope {
+  margin: 0;
+  min-width: 0;
+}
+.nf-scope-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--line);
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+.nf-scope-led {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--phosphor);
+  box-shadow: 0 0 10px var(--phosphor);
+  animation: lab-blink 1.1s steps(2, jump-none) infinite;
+}
+.nf-scope-ch {
+  margin-left: auto;
+  color: var(--subtle);
+}
+.nf-scope-screen {
+  position: relative;
+  margin: 14px;
+  aspect-ratio: 20 / 9;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--accent) 16%, var(--line));
+  background:
+    radial-gradient(ellipse 80% 70% at 50% 50%, color-mix(in srgb, var(--accent) 8%, transparent), transparent 70%),
+    var(--nf-glass);
+}
+.nf-scope-screen::after {
+  /* Scanlines and a vignette, as on the terminal. */
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 120% 100% at 50% 50%, transparent 60%, rgba(0, 0, 0, 0.5) 100%),
+    repeating-linear-gradient(to bottom, transparent 0 2px, rgba(0, 0, 0, 0.3) 2px 3px);
+}
+.cyan-edition[data-theme="light"] .nf-scope-screen::after {
+  background:
+    radial-gradient(ellipse 120% 100% at 50% 50%, transparent 60%, color-mix(in srgb, var(--ink) 7%, transparent) 100%),
+    repeating-linear-gradient(to bottom, transparent 0 2px, color-mix(in srgb, var(--ink) 4%, transparent) 2px 3px);
+}
+.nf-scope-screen svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.nf-scope-grid line {
+  stroke: color-mix(in srgb, var(--accent) 12%, transparent);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+.nf-scope-trace {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 1.6;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+  filter: drop-shadow(0 0 4px color-mix(in srgb, var(--accent) 80%, transparent));
+}
+.nf-scope-head {
+  fill: var(--ink);
+  filter: drop-shadow(0 0 6px var(--accent));
+  opacity: 0;
+}
+.cyan-edition[data-theme="light"] .nf-scope-trace,
+.cyan-edition[data-theme="light"] .nf-scope-head {
+  filter: none;
+}
+.cyan-edition[data-theme="light"] .nf-scope-head {
+  fill: var(--accent);
+}
+/* Fine static: a tile of noise that jumps about a few times a second. */
+.nf-scope-static {
+  position: absolute;
+  inset: -40px;
+  pointer-events: none;
+  opacity: 0.12;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.1' numOctaves='1' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1.2 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation: nf-static 0.6s steps(5) infinite;
+}
+.cyan-edition[data-theme="light"] .nf-scope-static {
+  opacity: 0.08;
+  filter: invert(1);
+}
+
+.nf-scope-readouts {
+  display: grid;
+  grid-template-columns: auto auto minmax(0, 1fr);
+  gap: 16px;
+  padding: 0 16px 14px;
+}
+.nf-scope-readouts > div {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+.nf-scope-readouts dt {
+  color: var(--subtle);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 10px;
+}
+.nf-scope-readouts dd {
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+.nf-scope-path dd {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ------------------------------------------------------------ keyframes */
+@keyframes nf-flicker {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  91% {
+    opacity: 0.55;
+  }
+  92% {
+    opacity: 1;
+  }
+  95% {
+    opacity: 0.8;
+  }
+  96% {
+    opacity: 1;
+  }
+}
+@keyframes nf-tear-a {
+  0%,
+  100% {
+    opacity: 0;
+    transform: none;
+    clip-path: inset(0);
+  }
+  91% {
+    opacity: 0.85;
+    transform: translate(-6px, 0);
+    clip-path: inset(18% 0 58% 0);
+  }
+  93% {
+    opacity: 0.85;
+    transform: translate(9px, 0);
+    clip-path: inset(62% 0 12% 0);
+  }
+  95% {
+    opacity: 0;
+  }
+}
+@keyframes nf-tear-b {
+  0%,
+  100% {
+    opacity: 0;
+    transform: none;
+    clip-path: inset(0);
+  }
+  92% {
+    opacity: 1;
+    transform: translate(12px, 0);
+    clip-path: inset(40% 0 44% 0);
+  }
+  94% {
+    opacity: 0;
+  }
+}
+@keyframes nf-static {
+  0% {
+    transform: translate(0, 0);
+  }
+  20% {
+    transform: translate(-17px, 9px);
+  }
+  40% {
+    transform: translate(11px, -21px);
+  }
+  60% {
+    transform: translate(-25px, -6px);
+  }
+  80% {
+    transform: translate(19px, 14px);
+  }
+}
+
+/* The pause must not freeze the readout mid-tear. */
+html[data-motion="paused"] .nf-code,
+html[data-motion="paused"] .nf-code::before,
+html[data-motion="paused"] .nf-code::after {
+  animation: none !important;
+}
+
+/* ----------------------------------------------------------- responsive */
+@media (max-width: 1100px) {
+  .nf-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 48px;
+  }
+}
+@media (max-width: 767px) {
+  .nf {
+    padding-top: 8px;
+  }
+  .nf-code {
+    font-size: clamp(96px, 34vw, 180px);
+  }
+  .nf-scope-readouts {
+    grid-template-columns: auto auto;
+  }
+  .nf-scope-path {
+    grid-column: 1 / -1;
+  }
+}
