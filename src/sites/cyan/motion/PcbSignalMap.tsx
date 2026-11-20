@@ -88,6 +88,8 @@ type Metrics = {
   toolGap: number;
   /** Between the pads of a tool that more than one project uses. */
   padSpread: number;
+  /** Least room between the outermost pin or pad and the end of its part. */
+  edge: number;
   chamfer: number;
   via: number;
   /** Least level run before a trace may turn. */
@@ -115,6 +117,7 @@ const WIDE: Metrics = {
   toolH: 24,
   toolGap: 6,
   padSpread: 8,
+  edge: 6,
   chamfer: 6,
   via: 2.5,
   stub: 32,
@@ -144,6 +147,7 @@ function compactMetrics(width: number): Metrics {
     toolH: 24,
     toolGap: 6,
     padSpread: 8,
+    edge: 5,
     chamfer: 3,
     via: 1.7,
     stub: 8,
@@ -270,62 +274,125 @@ function layoutBoard(width: number, projects: readonly MapProject[] = MAP_PROJEC
     tools.map((tool) => [tool, projects.flatMap((p, i) => (p.tools.includes(tool) ? [i] : []))]),
   );
   const toolPitch = m.toolH + m.toolGap;
-  const partsH = Math.max(
-    tools.length * toolPitch - m.toolGap,
-    projects.length * (m.chipH + m.chipGap) - m.chipGap,
-  );
   const top = m.head;
   const x0 = m.pad + m.projectW;
   const x1 = width - m.pad - m.toolW;
   const xs = x0 + m.pinLen;
   const xe = x1 - m.pinLen;
 
-  const toolTop = (row: number) => top + row * toolPitch;
+  // A tool that several projects use grows tall enough to keep its pads apart.
+  const toolHeight = new Map(
+    tools.map((tool) => {
+      const count = users.get(tool)?.length ?? 1;
+      return [tool, Math.max(m.toolH, (count - 1) * m.padSpread + 2 * m.edge)];
+    }),
+  );
+  const toolTop = new Map<string, number>();
   // A shared tool spreads its pads in the order of its projects, top to bottom.
   const padY = (tool: string, project: number) => {
     const list = users.get(tool) ?? [project];
-    const middle = toolTop(tools.indexOf(tool)) + m.toolH / 2;
+    const middle = (toolTop.get(tool) ?? top) + (toolHeight.get(tool) ?? m.toolH) / 2;
     return middle + (list.indexOf(project) - (list.length - 1) / 2) * m.padSpread;
   };
-  const offsets = (count: number) =>
-    Array.from({ length: count }, (_, k) => (k - (count - 1) / 2) * m.pinPitch);
+  // Pins close up on a chip with more tools than its height takes at the usual pitch.
+  const offsets = (count: number) => {
+    const pitch = count > 1 ? Math.min(m.pinPitch, (m.chipH - 2 * m.edge) / (count - 1)) : 0;
+    return Array.from({ length: count }, (_, k) => (k - (count - 1) / 2) * pitch);
+  };
 
-  // A chip's pins meet its tools in the same top-to-bottom order, so its own traces never cross.
-  const pins = projects.map((project, i) =>
-    project.tools.map((tool) => ({ tool, to: padY(tool, i) })).sort((a, b) => a.to - b.to),
-  );
-  const pads = pins.flatMap((list, i) => list.map((pin) => ({ project: i, tool: pin.tool, y: pin.to })));
-  // Each chip tries every height that runs one of its traces level and keeps
-  // the one with the least upright travel, where a pin level with another
-  // trace's pad costs extra: the two runs would read as one broken line.
-  const centres = pins.map((list, i) => {
-    const shift = offsets(list.length);
-    const score = (centre: number) =>
-      list.reduce((sum, pin, k) => {
-        const y = centre + shift[k];
-        const clashes = pads.filter(
-          (pad) => !(pad.project === i && pad.tool === pin.tool) && Math.abs(pad.y - y) < m.sep,
-        ).length;
-        return sum + Math.abs(y - pin.to) + clashes * 2 * toolPitch;
-      }, 0);
-    const options = list.map((pin, k) => pin.to - shift[k]).sort((a, b) => a - b);
-    let best = options[0] ?? top + partsH / 2;
-    for (const option of options) if (score(option) < score(best)) best = option;
-    return best;
-  });
+  /*
+   * Parts are placed top to bottom, a project at a time. Tools are listed in
+   * the order projects first use them, so the tools a project brings in are
+   * placed with its chip. The chip tries every height that runs one of its
+   * traces level and keeps the one with the least upright travel, where a pin
+   * level with another trace's pad costs extra: the two runs would read as one
+   * broken line. When a level run would put the chip into the one above, the
+   * project's new tools move down to meet it instead, so every chip can run a
+   * trace level however many projects the board holds.
+   */
   const step = m.chipH + m.chipGap;
-  const lowest = top + m.chipH / 2;
-  const highest = top + partsH - m.chipH / 2;
-  for (let k = 0; k < centres.length; k++) {
-    centres[k] = clamp(centres[k], lowest, highest);
-    if (k > 0) centres[k] = Math.max(centres[k], centres[k - 1] + step);
-  }
-  for (let k = centres.length - 1; k >= 0; k--) {
-    centres[k] = Math.min(centres[k], k === centres.length - 1 ? highest : centres[k + 1] - step);
-  }
-  if (centres.length && centres[0] < lowest) {
-    centres.forEach((_, k) => (centres[k] = Math.round(top + ((k + 0.5) * partsH) / centres.length)));
-  }
+  const centres: number[] = [];
+  // A chip's pins meet its tools in the same top-to-bottom order, so its own traces never cross.
+  const pins: { tool: string; to: number }[][] = [];
+  const placedPins: number[] = [];
+  /** The least centre for the next chip. */
+  let floor = top + m.chipH / 2;
+  /** Where the next new tool may start. */
+  let cursor = top;
+  projects.forEach((project, i) => {
+    const fresh = project.tools.filter((tool) => !toolTop.has(tool));
+    const shift = offsets(project.tools.length);
+    /** Puts the project's new tools in from `start` and returns where the next tool may go. */
+    const place = (start: number) => {
+      let y = start;
+      for (const tool of fresh) {
+        toolTop.set(tool, y);
+        y += (toolHeight.get(tool) ?? m.toolH) + m.toolGap;
+      }
+      return y;
+    };
+    const route = () =>
+      project.tools.map((tool) => ({ tool, to: padY(tool, i) })).sort((a, b) => a.to - b.to);
+    const clashes = (y: number, skip?: string) => {
+      let count = 0;
+      for (const tool of toolTop.keys()) {
+        for (const user of users.get(tool) ?? []) {
+          if (!(user === i && tool === skip) && Math.abs(padY(tool, user) - y) < m.sep) count++;
+        }
+      }
+      return count;
+    };
+    const score = ({ centre, start }: { centre: number; start: number }) => {
+      place(start);
+      let cost = start - cursor;
+      route().forEach((pin, k) => {
+        const y = centre + shift[k];
+        cost += Math.abs(y - pin.to) + clashes(y, pin.tool) * 2 * toolPitch;
+      });
+      // The new pads against the pins of the chips above, which never lead to them.
+      for (const tool of fresh) {
+        for (const user of users.get(tool) ?? []) {
+          const y = padY(tool, user);
+          cost += placedPins.filter((pin) => Math.abs(pin - y) < m.sep).length * 2 * toolPitch;
+        }
+      }
+      return cost;
+    };
+
+    const options: { centre: number; start: number }[] = [];
+    for (const tool of project.tools) {
+      let start = cursor;
+      for (let tries = 0; tries <= project.tools.length; tries++) {
+        place(start);
+        const k = route().findIndex((pin) => pin.tool === tool);
+        const centre = padY(tool, i) - shift[k];
+        if (centre >= floor - 0.01) {
+          options.push({ centre, start });
+          break;
+        }
+        // A tool placed with an earlier project stays put; a new one can come down.
+        if (!fresh.includes(tool)) break;
+        start += floor - centre;
+      }
+    }
+    let best = options[0] ?? { centre: floor, start: cursor };
+    let least = score(best);
+    for (const option of options.slice(1)) {
+      const cost = score(option);
+      if (cost < least) [best, least] = [option, cost];
+    }
+    cursor = place(best.start);
+    const list = route();
+    centres.push(best.centre);
+    pins.push(list);
+    list.forEach((_, k) => placedPins.push(best.centre + shift[k]));
+    floor = best.centre + step;
+  });
+  const partsBottom = Math.max(
+    top,
+    cursor - m.toolGap,
+    ...centres.map((centre) => centre + m.chipH / 2),
+  );
 
   const links = pins.flatMap((list, i) => {
     const shift = offsets(list.length);
@@ -362,7 +429,7 @@ function layoutBoard(width: number, projects: readonly MapProject[] = MAP_PROJEC
     };
   });
 
-  const height = top + partsH + m.pad;
+  const height = partsBottom + m.pad;
   const inset = m.pad / 2;
   const hole = size === "wide" ? 3.5 : 2.5;
   return {
@@ -384,10 +451,10 @@ function layoutBoard(width: number, projects: readonly MapProject[] = MAP_PROJEC
       ref: `U${i + 1}`,
       box: { x: m.pad, y: centres[i] - m.chipH / 2, w: m.projectW, h: m.chipH },
     })),
-    tools: tools.map((tool, row) => ({
+    tools: tools.map((tool) => ({
       name: tool,
       users: (users.get(tool) ?? []).map((i) => projects[i].name),
-      box: { x: x1, y: toolTop(row), w: m.toolW, h: m.toolH },
+      box: { x: x1, y: toolTop.get(tool) ?? top, w: m.toolW, h: toolHeight.get(tool) ?? m.toolH },
     })),
     traces,
   };

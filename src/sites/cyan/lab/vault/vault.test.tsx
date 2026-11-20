@@ -54,7 +54,7 @@ describe("the skill chart's geometry", () => {
   it("lists a project only where its stack names the skill exactly", () => {
     const python = skills.find((s) => s.id === "python")!;
     const cpp = skills.find((s) => s.id === "cpp")!;
-    expect(usedIn(python).map((p) => p.name)).toEqual(["StudyForge", "AxiomQuant"]);
+    expect(usedIn(python).map((p) => p.name)).toEqual(["StudyForge", "AxiomQuant", "ReconPilot", "Inventory RL"]);
     // "C++20" is not "C++": no guessing.
     expect(usedIn(cpp)).toEqual([]);
   });

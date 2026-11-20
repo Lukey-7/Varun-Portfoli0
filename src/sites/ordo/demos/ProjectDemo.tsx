@@ -11,6 +11,8 @@ const FILES: Record<string, string> = {
   axiomquant: "./AxiomQuantDemo.tsx",
   sprachweg: "./SprachwegDemo.tsx",
   tetris: "./ArcadeDemo.tsx",
+  reconpilot: "./ReconPilotDemo.tsx",
+  "inventory-rl": "./InventoryDemo.tsx",
 };
 
 const cache = new Map<string, LazyExoticComponent<ComponentType>>();

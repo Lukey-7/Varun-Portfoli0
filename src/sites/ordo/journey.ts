@@ -29,6 +29,20 @@ export const journeyKinds: { id: JourneyKind; label: string }[] = [
 
 export const journey: JourneyEntry[] = [
   {
+    date: "2026-11",
+    kind: "project",
+    title: "Inventory RL: PPO against the textbook ordering rule",
+    text: "Over 30 held-out seeds, PPO beat a tuned (s, S) rule only where demand follows a weekly cycle, by about 3%.",
+    to: "/work/inventory-rl",
+  },
+  {
+    date: "2026-11",
+    kind: "project",
+    title: "ReconPilot",
+    text: "Daily fund reconciliation and NAV checks, scored against planted breaks, with four-eyes sign-off and a hash-chained audit log.",
+    to: "/work/reconpilot",
+  },
+  {
     date: "2026-10",
     kind: "site",
     title: "Rebuilt this site around working demos",

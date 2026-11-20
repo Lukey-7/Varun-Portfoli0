@@ -1,7 +1,9 @@
 import {
   ArrowRight,
   BookOpen,
+  Eye,
   FileText,
+  Package,
   ScanLine,
   Wallet,
   Network,
@@ -87,6 +89,88 @@ export default function ProjectVisual({ kind }: { kind: string }) {
             </span>
           ),
         )}
+      </div>
+    );
+  if (kind === "recon")
+    return (
+      <div
+        className="project-visual recon-visual"
+        aria-label="Reconciliation diagram: book and custodian ledgers are matched row by row, one break is sized in basis points of NAV, passes a four-eyes sign-off and is written to a hash-chained audit log"
+        role="img"
+      >
+        <div className="recon-ledgers">
+          <div className="recon-head">
+            <b>book</b>
+            <b>custodian</b>
+          </div>
+          {Array.from({ length: 5 }, (_, i) => (
+            <div
+              className={`recon-row${i === 2 ? " is-break" : ""}`}
+              key={i}
+            >
+              <span />
+              <i />
+              <span />
+            </div>
+          ))}
+        </div>
+        <div className="diagram-link">
+          <i />
+          <ArrowRight size={13} />
+        </div>
+        <div className="recon-gate">
+          <span className="recon-break">Δ 3.2 bp</span>
+          <span className="recon-eyes">
+            <Eye size={14} strokeWidth={1.25} />
+            <Eye size={14} strokeWidth={1.25} />
+          </span>
+          <small>four eyes</small>
+        </div>
+        <div className="diagram-link">
+          <i />
+          <ArrowRight size={13} />
+        </div>
+        <div className="recon-chain">
+          {["#4e1a", "#9c07", "#d2b3"].map((hash) => (
+            <span key={hash}>{hash}</span>
+          ))}
+        </div>
+      </div>
+    );
+  if (kind === "inventory")
+    return (
+      <div
+        className="project-visual inventory-visual"
+        aria-label="Inventory diagram: an order rides a lead-time conveyor to the shelf, stock rises with each delivery and falls with daily demand, and a sale is lost when the shelf runs empty"
+        role="img"
+      >
+        <span className="inv-chip inv-order">order</span>
+        <div className="inv-belt">
+          <span className="inv-crate">
+            <Package size={14} strokeWidth={1.25} />
+          </span>
+          <div className="inv-slots">
+            <i />
+            <i />
+            <i />
+            <i />
+          </div>
+          <small>lead time</small>
+        </div>
+        <div className="inv-shelf">
+          <b>stock</b>
+          <div className="inv-tank">
+            <span className="inv-level" />
+            <i className="inv-mark inv-mark-max">S</i>
+            <i className="inv-mark inv-mark-min">s</i>
+          </div>
+        </div>
+        <div className="inv-demand">
+          <span className="inv-chip inv-sold">
+            demand <ArrowRight size={11} />
+          </span>
+          <span className="inv-chip inv-lost">lost sale ×</span>
+        </div>
       </div>
     );
   return (

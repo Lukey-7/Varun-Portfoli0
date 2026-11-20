@@ -90,7 +90,7 @@ describe("share previews", () => {
     for (const path of ["/", "/research", "/journey", "/writing/studyforge-evaluation", "/work/arcade"]) {
       expect(paths).toContain(path);
     }
-    expect(paths.filter((path) => path.startsWith("/work/"))).toHaveLength(6);
+    expect(paths.filter((path) => path.startsWith("/work/"))).toHaveLength(8);
   });
 
   it("write the page's title and absolute share tags into the head", () => {

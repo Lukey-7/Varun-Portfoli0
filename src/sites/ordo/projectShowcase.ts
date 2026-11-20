@@ -201,6 +201,92 @@ export const projectShowcase: Record<string, ProjectShowcase> = {
     note: "Research and methodology figures, not investment advice.",
     links: [{ label: "View on GitHub", href: "https://github.com/Lukey-7/AxiomQuant" }],
   },
+  reconpilot: {
+    pitch:
+      "Checks a fund's books against its custodian every morning, finds and sizes every disagreement, and makes sure two people sign off before the NAV goes out.",
+    media: [
+      {
+        src: "/projects/reconpilot-overview.webp",
+        width: 1440,
+        height: 900,
+        alt: "ReconPilot's morning overview: NAV per share, a blocked release status with pending decisions, four summary tiles and open breaks ranked by NAV impact in basis points",
+        caption: "Morning overview: NAV, release status and open breaks by NAV impact",
+        shape: "wide",
+      },
+      {
+        src: "/projects/reconpilot-case-workbench.webp",
+        width: 1440,
+        height: 900,
+        alt: "The case workbench: a queue of open cases, one case's NAV impact with approve, reject and reclassify controls, and the book-against-custodian evidence beside it",
+        caption: "Case workbench: the evidence beside every decision",
+        shape: "wide",
+      },
+      {
+        src: "/projects/reconpilot-sign-off.webp",
+        width: 1440,
+        height: 900,
+        alt: "NAV sign-off: four release conditions met, the four-eyes rule not met because the signer decided cases that day, and the audit trail's chain verified",
+        caption: "Sign-off enforces four eyes: whoever decided cases cannot release the NAV",
+        shape: "wide",
+      },
+      {
+        src: "/projects/reconpilot-audit-log.webp",
+        width: 1440,
+        height: 900,
+        alt: "The audit log reporting its hash chain intact after re-checking 112 entries, above a filterable list of recorded actions",
+        caption: "A hash-chained audit log anyone can verify",
+        shape: "wide",
+      },
+      {
+        src: "/projects/reconpilot-mi.webp",
+        width: 1440,
+        height: 900,
+        alt: "Management information: gross open NAV impact, net impact, open breaks, average days to resolve and SLA breaches, with breaks by cause and age",
+        caption: "Management information, with an Excel exception report",
+        shape: "wide",
+      },
+    ],
+    highlights: [
+      "On synthetic data with 200 planted breaks over 20 business days, the rules found 190 (95%) and named the right cause for 178; with the LLM second opinion beside them the cause was right for all 190.",
+      "Over 20 consecutive days the engine cleared 160 of 167 fixed breaks on the day they were fixed, and never cleared one early.",
+      "The model only explains, suggests and drafts. Every answer passes a strict schema, may quote no figure that is not in the evidence, and falls back to the rules when it fails.",
+      "Four-eyes sign-off, days strictly in order, a two-person unlock and an append-only SHA-256 audit chain, all enforced on the server and in the database.",
+      "404 Python tests (120 engine, 284 web layer against a real PostgreSQL), 24 Vitest files and 25 Playwright journeys with accessibility checks in both themes.",
+    ],
+    note: "Screenshots show the app's demo. Every figure is synthetic, generated from a fixed seed; no real fund, trade or person appears.",
+    links: [{ label: "View on GitHub", href: "https://github.com/Lukey-7/ReconPilot" }],
+  },
+  "inventory-rl": {
+    pitch:
+      "A shop simulator where a reinforcement-learning agent learns when to reorder stock, measured honestly against the rule operations researchers already use.",
+    media: [
+      {
+        src: "/projects/inventory-dashboard.webp",
+        width: 800,
+        height: 514,
+        alt: "The Streamlit dashboard watching the PPO agent on the hard setting: total cost, fill rate, lost sales and a chart of stock, demand and lost sales over 100 days",
+        caption: "Watch a policy: stock, demand and lost sales, day by day",
+        shape: "wide",
+      },
+      {
+        src: "/projects/inventory-learning-curves.webp",
+        width: 1440,
+        height: 420,
+        alt: "Learning curves for PPO on the easy, medium and hard settings, three training seeds each, against the tuned (s, S) rule",
+        caption: "PPO's learning curves against the tuned (s, S) rule, three seeds per setting",
+        shape: "wide",
+      },
+    ],
+    highlights: [
+      "Three settings, from no lead time and steady demand to a four-day lead time with a weekly demand cycle and a high fixed order cost.",
+      "Random, grid-searched (s, S) and PPO are compared on identical customers over 30 held-out seeds, with 95% confidence intervals and paired differences.",
+      "PPO beat (s, S) only on the hard setting, by about 3% (81.5 ± 26.4 cost units per 100 days); it tied on medium and was about 1% worse on easy.",
+      "All three PPO training seeds agree closely, so the result is not one lucky run.",
+      "A dashboard lets you watch any policy, race them head to head on the same days, or run the shop yourself and be ranked against PPO and (s, S).",
+    ],
+    note: "Simulated demand; costs are in the environment's own units.",
+    links: [{ label: "View on GitHub", href: "https://github.com/Lukey-7/inventory-rl-env" }],
+  },
   sprachweg: {
     pitch:
       "A daily German session in one app: reviews, grammar, sentence mining, speaking practice and graded reading, from A0 to B2.",

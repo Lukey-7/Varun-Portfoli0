@@ -709,6 +709,247 @@ html[data-portfolio-edition="ordo"][data-portfolio-theme="dark"] body {
   font-size: 10px;
   margin-top: 16px;
 }
+/* ReconPilot: book and custodian ledgers match row by row; one break is sized,
+   passes the four-eyes gate and is written into the hash chain. */
+.recon-visual {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.recon-visual .diagram-link {
+  width: 22px;
+}
+.recon-ledgers {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  gap: 11px;
+  width: 136px;
+  padding: 9px 0 12px;
+}
+.recon-ledgers::before,
+.recon-ledgers::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  top: 0;
+  bottom: 0;
+  width: calc(50% - 8px);
+  border: 1px solid var(--art-line);
+  border-radius: 4px;
+  background: var(--panel);
+}
+.recon-ledgers::before {
+  left: 0;
+}
+.recon-ledgers::after {
+  right: 0;
+  transform: rotate(2deg);
+}
+.recon-head,
+.recon-row {
+  display: grid;
+  grid-template-columns: 1fr 16px 1fr;
+  align-items: center;
+}
+.recon-head b {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 8px;
+  font-weight: 400;
+  text-align: center;
+  padding-bottom: 2px;
+}
+.recon-head b:last-child {
+  grid-column: 3;
+}
+.recon-row span {
+  height: 2px;
+  width: 68%;
+  background: currentColor;
+  opacity: 0.4;
+}
+.recon-row span:first-child {
+  justify-self: end;
+  margin-right: 8px;
+}
+.recon-row span:last-child {
+  margin-left: 8px;
+}
+.recon-row:nth-child(odd) span {
+  width: 52%;
+}
+.recon-row i {
+  height: 0;
+  border-top: 1px solid currentColor;
+  opacity: 0.7;
+}
+.recon-row.is-break span {
+  opacity: 1;
+}
+.recon-row.is-break span:last-child {
+  width: 34%;
+}
+.recon-row.is-break i {
+  border-top-style: dashed;
+  opacity: 1;
+}
+.recon-gate {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+}
+.recon-break,
+.recon-chain span,
+.inv-chip {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9px;
+  line-height: 1;
+  white-space: nowrap;
+  padding: 6px 8px;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  border-radius: 4px;
+}
+.recon-break {
+  border: 1px dashed currentColor;
+}
+.recon-eyes {
+  display: flex;
+  gap: 5px;
+  padding: 7px 9px;
+  border: 1px solid var(--art-line);
+  border-radius: 14px;
+  background: var(--panel-strong);
+}
+.recon-gate small,
+.inv-belt small,
+.inv-shelf b {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 8px;
+  font-weight: 400;
+  white-space: nowrap;
+  opacity: 0.8;
+}
+.recon-chain {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+.recon-chain span {
+  position: relative;
+  font-size: 8px;
+  padding: 5px 6px;
+  border-color: var(--art-line);
+}
+.recon-chain span + span::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: -10px;
+  height: 9px;
+  border-left: 1px solid var(--art-line);
+}
+
+/* Inventory RL: an order rides the lead-time belt to the shelf; stock rises
+   with the delivery, falls with each day's demand, and an empty shelf loses a sale. */
+.inventory-visual {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.inv-belt {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+  width: 76px;
+  padding-top: 22px;
+}
+.inv-slots {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  width: 100%;
+  height: 7px;
+  border-top: 1px solid var(--art-line);
+}
+.inv-slots i {
+  border-left: 1px solid var(--art-line);
+}
+.inv-slots i:last-child {
+  border-right: 1px solid var(--art-line);
+}
+.inv-crate {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border: 1px solid var(--art-line);
+  border-radius: 3px;
+  background: var(--panel-strong);
+  transform: translateX(19px);
+}
+.inv-shelf {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding-right: 12px;
+}
+.inv-tank {
+  position: relative;
+  width: 52px;
+  height: 104px;
+  border: 1px solid var(--art-line);
+  border-top-style: dashed;
+  border-radius: 0 0 4px 4px;
+  background: var(--panel);
+}
+.inv-level {
+  position: absolute;
+  inset: auto 0 0;
+  height: 55%;
+  border-top: 1px solid currentColor;
+  background: color-mix(in srgb, currentColor 20%, transparent);
+}
+.inv-mark {
+  position: absolute;
+  left: -4px;
+  right: -12px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 8px;
+  font-style: normal;
+  line-height: 1;
+  text-align: right;
+  border-top: 1px dashed var(--art-line);
+}
+.inv-mark-max {
+  top: 12%;
+}
+.inv-mark-min {
+  top: 62%;
+}
+.inv-demand {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+}
+.inv-sold {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.inv-lost {
+  border-style: dashed;
+  border-color: currentColor;
+}
 .other-section {
   padding-block: 45px 100px;
 }

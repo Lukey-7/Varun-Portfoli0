@@ -31,6 +31,8 @@ const DEMO_SLUG: Record<string, string> = {
   axiomquant: "axiomquant",
   language: "sprachweg",
   tetris: "arcade",
+  reconpilot: "reconpilot",
+  "inventory-rl": "inventory-rl",
 };
 
 export const ARCHIVE: ArchiveEntry[] = projects.map((project, i) => {

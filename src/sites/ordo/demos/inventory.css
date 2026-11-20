@@ -1,0 +1,732 @@
+/* Inventory RL demo: a small shop instrument. A shelf of unit cells, the
+   delivery pipeline, an order slider, and two live charts racing the (s, S)
+   rule. Layout follows the demo's own width (container queries). */
+.ivd-demo .ivd-layout {
+  container-type: inline-size;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 20px;
+}
+.ivd-demo .ivd-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+.ivd-demo .mono,
+.ivd-demo .ivd-tick {
+  font-family: "IBM Plex Mono", monospace;
+}
+.ivd-demo .ivd-layout .ivd-ss {
+  text-transform: none;
+}
+.ivd-demo :is(button, input):focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+
+/* ---------- Setup row ---------- */
+.ivd-demo .ivd-setup {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 14px 24px;
+}
+.ivd-demo .ivd-setup-group {
+  min-width: 0;
+}
+.ivd-demo .ivd-diff {
+  display: inline-grid;
+  gap: 1px;
+  min-width: 84px;
+  line-height: 1.25;
+}
+.ivd-demo .ivd-diff small {
+  font-size: 9px;
+  letter-spacing: 0.03em;
+  opacity: 0.8;
+}
+.ivd-demo .ivd-seed {
+  display: flex;
+  gap: 6px;
+}
+.ivd-demo .ivd-seed-input {
+  width: 92px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+.ivd-demo .ivd-seed .demo-btn {
+  font-size: 12px;
+}
+.ivd-demo .ivd-config {
+  flex: 1 1 100%;
+  max-width: 640px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+
+/* ---------- Main grid ---------- */
+.ivd-demo .ivd-main {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 22px;
+}
+.ivd-demo .ivd-shop {
+  display: grid;
+  align-content: start;
+  gap: 16px;
+  min-width: 0;
+  padding: 16px;
+  border: 1px solid var(--line);
+}
+
+/* Day counter and a hairline progress bar. */
+.ivd-demo .ivd-day {
+  display: grid;
+  gap: 8px;
+}
+.ivd-demo .ivd-day h4 {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.ivd-demo .ivd-day h4 strong {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink);
+}
+.ivd-demo .ivd-progress {
+  height: 2px;
+  background: var(--line);
+}
+.ivd-demo .ivd-progress i {
+  display: block;
+  height: 100%;
+  background: var(--ink);
+}
+
+/* Today's expected demand, with the weekly cycle on the hard setting. */
+.ivd-demo .ivd-today {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.ivd-demo .ivd-today p {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  line-height: 1.5;
+  letter-spacing: 0.02em;
+  color: var(--muted);
+}
+.ivd-demo .ivd-today strong {
+  font-weight: 500;
+  color: var(--ink);
+}
+.ivd-demo .ivd-week {
+  display: flex;
+  flex: none;
+  align-items: flex-end;
+  gap: 2px;
+  height: 18px;
+}
+.ivd-demo .ivd-week i {
+  width: 5px;
+  height: var(--h, 50%);
+  background: color-mix(in srgb, var(--ink) 22%, var(--page));
+}
+.ivd-demo .ivd-week i.is-today {
+  background: var(--ink);
+}
+
+/* Shelf and pipeline. */
+.ivd-demo .ivd-block {
+  display: grid;
+  gap: 8px;
+}
+.ivd-demo .ivd-block-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.ivd-demo .ivd-block-head strong {
+  font-size: 20px;
+  font-weight: 400;
+  letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+.ivd-demo .ivd-shelf {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(20, minmax(0, 1fr));
+  gap: 2px;
+}
+.ivd-demo .ivd-shelf i {
+  aspect-ratio: 1;
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+.ivd-demo .ivd-shelf i.is-full {
+  background: var(--ink);
+  box-shadow: none;
+}
+.ivd-demo:not(.is-still) .ivd-shelf i {
+  transition: background-color 0.25s ease, box-shadow 0.25s ease;
+}
+.ivd-demo .ivd-overflow {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 6px);
+  padding: 0 4px;
+  border: 1px solid var(--ink);
+  background: var(--page);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9px;
+  line-height: 1.5;
+}
+.ivd-demo .ivd-pipe {
+  display: flex;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.ivd-demo .ivd-pipe li {
+  display: grid;
+  flex: 1 1 0;
+  min-width: 0;
+  gap: 2px;
+  padding: 6px 6px 5px;
+  border: 1px solid var(--line);
+  text-align: center;
+}
+.ivd-demo .ivd-pipe li.has-units {
+  border-color: var(--ink);
+}
+.ivd-demo .ivd-pipe li.is-yours {
+  border-style: dashed;
+  border-color: var(--ink);
+  background: color-mix(in srgb, var(--ink) 5%, transparent);
+}
+.ivd-demo .ivd-pipe strong {
+  font-size: 16px;
+  font-weight: 400;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+}
+.ivd-demo .ivd-pipe span {
+  overflow: hidden;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 8.5px;
+  letter-spacing: 0.02em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--muted);
+}
+.ivd-demo .ivd-pipe-none,
+.ivd-demo .ivd-position {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  line-height: 1.55;
+  color: var(--muted);
+}
+.ivd-demo .ivd-position {
+  color: var(--ink);
+}
+.ivd-demo .ivd-position span {
+  color: var(--muted);
+}
+
+/* ---------- Order controls ---------- */
+.ivd-demo .ivd-order {
+  display: grid;
+  gap: 6px;
+  padding-top: 14px;
+  border-top: 1px dashed var(--line);
+}
+.ivd-demo .ivd-order-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+.ivd-demo .ivd-order-head label {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.ivd-demo .ivd-order-head output {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  color: var(--muted);
+}
+.ivd-demo .ivd-order-head output strong {
+  font-family: inherit;
+  font-size: 30px;
+  font-weight: 400;
+  letter-spacing: -0.05em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+.ivd-demo .ivd-range-wrap {
+  --mark: 0;
+  position: relative;
+}
+/* A 40px-tall hit area around a hairline track and a square thumb. */
+.ivd-demo .ivd-range {
+  --fill: 0%;
+  display: block;
+  width: 100%;
+  height: 40px;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  -webkit-appearance: none;
+  appearance: none;
+  cursor: pointer;
+}
+.ivd-demo .ivd-range:disabled {
+  cursor: progress;
+  opacity: 0.6;
+}
+.ivd-demo .ivd-range::-webkit-slider-runnable-track {
+  height: 2px;
+  background: linear-gradient(to right, var(--ink) var(--fill), var(--line) var(--fill));
+}
+.ivd-demo .ivd-range::-moz-range-track {
+  height: 2px;
+  background: linear-gradient(to right, var(--ink) var(--fill), var(--line) var(--fill));
+}
+.ivd-demo .ivd-range::-webkit-slider-thumb {
+  width: 16px;
+  height: 16px;
+  margin-top: -7px;
+  border: 0;
+  border-radius: 0;
+  background: var(--ink);
+  -webkit-appearance: none;
+  appearance: none;
+}
+.ivd-demo .ivd-range::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border: 0;
+  border-radius: 0;
+  background: var(--ink);
+}
+/* The rule's order: a small notch above the track, centred where the thumb would sit. */
+.ivd-demo .ivd-mark {
+  position: absolute;
+  top: 6px;
+  left: calc(8px + (100% - 16px) * var(--mark));
+  width: 0;
+  height: 0;
+  margin-left: -5px;
+  border: 5px solid transparent;
+  border-top: 6px solid var(--ink);
+  pointer-events: none;
+}
+.ivd-demo .ivd-order-cost,
+.ivd-demo .ivd-keys {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  line-height: 1.55;
+  color: var(--muted);
+}
+.ivd-demo .ivd-hint {
+  padding: 2px 0 2px 10px;
+  border-left: 2px solid var(--ink);
+  font-size: 12px;
+  line-height: 1.55;
+}
+.ivd-demo .ivd-actions,
+.ivd-demo .ivd-auto-row,
+.ivd-demo .ivd-result-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.ivd-demo .ivd-actions {
+  margin-top: 6px;
+}
+.ivd-demo .ivd-actions .demo-btn.is-ghost,
+.ivd-demo .ivd-auto-row .demo-btn,
+.ivd-demo .ivd-result-actions .demo-btn {
+  font-size: 12px;
+}
+.ivd-demo .demo-btn[aria-pressed="true"] {
+  border-color: var(--ink);
+  background: color-mix(in srgb, var(--ink) 9%, transparent);
+}
+.ivd-demo .ivd-auto {
+  margin-top: 10px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--line);
+}
+.ivd-demo .ivd-auto .demo-chip {
+  padding-inline: 10px;
+}
+
+/* Yesterday's receipt. */
+.ivd-demo .ivd-receipt {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  line-height: 1.65;
+  color: var(--muted);
+}
+.ivd-demo .ivd-receipt > span:first-child {
+  padding: 0 4px;
+  margin-right: 4px;
+  border: 1px solid var(--line);
+  color: var(--ink);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.ivd-demo .ivd-receipt .is-lost {
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.ivd-demo .ivd-receipt small {
+  display: block;
+  font-size: 9px;
+}
+
+/* ---------- Result at day 100 ---------- */
+.ivd-demo .ivd-result {
+  display: grid;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid var(--ink);
+}
+.ivd-demo:not(.is-still) .ivd-result {
+  animation: ivd-reveal 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes ivd-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+.ivd-demo .ivd-result-title {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.ivd-demo .ivd-result-pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+.ivd-demo .ivd-result-pair > div + div {
+  padding-left: 14px;
+  border-left: 1px solid var(--line);
+}
+.ivd-demo .ivd-result-pair > div > span {
+  display: block;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.ivd-demo .ivd-result-pair strong {
+  display: block;
+  margin-top: 4px;
+  font-size: 30px;
+  font-weight: 400;
+  letter-spacing: -0.05em;
+  line-height: 1.05;
+  font-variant-numeric: tabular-nums;
+}
+.ivd-demo .ivd-verdict {
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+}
+.ivd-demo .ivd-rank {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--line);
+}
+.ivd-demo .ivd-rank li {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: 8px;
+  padding: 7px 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 13px;
+}
+.ivd-demo .ivd-rank li.is-you {
+  font-weight: 500;
+}
+.ivd-demo .ivd-rank-n {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  color: var(--muted);
+}
+.ivd-demo .ivd-rank li.is-you .ivd-rank-n {
+  color: var(--ink);
+}
+.ivd-demo .ivd-rank-cost {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+.ivd-demo .ivd-result-note {
+  font-size: 12px;
+  line-height: 1.55;
+  color: var(--muted);
+}
+
+/* ---------- Charts ---------- */
+.ivd-demo .ivd-charts {
+  display: grid;
+  align-content: start;
+  gap: 22px;
+  min-width: 0;
+}
+.ivd-demo .ivd-chart,
+.ivd-demo .ivd-plot {
+  min-width: 0;
+  margin: 0;
+}
+.ivd-demo .ivd-chart-head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 4px 12px;
+  margin-bottom: 8px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.ivd-demo .ivd-chart-meta {
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.ivd-demo .ivd-svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  overflow: visible;
+}
+.ivd-demo .ivd-future {
+  fill: color-mix(in srgb, var(--ink) 3%, transparent);
+}
+.ivd-demo .ivd-grid {
+  stroke: var(--line);
+  stroke-width: 1;
+}
+.ivd-demo .ivd-axis {
+  stroke: var(--muted);
+  stroke-width: 1;
+}
+.ivd-demo .ivd-cursor {
+  stroke: var(--ink);
+  stroke-width: 1;
+  stroke-dasharray: 2 2;
+}
+.ivd-demo .ivd-tick {
+  font-size: 9px;
+  fill: var(--muted);
+}
+.ivd-demo .ivd-bars rect,
+.ivd-demo .ivd-key-bar {
+  fill: color-mix(in srgb, var(--ink) 24%, var(--page));
+  background: color-mix(in srgb, var(--ink) 24%, var(--page));
+}
+.ivd-demo .ivd-demand circle,
+.ivd-demo .ivd-key-dot {
+  fill: var(--ink);
+  background: var(--ink);
+}
+.ivd-demo .ivd-lost rect,
+.ivd-demo .ivd-key-lost {
+  fill: var(--ink);
+  background: var(--ink);
+}
+.ivd-demo .ivd-rule-stock {
+  fill: none;
+  stroke: var(--muted);
+  stroke-width: 1.1;
+  stroke-dasharray: 3 2;
+  stroke-linejoin: round;
+}
+.ivd-demo .ivd-race-you {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 1.8;
+  stroke-linejoin: round;
+}
+.ivd-demo .ivd-race-rule {
+  fill: none;
+  stroke: var(--muted);
+  stroke-width: 1.3;
+  stroke-dasharray: 5 3;
+  stroke-linejoin: round;
+}
+.ivd-demo .ivd-ppo {
+  stroke: var(--subtle);
+  stroke-width: 1.4;
+  stroke-dasharray: 0.1 3.2;
+  stroke-linecap: round;
+}
+.ivd-demo .ivd-race-dot {
+  fill: var(--ink);
+  stroke: var(--page);
+  stroke-width: 1.5;
+}
+.ivd-demo .ivd-race-dot.is-rule {
+  fill: var(--page);
+  stroke: var(--muted);
+}
+.ivd-demo .ivd-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.ivd-demo .ivd-legend li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.ivd-demo .ivd-legend strong {
+  font-weight: 500;
+  color: var(--ink);
+}
+.ivd-demo .ivd-legend svg {
+  width: 18px;
+  height: 6px;
+  overflow: visible;
+}
+.ivd-demo .ivd-key-bar,
+.ivd-demo .ivd-key-lost {
+  display: inline-block;
+  width: 6px;
+  height: 10px;
+}
+.ivd-demo .ivd-key-lost {
+  height: 4px;
+}
+.ivd-demo .ivd-key-dot {
+  display: inline-block;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+}
+.ivd-demo .ivd-ppo-note {
+  margin-top: 6px;
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+/* ---------- Running cost breakdown ---------- */
+.ivd-demo .ivd-stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 0;
+  border-block: 1px solid var(--line);
+}
+.ivd-demo .ivd-stats > div {
+  min-width: 0;
+  padding: 12px 10px 12px 0;
+}
+.ivd-demo .ivd-stats > div:nth-child(even) {
+  padding-left: 12px;
+  border-left: 1px solid var(--line);
+}
+.ivd-demo .ivd-stats > div:nth-child(n + 3) {
+  border-top: 1px solid var(--line);
+}
+.ivd-demo .ivd-stats > div:last-child:nth-child(odd) {
+  grid-column: 1 / -1;
+}
+.ivd-demo .ivd-stats dt {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.ivd-demo .ivd-stats dd {
+  margin: 6px 0 0;
+  font-size: 22px;
+  letter-spacing: -0.04em;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+.ivd-demo .ivd-stats small {
+  display: block;
+  margin-top: 4px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9px;
+  letter-spacing: 0.02em;
+  color: var(--muted);
+}
+
+/* ---------- Wider demos ---------- */
+@container (min-width: 560px) {
+  .ivd-demo .ivd-stats {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+  .ivd-demo .ivd-stats > div:nth-child(n) {
+    padding: 12px 10px 12px 14px;
+    border-top: 0;
+    border-left: 1px solid var(--line);
+  }
+  .ivd-demo .ivd-stats > div:first-child {
+    padding-left: 0;
+    border-left: 0;
+  }
+  .ivd-demo .ivd-stats > div:last-child:nth-child(odd) {
+    grid-column: auto;
+  }
+}
+@container (min-width: 780px) {
+  .ivd-demo .ivd-main {
+    grid-template-columns: minmax(300px, 360px) minmax(0, 1fr);
+    gap: 28px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ivd-demo *,
+  .ivd-demo *::before,
+  .ivd-demo *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}

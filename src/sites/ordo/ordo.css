@@ -214,6 +214,11 @@
 .ordo-card-art .quant-visual {
   padding: 40px;
 }
+.ordo-card-art .recon-break,
+.ordo-card-art .inv-chip {
+  font-size: 8px;
+  padding: 5px 7px;
+}
 .ordo-card-copy {
   padding: 0 22px 23px;
   display: flex;
@@ -1826,6 +1831,102 @@ html[data-portfolio-edition="ordo"], .ordo-edition * { scrollbar-color: #82857d 
   100% { left: 0; }
 }
 
+/* ReconPilot: rows tie off one by one, the break flags and is sized, both
+   eyes sign, and the newest link of the audit chain is written. */
+.ordo-card-art .recon-row i {
+  transform-origin: left;
+  animation: recon-tie 6s ease-in-out infinite;
+}
+.ordo-card-art .recon-row:nth-child(3) i { animation-delay: 0.25s; }
+.ordo-card-art .recon-row:nth-child(4) i { animation-name: recon-flag; }
+.ordo-card-art .recon-row:nth-child(5) i { animation-delay: 0.5s; }
+.ordo-card-art .recon-row:nth-child(6) i { animation-delay: 0.75s; }
+@keyframes recon-tie {
+  0%, 4% { transform: scaleX(0); }
+  14%, 90% { transform: scaleX(1); }
+  100% { transform: scaleX(0); }
+}
+@keyframes recon-flag {
+  0%, 18% { transform: scaleX(0); opacity: 1; }
+  24%, 90% { transform: scaleX(1); opacity: 1; }
+  28%, 36% { opacity: 0.25; }
+  32%, 40% { opacity: 1; }
+  100% { transform: scaleX(0); }
+}
+.ordo-card-art .recon-break {
+  animation: recon-size 6s ease-in-out infinite;
+}
+@keyframes recon-size {
+  0%, 30%, 52%, 100% { background: var(--page); color: var(--ink); }
+  36%, 46% { background: var(--ink); color: var(--page); }
+}
+.ordo-card-art .recon-eyes svg {
+  animation: recon-eye 6s ease-in-out infinite;
+}
+.ordo-card-art .recon-eyes svg + svg {
+  animation-delay: 0.6s;
+}
+@keyframes recon-eye {
+  0%, 50%, 60%, 100% { transform: scaleY(1); }
+  53% { transform: scaleY(0.1); }
+}
+.ordo-card-art .recon-chain span:first-child {
+  animation: recon-write 6s ease-in-out infinite;
+}
+@keyframes recon-write {
+  0%, 64%, 92%, 100% { background: var(--page); color: var(--ink); border-color: var(--art-line); transform: none; }
+  68% { transform: translateY(-3px); }
+  72%, 86% { background: var(--ink); color: var(--page); border-color: var(--ink); transform: none; }
+}
+
+/* Inventory RL: each day's demand steps the shelf down; below s an order
+   leaves, rides the lead-time belt, and a stock-out loses a sale before the
+   delivery restocks the shelf to S. */
+.ordo-card-art .inv-level {
+  animation: inv-stock 8s ease-out infinite;
+}
+@keyframes inv-stock {
+  0%, 10% { height: 84%; }
+  12.5%, 22.5% { height: 71%; }
+  25%, 35% { height: 58%; }
+  37.5%, 47.5% { height: 45%; }
+  50%, 60% { height: 30%; }
+  62.5%, 72.5% { height: 16%; }
+  75%, 85% { height: 4%; }
+  87.5%, 90% { height: 0%; }
+  94%, 100% { height: 84%; }
+}
+.ordo-card-art .inv-sold {
+  animation: inv-day 1s ease-out infinite;
+}
+@keyframes inv-day {
+  0%, 18% { background: var(--ink); color: var(--page); }
+  40%, 100% { background: var(--page); color: var(--ink); }
+}
+.ordo-card-art .inv-order {
+  animation: inv-order 8s ease-in-out infinite;
+}
+@keyframes inv-order {
+  0%, 49%, 60%, 100% { background: var(--page); color: var(--ink); border-color: var(--line); }
+  51%, 58% { background: var(--ink); color: var(--page); border-color: var(--ink); }
+}
+.ordo-card-art .inv-crate {
+  animation: inv-ship 8s linear infinite;
+}
+@keyframes inv-ship {
+  0%, 50% { transform: translateX(-6px); opacity: 0; }
+  53% { transform: translateX(0); opacity: 1; }
+  90% { transform: translateX(56px); opacity: 1; }
+  94%, 100% { transform: translateX(64px); opacity: 0; }
+}
+.ordo-card-art .inv-lost {
+  animation: inv-lost 8s ease-in-out infinite;
+}
+@keyframes inv-lost {
+  0%, 86%, 96%, 100% { background: var(--page); color: var(--ink); }
+  88%, 93% { background: var(--ink); color: var(--page); }
+}
+
 /* Sprachweg: the ring turns, and the review words light up in a learning loop. */
 .ordo-card-art .language-orbit {
   border-color: transparent;
@@ -2622,6 +2723,12 @@ html[data-motion="paused"] .ordo-edition *::after {
   .project-hero-art > .quant-visual {
     scale: 1.1;
   }
+  .project-hero-art > .recon-visual {
+    scale: 1.3;
+  }
+  .project-hero-art > .inventory-visual {
+    scale: 1.35;
+  }
 }
 .page-hero-art {
   position: relative;
@@ -2799,6 +2906,13 @@ html[data-motion="paused"] .ordo-edition *::after {
   }
   .project-hero-art > * {
     scale: 1.2;
+  }
+  /* The two widest diagrams keep clear of the frame on narrow two-column layouts. */
+  .project-hero-art > .recon-visual {
+    scale: 1.05;
+  }
+  .project-hero-art > .inventory-visual {
+    scale: 1.1;
   }
 }
 

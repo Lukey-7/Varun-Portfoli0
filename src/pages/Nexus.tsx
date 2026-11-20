@@ -104,7 +104,8 @@ const Nexus = () => {
         intro={
           <>
             <p>
-              AI systems, retrieval pipelines and a quantitative engine — the work that best represents how I build.
+              AI systems, retrieval pipelines, a quantitative engine, fund-operations controls and a
+              reinforcement-learning study — the work that best represents how I build.
             </p>
             <p>
               {COUNTS.projects} projects and {COUNTS.frames} screenshots. Open any card to flip through its screens, read

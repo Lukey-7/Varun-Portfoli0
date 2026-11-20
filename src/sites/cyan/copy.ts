@@ -61,6 +61,30 @@ const CASE_TEXT: Partial<Record<string, CaseText>> = {
     ownership:
       "My own engineering and research project. I wrote the C++ numerical core, the Python integration and the validation around them.",
   },
+  reconpilot: {
+    description:
+      "It checks a fund's books against the custodian's statements and sizes every disagreement in basis points of NAV. Whoever decided the day's cases can't be the one who releases the NAV.",
+    problem:
+      "Every business day, a fund administrator lines up the fund's own trades and positions against the custodian's holdings and cash statements. Anything that disagrees is a break. Each break needs a size against the NAV, an explanation and a sign-off before the NAV can go out.",
+    approach:
+      "The matching is deterministic. Rules compare positions and cash with a tolerance per asset class, group breaks into cases and size each case against the NAV. Open cases age and escalate from one day to the next until they clear. An optional LLM second opinion explains a case using its real figures and drafts the query to the custodian. It can't change a figure or close a case, and if its answer fails the schema check, the rules' own explanation stands. A person decides every case, a second approver releases the NAV, and each step goes into a hash-chained audit log. The web app is React on a FastAPI and PostgreSQL backend, and the four-eyes rule is enforced on the server and in the database.",
+    evidence:
+      "The synthetic data has 200 planted breaks over 20 business days. The rules found 190 and named the right cause for 178. With the second opinion beside them, the cause was right for all 190. Detection stayed at 190 because the model never raises a case. There are 404 Python tests, 120 for the engine and 284 for the web layer against a real PostgreSQL, plus 25 Playwright journeys.",
+    ownership:
+      "I built it on my own, from the reconciliation engine and its controls to the web app and the evaluation.",
+  },
+  "inventory-rl": {
+    description:
+      "A simulated shop where a PPO agent learns when to reorder stock. It's scored against the textbook (s, S) rule on seeds it never trained on.",
+    problem:
+      "The shop orders stock every day and deliveries take days to arrive. Run short and customers leave; overstock and the shelves cost money. The classic (s, S) rule already handles this well, so I wanted to know whether reinforcement learning could find anything better.",
+    approach:
+      "The Gymnasium environment has lost sales, an order lead time and a weekly demand cycle, at three difficulty settings. The hard one has a four-day lead time and a high fixed cost per order. A random policy, an (s, S) rule tuned by grid search and PPO from Stable-Baselines3 face identical customers on held-out seeds. PPO is trained three times per setting. In the Streamlit dashboard you can watch any policy, race two on the same days or run the shop yourself.",
+    evidence:
+      "Over 30 held-out seeds, PPO beat the tuned (s, S) rule only on the hard setting, by about 3% of cost (81.5 ± 26.4 units per 100 days), with all three training seeds ahead. It tied on medium. On easy it was about 1% worse, where (s, S) is already close to the right answer. My best guess at the reason is the weekly demand cycle, which a single fixed (s, S) pair can't follow. Demand is simulated and costs are in the environment's own units.",
+    ownership:
+      "Everything in it is mine: the environment, the baselines, the training runs, the evaluation and the dashboard.",
+  },
 };
 
 const OTHER_WORK_TEXT: Partial<Record<string, string>> = {

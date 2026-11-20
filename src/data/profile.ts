@@ -131,6 +131,15 @@ export const skills: Skill[] = [
     connections: ['python', 'rag', 'data'],
   },
   {
+    id: 'rl',
+    name: 'Reinforcement Learning',
+    short: 'RL',
+    category: 'AI/ML',
+    description:
+      'Gymnasium environments and PPO with Stable-Baselines3, evaluated against operations-research baselines over held-out seeds with confidence intervals.',
+    connections: ['python', 'data', 'nlp'],
+  },
+  {
     id: 'react',
     name: 'React.js / Angular',
     short: 'RCT',
@@ -181,7 +190,7 @@ export const skills: Skill[] = [
     short: 'SQL',
     category: 'Data',
     description:
-      'Relational schema design, query optimisation and migrations backing both AI products and financial simulation tooling.',
+      'Relational schema design, query optimisation and migrations behind AI products and financial tooling, including a PostgreSQL job queue and an append-only audit chain enforced in the database.',
     connections: ['python', 'java', 'vector'],
   },
   {

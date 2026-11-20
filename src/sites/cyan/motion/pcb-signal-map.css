@@ -322,8 +322,9 @@
 }
 
 /* Phones: the same board, narrower parts and finer copper. */
+/* The narrowest chips (96px on a 320px phone) still fit "Inventory RL". */
 .pcb-board[data-size="compact"] .pcb-ic {
-  padding: 0 8px 0 9px;
+  padding: 0 5px 0 7px;
   gap: 3px;
 }
 .pcb-board[data-size="compact"] .pcb-ic .pcb-name {
@@ -340,9 +341,16 @@
 .pcb-board[data-size="compact"] .pcb-part {
   padding: 0 7px;
 }
+/* A tool name too long for a narrow part, such as Stable-Baselines3, breaks
+   onto a second line at its hyphen or space instead of losing its end. */
 .pcb-board[data-size="compact"] .pcb-part .pcb-name {
   font-size: 9.5px;
   letter-spacing: 0.04em;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  white-space: normal;
 }
 .pcb-board[data-size="compact"] .pcb-trace {
   stroke-width: 1.1;

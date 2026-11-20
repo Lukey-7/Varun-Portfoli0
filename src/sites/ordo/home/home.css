@@ -163,6 +163,33 @@
 .ordo-home .ordo-project-button:hover {
   background: transparent;
 }
+/* When the projects don't fill the last row, a hatched blank closes the
+   grid's frame instead of leaving its corner open. */
+.ordo-home .ordo-project-grid::after {
+  content: "";
+  display: none;
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  background: repeating-linear-gradient(
+    -45deg,
+    transparent 0 9px,
+    color-mix(in srgb, var(--line) 55%, transparent) 9px 10px
+  );
+}
+@media (min-width: 1101px) {
+  .ordo-home .ordo-project-grid:has(> article:last-child:nth-child(3n + 2))::after {
+    display: block;
+  }
+  .ordo-home .ordo-project-grid:has(> article:last-child:nth-child(3n + 1))::after {
+    display: block;
+    grid-column: span 2;
+  }
+}
+@media (min-width: 768px) and (max-width: 1100px) {
+  .ordo-home .ordo-project-grid:has(> article:last-child:nth-child(odd))::after {
+    display: block;
+  }
+}
 .ordo-card-foot {
   display: flex;
   align-items: center;

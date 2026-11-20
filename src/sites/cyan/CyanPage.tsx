@@ -65,6 +65,11 @@ const workflow = [
   },
 ];
 
+/** The number of selected projects in words, for the work section's introduction. */
+const countWord = (count: number) =>
+  ["No", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten"][count] ??
+  String(count);
+
 const THEME_KEY = "cyan-theme";
 
 /** Dark unless the visitor has chosen light. */
@@ -361,7 +366,7 @@ export default function CyanPage() {
               Selected work<span className="heading-period">.</span>
             </h2>
             <p>
-              Four projects I built alone, all with public source. Each one
+              {countWord(cyanWork.length)} projects I built alone, all with public source. Each one
               opens to show the mechanism and the check I ran on it.
             </p>
           </motion.div>

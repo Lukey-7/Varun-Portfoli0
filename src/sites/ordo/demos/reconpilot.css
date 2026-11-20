@@ -1,0 +1,794 @@
+/* ReconPilot demo: one fund-day reconciled, decided and signed off.
+   Layout follows the demo's own width (container queries), so it works in a
+   page column and on a phone alike. Monochrome: state is carried by fill,
+   border style and words, never by colour alone. */
+.rp-demo .rp-desk {
+  container: rp / inline-size;
+  display: grid;
+  gap: 16px;
+}
+.rp-demo p {
+  margin: 0;
+}
+.rp-demo .demo-label {
+  margin-bottom: 6px;
+}
+.rp-demo .rp-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+.rp-demo .rp-fine {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+.rp-demo .rp-empty {
+  padding: 18px 14px;
+  border: 1px dashed var(--line);
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+.rp-demo .demo-btn {
+  font-size: 12px;
+}
+.rp-demo .demo-btn:focus-visible,
+.rp-demo .rp-row:focus-visible,
+.rp-demo .rp-select:focus-visible,
+.rp-demo summary:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+.rp-demo .demo-btn.is-ghost:disabled {
+  border-color: var(--line);
+}
+
+/* ---------- Fund-day, user and controls ---------- */
+.rp-demo .rp-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px 20px;
+}
+.rp-demo .rp-fund {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+.rp-demo .rp-fund strong {
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+.rp-demo .rp-fund span {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.rp-demo .rp-users .demo-chips {
+  gap: 4px;
+}
+.rp-demo .rp-user {
+  display: inline-grid;
+  gap: 1px;
+  min-height: 42px;
+  padding: 5px 10px;
+  line-height: 1.25;
+}
+.rp-demo .rp-user span {
+  font-size: 9px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  opacity: 0.8;
+}
+.rp-demo .rp-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.rp-demo .rp-plant,
+.rp-demo .rp-reclass {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.rp-demo .rp-select {
+  min-height: 42px;
+  max-width: 100%;
+  padding: 0 10px;
+  border: 1px solid var(--line);
+  border-radius: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 11px;
+}
+.rp-demo .rp-select:disabled {
+  opacity: 0.5;
+}
+
+/* ---------- Pipeline ---------- */
+.rp-demo .rp-steps {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--line);
+  list-style: none;
+}
+.rp-demo .rp-steps li {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 15em) minmax(0, 1fr);
+  align-items: baseline;
+  gap: 10px;
+  padding: 6px 12px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10.5px;
+  line-height: 1.5;
+}
+.rp-demo .rp-steps li + li {
+  border-top: 1px dashed var(--line);
+}
+.rp-demo .rp-step-mark {
+  display: inline-grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  border: 1px solid var(--line);
+  font-size: 9px;
+  color: var(--subtle);
+}
+.rp-demo .rp-steps .is-done .rp-step-mark {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--page);
+}
+.rp-demo .rp-steps .is-now .rp-step-mark {
+  border-color: var(--ink);
+  color: var(--ink);
+}
+.rp-demo .rp-step-name {
+  color: var(--ink);
+}
+.rp-demo .rp-steps .is-wait .rp-step-name {
+  color: var(--muted);
+}
+.rp-demo .rp-step-out {
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+
+/* ---------- NAV strip ---------- */
+.rp-demo .rp-strip {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px 18px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  background: var(--panel);
+}
+.rp-demo .rp-strip > div {
+  display: grid;
+  align-content: start;
+  min-width: 0;
+}
+.rp-demo .rp-strip .demo-label {
+  margin-bottom: 2px;
+}
+.rp-demo .rp-strip strong {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 15px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+.rp-demo .rp-strip small {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+.rp-demo .rp-release {
+  grid-column: 1 / -1;
+  gap: 4px;
+}
+.rp-demo .rp-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  justify-self: start;
+  padding: 2px 8px;
+  border: 1px solid var(--ink);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  line-height: 1.6;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.rp-demo .rp-pill.is-idle {
+  border-style: dashed;
+  border-color: var(--muted);
+  color: var(--muted);
+}
+.rp-demo .rp-pill.is-blocked,
+.rp-demo .rp-pill.is-done {
+  background: var(--ink);
+  color: var(--page);
+}
+
+/* ---------- Queue and case ---------- */
+.rp-demo .rp-work,
+.rp-demo .rp-bottom {
+  display: grid;
+  gap: 16px;
+}
+.rp-demo .rp-pane {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.rp-demo .rp-queue {
+  margin: 0 0 8px;
+  padding: 0;
+  border: 1px solid var(--line);
+  list-style: none;
+}
+.rp-demo .rp-queue > li + li {
+  border-top: 1px solid var(--line);
+}
+.rp-demo .rp-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  width: 100%;
+  padding: 9px 12px;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  text-align: left;
+  transition: background 0.2s;
+}
+.rp-demo .rp-row:hover {
+  background: color-mix(in srgb, var(--ink) 4%, transparent);
+}
+.rp-demo .rp-row[aria-pressed="true"] {
+  background: color-mix(in srgb, var(--ink) 8%, transparent);
+  box-shadow: inset 2px 0 0 var(--ink);
+}
+.rp-demo .rp-row:focus-visible {
+  outline-offset: -3px;
+}
+.rp-demo .rp-row-main,
+.rp-demo .rp-row-side {
+  display: grid;
+  align-content: start;
+  gap: 3px;
+  min-width: 0;
+}
+.rp-demo .rp-row-side {
+  justify-items: end;
+  text-align: right;
+}
+.rp-demo .rp-row-id,
+.rp-demo .rp-row-impact {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 11.5px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.rp-demo .rp-row-name {
+  overflow: hidden;
+  font-size: 13px;
+  line-height: 1.3;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.rp-demo .rp-row-bp,
+.rp-demo .rp-row-cause {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9.5px;
+  line-height: 1.4;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.rp-demo .rp-row-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.rp-demo .rp-tag {
+  display: inline-block;
+  padding: 1px 5px;
+  border: 1px solid var(--line);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9px;
+  line-height: 1.4;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--muted);
+}
+.rp-demo .rp-tag.is-pending {
+  border-style: dashed;
+  border-color: var(--muted);
+}
+.rp-demo .rp-tag.is-approved,
+.rp-demo .rp-tag.is-reclassified,
+.rp-demo .rp-tag.is-pass {
+  border-color: var(--ink);
+  color: var(--ink);
+}
+.rp-demo .rp-tag.is-rejected {
+  text-decoration: line-through;
+}
+.rp-demo .rp-tag.is-material,
+.rp-demo .rp-tag.is-fail {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--page);
+}
+.rp-demo .rp-tag.is-escalated,
+.rp-demo .rp-tag.is-warn {
+  border-color: var(--ink);
+  border-style: dashed;
+  color: var(--ink);
+}
+
+.rp-demo .rp-case {
+  flex: 1;
+  display: grid;
+  align-content: start;
+  gap: 14px;
+  padding: 14px;
+  border: 1px solid var(--line);
+}
+.rp-demo .rp-case-body {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+}
+.rp-demo .rp-case-head {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+.rp-demo .rp-case-head strong {
+  margin-right: 6px;
+  font-family: "IBM Plex Mono", monospace;
+  font-weight: 500;
+  color: var(--ink);
+}
+.rp-demo .rp-impact {
+  display: grid;
+  gap: 4px;
+  padding: 12px 14px;
+  border: 1px solid var(--ink);
+}
+.rp-demo .rp-impact .demo-label {
+  margin: 0;
+}
+.rp-demo .rp-impact p:first-of-type {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 11px;
+  color: var(--muted);
+}
+.rp-demo .rp-impact p:first-of-type strong {
+  font-size: 26px;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+.rp-demo .rp-cause {
+  font-size: 13px;
+}
+.rp-demo .rp-cause .demo-label {
+  margin-bottom: 2px;
+}
+.rp-demo .rp-cause strong {
+  font-weight: 500;
+}
+.rp-demo .rp-explain {
+  font-size: 13px;
+  line-height: 1.65;
+  overflow-wrap: anywhere;
+}
+.rp-demo .rp-evidence {
+  display: grid;
+  gap: 8px;
+}
+.rp-demo .rp-table-wrap {
+  max-width: 100%;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--line) transparent;
+}
+.rp-demo .rp-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10.5px;
+  font-variant-numeric: tabular-nums;
+}
+.rp-demo .rp-table th,
+.rp-demo .rp-table td {
+  padding: 5px 6px;
+  border-bottom: 1px solid var(--line);
+  text-align: right;
+  white-space: nowrap;
+}
+.rp-demo .rp-table th:first-child {
+  padding-left: 0;
+  text-align: left;
+  white-space: normal;
+}
+.rp-demo .rp-table td:last-child,
+.rp-demo .rp-table thead th:last-child {
+  padding-right: 0;
+}
+.rp-demo .rp-table thead th {
+  font-size: 9px;
+  font-weight: 400;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.rp-demo .rp-table tbody th {
+  font-weight: 400;
+  color: var(--ink);
+}
+.rp-demo .rp-table .is-off {
+  font-weight: 600;
+  color: var(--ink);
+}
+.rp-demo .rp-table .is-quiet {
+  color: var(--muted);
+}
+.rp-demo .rp-ref {
+  display: block;
+  font-size: 9px;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+.rp-demo .rp-query summary,
+.rp-demo .rp-checks summary,
+.rp-demo .rp-key summary {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 32px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+  cursor: pointer;
+}
+.rp-demo .rp-query summary:hover,
+.rp-demo .rp-checks summary:hover,
+.rp-demo .rp-key summary:hover {
+  color: var(--ink);
+}
+.rp-demo .rp-query pre {
+  margin: 6px 0 0;
+  padding: 12px;
+  border: 1px dashed var(--line);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 11px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.rp-demo .rp-decide {
+  display: grid;
+  gap: 8px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--line);
+}
+.rp-demo .rp-decide .demo-label {
+  margin: 0;
+}
+.rp-demo .rp-decide .demo-input {
+  min-height: 0;
+  font-size: 13px;
+}
+.rp-demo .rp-decided {
+  font-size: 12px;
+  line-height: 1.5;
+}
+.rp-demo .rp-decide-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.rp-demo .rp-news,
+.rp-demo .rp-verdict {
+  min-height: 1.5em;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10.5px;
+  line-height: 1.55;
+  color: var(--ink);
+}
+.rp-demo .rp-news.is-bad,
+.rp-demo .rp-verdict.is-bad {
+  padding-left: 8px;
+  border-left: 2px solid var(--ink);
+  font-weight: 600;
+}
+
+/* ---------- Sign-off ---------- */
+.rp-demo .rp-sign,
+.rp-demo .rp-audit {
+  flex: 1;
+  display: grid;
+  align-content: start;
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid var(--line);
+}
+.rp-demo .rp-sign > .rp-empty,
+.rp-demo .rp-audit > .rp-empty {
+  border: 0;
+  padding: 0;
+}
+.rp-demo .rp-sign-head {
+  display: grid;
+  gap: 2px;
+  font-size: 20px;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+}
+.rp-demo .rp-sign-head span {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.rp-demo .rp-conditions,
+.rp-demo .rp-checks ul,
+.rp-demo .rp-key ul {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.rp-demo .rp-conditions li {
+  display: grid;
+  grid-template-columns: 62px minmax(0, 1fr);
+  gap: 10px;
+  padding: 7px 0;
+  border-top: 1px solid var(--line);
+}
+.rp-demo .rp-conditions strong {
+  display: block;
+  font-size: 12.5px;
+  font-weight: 500;
+  line-height: 1.4;
+}
+.rp-demo .rp-conditions small {
+  display: block;
+  font-size: 11.5px;
+  line-height: 1.5;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+.rp-demo .rp-cond-mark {
+  align-self: start;
+  justify-self: start;
+  padding: 1px 5px;
+  border: 1px solid var(--ink);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9px;
+  line-height: 1.5;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.rp-demo .rp-conditions .is-not .rp-cond-mark {
+  background: var(--ink);
+  color: var(--page);
+}
+.rp-demo .rp-checks li,
+.rp-demo .rp-key li {
+  display: flex;
+  gap: 8px;
+  padding: 5px 0;
+  font-size: 11.5px;
+  line-height: 1.5;
+}
+.rp-demo .rp-checks li > span:last-child {
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+.rp-demo .rp-checks strong {
+  font-weight: 500;
+  color: var(--ink);
+}
+.rp-demo .rp-sign-btn {
+  justify-self: start;
+  max-width: 100%;
+}
+.rp-demo .rp-switch {
+  justify-self: start;
+}
+
+/* ---------- Audit trail ---------- */
+.rp-demo .rp-audit-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.rp-demo .rp-log {
+  max-height: 300px;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border: 1px solid var(--line);
+  list-style: none;
+  scrollbar-width: thin;
+  scrollbar-color: var(--line) transparent;
+}
+.rp-demo .rp-log li {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr);
+  gap: 8px;
+  padding: 6px 10px;
+  transition: background 0.2s;
+}
+.rp-demo .rp-log li + li {
+  border-top: 1px solid var(--line);
+}
+.rp-demo .rp-log-seq {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  line-height: 1.6;
+  color: var(--subtle);
+}
+.rp-demo .rp-log-main {
+  display: grid;
+  gap: 1px;
+  min-width: 0;
+}
+.rp-demo .rp-log-what {
+  font-size: 12px;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+.rp-demo .rp-log-what strong {
+  margin-right: 4px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10.5px;
+  font-weight: 500;
+}
+.rp-demo .rp-log-meta {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9.5px;
+  line-height: 1.5;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+.rp-demo .rp-log li.is-checked {
+  background: color-mix(in srgb, var(--ink) 5%, transparent);
+}
+.rp-demo .rp-log li.is-edited .rp-log-what {
+  text-decoration: underline dashed;
+  text-underline-offset: 3px;
+}
+.rp-demo .rp-log li.is-bad {
+  background: var(--ink);
+  color: var(--page);
+}
+.rp-demo .rp-log li.is-bad .rp-log-meta,
+.rp-demo .rp-log li.is-bad .rp-log-seq {
+  color: var(--page);
+}
+
+/* ---------- Answer key ---------- */
+.rp-demo .rp-key {
+  padding: 4px 14px;
+  border: 1px dashed var(--line);
+}
+.rp-demo .rp-key li {
+  display: block;
+  border-top: 1px solid var(--line);
+}
+.rp-demo .rp-key strong {
+  font-weight: 500;
+}
+
+/* ---------- Wider demos: side by side ---------- */
+@container rp (min-width: 560px) {
+  .rp-demo .rp-strip {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.4fr);
+  }
+  .rp-demo .rp-release {
+    grid-column: auto;
+  }
+}
+@container rp (min-width: 820px) {
+  .rp-demo .rp-work {
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  }
+  .rp-demo .rp-bottom {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+}
+@container rp (max-width: 440px) {
+  .rp-demo .rp-steps li {
+    grid-template-columns: 22px minmax(0, 1fr);
+    gap: 2px 10px;
+  }
+  .rp-demo .rp-step-out {
+    grid-column: 2;
+  }
+  .rp-demo .rp-steps .is-wait .rp-step-out {
+    display: none;
+  }
+  .rp-demo .rp-controls > .demo-btn,
+  .rp-demo .rp-plant,
+  .rp-demo .rp-plant .rp-select {
+    flex: 1 1 100%;
+  }
+  .rp-demo .rp-plant .demo-btn {
+    flex: 1 1 100%;
+  }
+  .rp-demo .rp-impact p:first-of-type strong {
+    font-size: 22px;
+  }
+  .rp-demo .rp-table {
+    font-size: 10px;
+  }
+  .rp-demo .rp-table th,
+  .rp-demo .rp-table td {
+    padding-inline: 4px;
+  }
+}
+
+/* ---------- Motion ---------- */
+@keyframes rp-arrive {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+}
+.rp-demo .rp-steps .is-done .rp-step-out {
+  animation: rp-arrive 0.3s ease-out both;
+}
+.rp-demo .rp-steps .is-now .rp-step-mark {
+  animation: caret-blink 0.8s step-end infinite;
+}
+.rp-demo .rp-queue > li {
+  animation: rp-arrive 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: calc(var(--i, 0) * 0.05s);
+}
+.rp-demo .rp-case-body {
+  animation: rp-arrive 0.3s ease-out both;
+}
+.rp-demo .rp-log li.is-new {
+  animation: rp-arrive 0.3s ease-out both;
+}
+/* Paused or reduced motion shows end states, never a half-played frame. */
+.rp-demo.is-still *,
+html[data-motion="paused"] .rp-demo * {
+  animation: none !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  .rp-demo * {
+    animation: none !important;
+    transition: none !important;
+  }
+}

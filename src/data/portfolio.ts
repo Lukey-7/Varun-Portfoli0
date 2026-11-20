@@ -91,6 +91,52 @@ export const selectedWork = [
     ownership:
       "Independent engineering and research project. C++ numerical core, Python integration and validation.",
   },
+  {
+    id: "reconpilot",
+    name: "ReconPilot",
+    category: "Fund operations & controls",
+    visual: "recon",
+    title: "Every break found, sized and signed off.",
+    description:
+      "A fund reconciliation and NAV-checking engine, with a web app for the team that works the breaks under four-eyes controls.",
+    stack: ["Python", "FastAPI", "PostgreSQL", "React"],
+    github: "https://github.com/Lukey-7/ReconPilot",
+    facts: [
+      ["190 / 200", "planted breaks found on synthetic data"],
+      ["404", "Python tests"],
+    ],
+    problem:
+      "Every business day a fund administrator compares the fund's own trades and positions with the custodian's holdings and cash statements. Anything that does not agree is a break, and each one has to be found, sized against the NAV, explained and signed off before the NAV goes out.",
+    approach:
+      "Deterministic rules match positions and cash with per-asset-class tolerances, group breaks into cases, size them in basis points of NAV, and age, escalate and clear them across days. An optional LLM second opinion explains each case with its real figures and drafts the custodian query, but never changes a figure or closes a case. People decide every case, a second approver releases the NAV, and every step lands in a hash-chained audit log.",
+    evidence:
+      "On synthetic data with 200 planted breaks over 20 business days, the rules found 190 and named the right cause for 178. With the second opinion beside them the cause was right for all 190, while detection stayed the same, because the model never raises a case. The project has 404 Python tests, 120 for the engine and 284 for the web layer against a real PostgreSQL, plus 25 Playwright journeys.",
+    ownership:
+      "Independent project. Reconciliation engine, controls, web application and evaluation.",
+  },
+  {
+    id: "inventory-rl",
+    name: "Inventory RL",
+    category: "Reinforcement learning",
+    visual: "inventory",
+    title: "Can an agent out-order the textbook?",
+    description:
+      "A Gymnasium inventory-control environment where a PPO agent is measured against the classic (s, S) ordering rule over held-out seeds.",
+    stack: ["Python", "Gymnasium", "Stable-Baselines3", "Streamlit"],
+    github: "https://github.com/Lukey-7/inventory-rl-env",
+    facts: [
+      ["30", "held-out seeds per comparison"],
+      ["≈3%", "lower cost than tuned (s, S) on the hard setting"],
+    ],
+    problem:
+      "A shop orders stock every day. Order too little and customers walk away; order too much and the shelves cost money; and deliveries take days to arrive. The textbook (s, S) rule handles this well, so the real question is whether reinforcement learning finds anything better.",
+    approach:
+      "I built a Gymnasium environment with lost sales, an order lead time and a weekly demand cycle, in three difficulty settings. A random policy, a grid-searched (s, S) rule and PPO from Stable-Baselines3, trained three times per setting, are compared on identical customers over held-out seeds. A Streamlit dashboard lets you watch each policy, race them on the same days or run the shop yourself.",
+    evidence:
+      "Over 30 held-out seeds, PPO beat the tuned (s, S) rule only on the hard setting, by about 3% of cost (81.5 ± 26.4 units per 100 days, with all three training seeds ahead). It tied on medium and was about 1% worse on easy, where (s, S) is close to the right answer. The likeliest reason is the weekly demand cycle, which one fixed (s, S) pair cannot follow.",
+    ownership:
+      "Independent project. Environment, baselines, training, evaluation and dashboard.",
+  },
 ];
 
 export type SelectedWork = (typeof selectedWork)[number];
