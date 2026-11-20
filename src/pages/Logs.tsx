@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { profile } from "@/data/profile";
 import { LabHero, LabSectionTitle, Reveal } from "@/sites/cyan/lab/LabParts";
-import { Calibration } from "@/sites/cyan/lab/logs/Calibration";
-import { OperatingModes } from "@/sites/cyan/lab/logs/OperatingModes";
-import { SignalSummary } from "@/sites/cyan/lab/logs/SignalSummary";
-import { SignalTrace } from "@/sites/cyan/lab/logs/SignalTrace";
+import { Calibration } from "@/sites/cyan/lab/trace/Calibration";
+import { OperatingModes } from "@/sites/cyan/lab/trace/OperatingModes";
+import { SignalSummary } from "@/sites/cyan/lab/trace/SignalSummary";
+import { SignalTrace } from "@/sites/cyan/lab/trace/SignalTrace";
 import "@/sites/cyan/lab/logs.css";
 
 /**
