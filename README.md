@@ -35,7 +35,7 @@ Deploy the monochrome site. On Vercel, create a project from this repository wit
 
 | Setting | Value |
 | --- | --- |
-| Branch | this branch, or `main` once it is merged |
+| Branch | `main` |
 | Build command | `npm run build:ordo` |
 | Output directory | `dist/ordo` |
 | Environment variable | `SITE_URL`: the public address, e.g. `https://your-domain` |
@@ -76,7 +76,7 @@ npm run preview:ordo
 
 Interaction tests cover case-study opening/closing, workflow keyboard navigation, mobile navigation, appearance switching, clipboard success/failure and employment disclosures. Legacy pages load on demand. Unused starter providers no longer inflate the landing-page bundle.
 
-Not deployed yet. See Deploying above.
+Live on Vercel: the monochrome site at https://varun-darji.vercel.app and the cyan site at https://varun-darji-lab.vercel.app. Every push to `main` redeploys both.
 
 ## Contact
 
